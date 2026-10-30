@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import List, Optional
 
+from .model import Offer
+
 # Relative to "excellent": that is how most Avito listings describe themselves,
 # so comparables and past prices are taken as excellent-condition prices.
 CONDITION_FACTOR = {
@@ -27,15 +29,6 @@ STEP_PERCENT = 10
 STEP_DAYS = 7
 MARKET_FLOOR_FACTOR = 0.8
 LOT_THRESHOLD = 250
-
-
-@dataclass
-class Offer:
-    source: str
-    price: float
-    url: str = ""
-    title: str = ""
-    in_stock: bool = True
 
 
 @dataclass

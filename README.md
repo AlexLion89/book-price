@@ -11,6 +11,8 @@
 
 - `bookprice/pricing.py` — правило цены и график снижения.
 - `bookprice/matching.py` — «то же издание или нет» для объявлений.
+- `bookprice/catalog.py` — карточка книги по ISBN (FantLab + Читай-город) и поиск изданий по названию.
+- `bookprice/sources/` — по модулю на площадку: `chitai_gorod`, `alib`, `fantlab`.
 - Тесты: `python -m unittest discover -s tests -t .`
 
 Python 3.9 и новее.

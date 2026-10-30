@@ -1,6 +1,7 @@
 import unittest
 
-from bookprice.pricing import Offer, drop_outliers, percentile, round_price, suggest
+from bookprice.model import Offer
+from bookprice.pricing import drop_outliers, percentile, round_price, suggest
 
 
 def shops(*prices, in_stock=True):

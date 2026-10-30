@@ -3,7 +3,9 @@ from __future__ import annotations
 import math
 import re
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List
+
+from .model import Book
 
 STOP_WORDS = {
     "и", "в", "во", "на", "с", "со", "о", "об", "по", "за", "из", "к", "у", "а", "но", "не",
@@ -15,20 +17,32 @@ FOREIGN_FORMAT = [
     "аудиокнига", "mp3", "диск", "журнал", "открытка", "открытки", "плакат", "постер",
     "закладка", "футболка", "пазл", "раскраска", "блокнот", "ежедневник",
 ]
-YEAR = re.compile(r"\b(1[89]\d\d|20[0-4]\d)\b")
+YEAR = re.compile(r"(?<!\d)(1[89]\d\d|20[0-4]\d)(?!\d)")
+FIRST_NAMES = set("""
+александр алексей анатолий андрей антон аркадий борис вадим валентин валерий василий виктор
+виталий владимир владислав вячеслав геннадий георгий глеб григорий даниил денис дмитрий евгений
+егор иван игорь илья кирилл константин лев леонид максим марк михаил никита николай олег павел
+петр роман руслан сергей станислав степан тимур федор эдуард юрий яков
+александра алла анастасия анна валентина вера виктория галина дарья евгения екатерина елена
+елизавета жанна зинаида инна ирина карина кристина лариса лидия любовь людмила маргарита марина
+мария надежда наталья нина ольга полина светлана софья тамара татьяна ульяна юлия
+агата артур генри джеймс джек джоан джозеф джон джордж дэн дэниел кэтлин льюис нил рэй стивен
+терри уильям фрэнсис чарльз эрих эрнест
+""".split())
 
-
-@dataclass
-class Book:
-    title: str
-    author: str = ""
-    year: Optional[int] = None
+# Verdicts: "yes" — same edition; "maybe" — same book, edition not stated;
+# "other" — same book, another year; "no" — something else.
+COUNTED_BY_DEFAULT = {"yes", "maybe"}
 
 
 @dataclass
 class MatchResult:
     verdict: str
     reason: str
+
+    @property
+    def counted(self) -> bool:
+        return self.verdict in COUNTED_BY_DEFAULT
 
 
 def normalize(text: str) -> str:
@@ -50,11 +64,22 @@ def common_prefix(a: str, b: str) -> int:
     return n
 
 
-def found_in(word: str, listing_words: List[str]) -> bool:
+def found_in(word: str, listing_words: List[str], strict: bool = False) -> bool:
     if len(word) <= 3 or word.isdigit():
         return word in listing_words
-    need = max(3, min(len(word) - 2, 7))
+    need = max(4 if strict else 3, min(len(word) - 2, 7))
     return any(common_prefix(word, w) >= need for w in listing_words)
+
+
+def surnames(author: str) -> List[str]:
+    """Word order varies ("Михаил Булгаков", "Булгаков М.А."), so drop initials and common first names
+    instead of guessing the surname position; a bare first name would match "Михайловское"."""
+    result = []
+    for one in author.split(","):
+        candidates = [w for w in words(one) if len(w) >= 3]
+        rest = [w for w in candidates if w not in FIRST_NAMES]
+        result.extend(rest or candidates)
+    return result
 
 
 def significant(text: str) -> List[str]:
@@ -74,8 +99,8 @@ def match(book: Book, listing_title: str, listing_text: str = "") -> MatchResult
         if has_phrase(full, phrase) and not has_phrase(title_norm, phrase):
             return MatchResult("no", f"похоже на другое: «{phrase}»")
 
-    author_words = [w for w in words(book.author) if len(w) >= 4]
-    if author_words and not any(found_in(w, full_words) for w in author_words):
+    author_words = surnames(book.author)
+    if author_words and not any(found_in(w, full_words, strict=True) for w in author_words):
         return MatchResult("no", "нет автора")
 
     title_words = significant(book.title)
@@ -85,10 +110,11 @@ def match(book: Book, listing_title: str, listing_text: str = "") -> MatchResult
         if found < need:
             return MatchResult("no", f"из названия нашлось {found} слов из {len(title_words)}")
 
-    if book.year:
+    known = set(book.years())
+    if known:
         years = {int(y) for y in YEAR.findall(full)} - {int(y) for y in YEAR.findall(title_norm)}
-        if book.year in years:
+        if known & years:
             return MatchResult("yes", "совпали автор, название и год")
         if years:
-            return MatchResult("maybe", "другой год — возможно, другое издание")
+            return MatchResult("other", "другой год — скорее всего, другое издание")
     return MatchResult("maybe", "совпали автор и название, издание не указано")
