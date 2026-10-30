@@ -18,6 +18,7 @@ FOREIGN_FORMAT = [
     "закладка", "футболка", "пазл", "раскраска", "блокнот", "ежедневник",
 ]
 YEAR = re.compile(r"(?<!\d)(1[89]\d\d|20[0-4]\d)(?!\d)")
+BINDING_LABEL = {"soft": "мягкий", "hard": "твёрдый"}
 PUBLISHER_NOISE = {"издательство", "издательский", "книжное", "книжный", "дом", "группа", "ооо", "зао"}
 FIRST_NAMES = set("""
 александр алексей анатолий андрей антон аркадий борис вадим валентин валерий василий виктор
@@ -91,6 +92,16 @@ def has_phrase(text_norm: str, phrase: str) -> bool:
     return re.search(r"\b" + re.escape(phrase) + r"\b", text_norm) is not None
 
 
+def binding_kind(text_norm: str) -> set:
+    """"Обложка" is not a hint: hardcovers have one too. Only explicit soft/hard words count."""
+    kinds = set()
+    if "мягк" in text_norm:
+        kinds.add("soft")
+    if "тверд" in text_norm:
+        kinds.add("hard")
+    return kinds
+
+
 def publisher_words(publisher: str) -> List[str]:
     return [w for w in significant(publisher.split(",")[0]) if len(w) >= 4 and w not in PUBLISHER_NOISE]
 
@@ -124,6 +135,10 @@ def match(book: Book, listing_title: str, listing_text: str = "", desc: str = ""
 
     if exact_isbn:
         return MatchResult("yes", "найдено по ISBN")
+
+    mine, theirs = binding_kind(normalize(book.binding)), binding_kind(everything)
+    if mine and theirs and not mine & theirs:
+        return MatchResult("other", f"другой переплёт — {BINDING_LABEL[theirs.pop()]}")
 
     known = set(book.years())
     if known:

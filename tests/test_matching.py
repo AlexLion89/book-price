@@ -74,6 +74,18 @@ class MatchTest(unittest.TestCase):
         self.assertEqual(match(MASTER, "Мастер и Маргарита", need_author=False).verdict, "maybe")
         self.assertEqual(match(MASTER, "Мастер и Маргарита").verdict, "no")
 
+    def test_other_binding_is_other_edition(self):
+        hard = Book(title="Мастер и Маргарита", author="Михаил Булгаков", binding="твёрдая")
+        result = match(hard, "Булгаков Мастер и Маргарита", desc="Мягкий переплет, хорошее состояние")
+        self.assertEqual(result.verdict, "other")
+        self.assertIn("мягкий", result.reason)
+
+    def test_same_binding_or_unknown_is_fine(self):
+        hard = Book(title="Мастер и Маргарита", author="Михаил Булгаков", binding="Твердая обложка")
+        self.assertEqual(match(hard, "Булгаков Мастер и Маргарита", desc="твёрдый переплёт").verdict, "maybe")
+        self.assertEqual(match(hard, "Булгаков Мастер и Маргарита", desc="обложка целая").verdict, "maybe")
+        self.assertEqual(match(MASTER, "Булгаков Мастер и Маргарита", desc="мягкая обложка").verdict, "maybe")
+
     def test_word_boundary_for_format(self):
         self.assertEqual(self.verdict(MASTER, "Мастер и Маргарита Булгаков, Томск, самовывоз"), "maybe")
 
