@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Цена книги — как установить и пользоваться</title>
+<style>
+  @page { size: A4; margin: 13mm 14mm; }
+  body { font: 11pt/1.42 "Segoe UI", system-ui, sans-serif; color: #2b2620; margin: 0; }
+  h1 { font-size: 21pt; margin: 0 0 3pt; }
+  h2 { font-size: 14pt; margin: 14pt 0 6pt; color: #2f7d6d; }
+  .lead { color: #7a7064; margin: 0 0 6pt; }
+  ol, ul { padding-left: 18pt; margin: 0; }
+  li { margin: 0 0 7pt; }
+  li::marker { font-weight: 700; color: #2f7d6d; }
+  img { display: block; width: 100%; border: 1px solid #e8e1d6; border-radius: 5pt; object-fit: cover; object-position: top left; }
+  .side { display: grid; grid-template-columns: 1fr 245pt; gap: 10pt; align-items: start; margin-top: 3pt; }
+  .note { background: #fff3e6; border: 1px solid #f0c9a0; border-radius: 6pt; padding: 5pt 9pt; margin: 5pt 0 0; }
+  .tip { color: #7a7064; font-size: 9.5pt; margin-top: 2pt; }
+  b.btn { display: inline-block; border: 1px solid #c9c1b4; border-radius: 4pt; padding: 0 4pt; font-weight: 600; background: #fff; line-height: 1.3; }
+  .smartscreen { background: #1f6fbf; color: #fff; border-radius: 4pt; padding: 9pt 12pt; width: 290pt; font-size: 9.5pt; margin-top: 4pt; }
+  .smartscreen .t { font-size: 14pt; font-weight: 600; margin-bottom: 5pt; }
+  .smartscreen .run { display: inline-block; border: 2px solid #fff; padding: 2pt 8pt; margin-top: 6pt; font-weight: 600; }
+  .ring { outline: 3px solid #ffb84d; outline-offset: 2px; border-radius: 3px; }
+  .page2 { break-before: page; font-size: 10.5pt; }
+  .page2 li { margin-bottom: 6pt; }
+</style>
+</head>
+<body>
+
+<h1>📚 Цена книги</h1>
+<p class="lead">Программа подсказывает, за сколько выставить книгу на Авито и как снижать цену, если она не продаётся.
+Работает на Windows 10 и 11, нужен только интернет.</p>
+
+<h2>Установка — один раз, 5 минут</h2>
+<ol>
+  <li><strong>Скачайте архив</strong> <code>BookPrice-….zip</code> по ссылке, которую вам прислали. Он окажется в папке «Загрузки».</li>
+  <li><strong>Распакуйте его.</strong> Правой кнопкой по архиву → <b class="btn">Извлечь все…</b> → <b class="btn">Извлечь</b>.
+    <div class="tip">В Windows 10 и 11 одинаково. Запустить программу прямо из архива, не распаковав, не получится — она сама об этом скажет.</div></li>
+  <li><strong>Откройте <code>BookPrice.exe</code></strong> в распакованной папке <code>BookPrice</code>.</li>
+  <li><strong>Windows один раз предупредит</strong> — так бывает со всеми программами не из магазина Microsoft.
+    Нажмите <b class="btn">Подробнее</b>, потом <b class="btn">Выполнить в любом случае</b>:
+    <div class="smartscreen">
+      <div class="t">Windows защитила ваш компьютер</div>
+      Фильтр SmartScreen в Microsoft Defender предотвратил запуск неопознанного приложения…<br>
+      <span class="ring"><u>Подробнее</u></span><br>
+      <span class="run ring">Выполнить в любом случае</span>
+    </div></li>
+  <li><strong>Готово.</strong> Откроется окно «Цена книги», а на рабочем столе появится ярлык <b>Цена книги</b> — дальше запускайте программу им.
+    <div class="tip">Папку <code>BookPrice</code> не удаляйте. Если переложили её в другое место — удалите старый ярлык и откройте <code>BookPrice.exe</code> снова: ярлык создастся заново. Ваши книги при этом не пропадут.</div></li>
+</ol>
+
+<h2>Если что-то не так</h2>
+<ul>
+  <li><strong>Какой-то сайт «не получилось прочитать»</strong> — на странице книги нажмите «открыть поиск», посмотрите цену сами и впишите её в поле «Нашли цену сами?». Цена пересчитается.</li>
+  <li><strong>Ошибка или странная цена</strong> — нажмите вверху <b class="btn">Отчёт об ошибке</b>. На рабочем столе появится zip-файл — пришлите его тому, кто дал вам программу. Сама программа ничего никуда не отправляет.</li>
+  <li><strong>Новая версия</strong> — вверху <b class="btn">Обновления</b>: программа скачает исправления и перезапустится.</li>
+  <li><strong>Закрыть программу</strong> — <b class="btn">Выйти</b>. Если просто закрыть окно, она сама выключится через полчаса.</li>
+</ul>
+
+<div class="page2">
+<h2 style="margin-top: 0">Как узнать цену книги</h2>
+<ol>
+  <li><strong>Нажмите «+ Добавить книгу»</strong> и впишите ISBN — 13 цифр под штрихкодом на задней обложке (обычно начинаются с 978), потом <b class="btn">Найти</b>.
+    <div class="side"><div>Программа сама найдёт обложку, издательство и год. Выберите <strong>состояние</strong> книги и нажмите <b class="btn">Найти цены</b>.
+      <div class="tip">Нет ISBN (старая книга)? Нажмите «У книги нет ISBN», впишите название, автора и год и выберите своё издание из списка.</div></div>
+      <img src="img/add.png" alt=""></div></li>
+  <li><strong>Откроется второе окно — «Поиск цен».</strong> В нём программа сама ходит по магазинам и Авито, около минуты. Ничего нажимать не нужно, закрывать его тоже не надо — можно свернуть.
+    <div class="note">Если сайт спросит <strong>«Вы не робот?»</strong>, в программе появится оранжевая надпись. Перейдите в окно «Поиск цен» и пройдите проверку там — поиск продолжится сам.</div></li>
+  <li><strong>Смотрите цену.</strong>
+    <div class="side"><div>Крупно — за сколько выставить, рядом — ниже какой цены не опускаться, под ними — как снижать, если не продаётся. Ниже — почему программа так решила.</div>
+      <img src="img/book.png" alt=""></div></li>
+  <li><strong>Проверьте, что нашлось</strong> (ниже на той же странице). Галочка — предложение учтено в цене. Если это другое издание, комплект или вообще не та книга — снимите галочку, цена пересчитается.</li>
+  <li><strong>Выставьте объявление.</strong> Кнопка <b class="btn">Скопировать</b> берёт готовый текст для описания. Выставили — впишите цену в программе и нажмите <b class="btn">Запомнить</b>.</li>
+  <li><strong>Через неделю без продажи</strong> программа подскажет, до скольких снизить.
+    <div class="side"><div>Снизили на Авито — нажмите <b class="btn">Снизила до …</b> на странице книги. Продали — <b class="btn">Отметить проданной</b>.</div>
+      <img src="img/list.png" alt="" style="height: 150pt"></div></li>
+</ol>
+</div>
+
+</body>
+</html>

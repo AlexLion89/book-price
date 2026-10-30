@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import re
 from typing import List, Optional
 
 from . import isbn as isbn_mod
@@ -40,6 +41,19 @@ def identify(http: Http, raw_isbn: str) -> Optional[Book]:
     if book:
         book.isbn = code
     return book
+
+
+def enrich(http: Http, book: Book) -> Book:
+    """Title search on FantLab returns editions without cover and binding: fetch the full card of the chosen one."""
+    m = re.search(r"fantlab\.ru/edition(\d+)", book.source_url or "")
+    if not m or book.cover_url:
+        return book
+    try:
+        full = fantlab.edition(http, int(m.group(1)), book.isbn)
+    except Exception:
+        log.exception("FantLab: карточка издания %s", m.group(1))
+        return book
+    return merge(full, book)
 
 
 def find(http: Http, title: str, author: str = "") -> List[Book]:

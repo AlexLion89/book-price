@@ -206,6 +206,7 @@ def make_handler(app: App) -> Callable:
         book = Book(**{k: v for k, v in data.items() if k in Book.__dataclass_fields__})
         if not book.title:
             raise ValueError("нужно название книги")
+        book = catalog.enrich(app.http, book)
         book_id = app.store.add_book(book, body.get("condition", "excellent"))
         app.searcher.submit(book_id)
         return {"id": book_id}
