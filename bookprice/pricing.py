@@ -88,6 +88,7 @@ def suggest(
     used_offers: List[Offer],
     past_prices: List[float],
     condition: str = "excellent",
+    used_label: str = "на Авито",
 ) -> Verdict:
     factor = CONDITION_FACTOR[condition]
     in_stock = [o.price for o in shop_offers if o.in_stock]
@@ -101,12 +102,12 @@ def suggest(
         target = cap
         if used:
             a = percentile(used, 0.25)
-            reasons.append(f"на Авито {len(used)} похожих, дешёвая четверть — до {a:.0f} ₽")
+            reasons.append(f"{used_label} {len(used)} похожих, дешёвая четверть — до {a:.0f} ₽")
             target = min(a * UNDERCUT_COMPETITORS, cap)
         verdict = _market(target * factor, "new_in_shops", reasons)
     elif used:
         a = percentile(used, 0.25)
-        reasons = [f"в магазинах нет; на Авито {len(used)} похожих, дешёвая четверть — до {a:.0f} ₽"]
+        reasons = [f"в магазинах нет; {used_label} {len(used)} похожих, дешёвая четверть — до {a:.0f} ₽"]
         if len(used) < FEW_LISTINGS:
             reasons.append("объявлений мало — если они висят месяцами, их цена не рыночная")
         verdict = _market(a * SCARCE_UNDERCUT * factor, "only_used", reasons)

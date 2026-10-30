@@ -90,7 +90,8 @@ def has_phrase(text_norm: str, phrase: str) -> bool:
     return re.search(r"\b" + re.escape(phrase) + r"\b", text_norm) is not None
 
 
-def match(book: Book, listing_title: str, listing_text: str = "") -> MatchResult:
+def match(book: Book, listing_title: str, listing_text: str = "", by_isbn: bool = False) -> MatchResult:
+    """by_isbn: the shop was searched by ISBN, so only weed out recommendations and merch."""
     full = normalize(listing_title + " " + listing_text)
     full_words = full.split()
     title_norm = normalize(book.title)
@@ -100,7 +101,7 @@ def match(book: Book, listing_title: str, listing_text: str = "") -> MatchResult
             return MatchResult("no", f"похоже на другое: «{phrase}»")
 
     author_words = surnames(book.author)
-    if author_words and not any(found_in(w, full_words, strict=True) for w in author_words):
+    if not by_isbn and author_words and not any(found_in(w, full_words, strict=True) for w in author_words):
         return MatchResult("no", "нет автора")
 
     title_words = significant(book.title)
@@ -109,6 +110,9 @@ def match(book: Book, listing_title: str, listing_text: str = "") -> MatchResult
         need = max(1, math.ceil(len(title_words) * 0.6))
         if found < need:
             return MatchResult("no", f"из названия нашлось {found} слов из {len(title_words)}")
+
+    if by_isbn:
+        return MatchResult("yes", "найдено по ISBN")
 
     known = set(book.years())
     if known:
