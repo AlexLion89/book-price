@@ -74,9 +74,11 @@ def classify(book: Book, results: List[SourceResult], marks: Dict[Tuple[str, str
         kind = BY_NAME[r.source].kind if r.source in BY_NAME else "shop"
         for o in r.offers:
             m: MatchResult = match(book, o.title, o.text, by_isbn=kind == "shop" and bool(book.isbn))
+            # Booksellers list every old printing: only a matching year is trusted without a human look.
+            auto = m.verdict == "yes" if kind == "dealer" else m.counted
             key = (o.source, o.ext_id or o.url)
             marked = key in marks
-            found.append(Found(o, kind, m.verdict, m.reason, marks[key] if marked else m.counted, marked))
+            found.append(Found(o, kind, m.verdict, m.reason, marks[key] if marked else auto, marked))
     return found
 
 
@@ -90,6 +92,6 @@ def evaluate(book: Book, found: List[Found], manual: List[Offer], condition: str
     if not dealers:
         return suggest(shops, [], [], condition)
     discounted = [Offer(source=o.source, price=o.price * DEALER_DISCOUNT) for o in dealers]
-    verdict = suggest(shops, discounted, [], condition, used_label="у букинистов alib (за вычетом 20 %)")
+    verdict = suggest(shops, discounted, [], condition, used_label="у букинистов alib (минус 20 %)")
     verdict.reasons.insert(0, "на Авито похожих нет — ориентир по букинистам: на Авито обычно процентов на 20 дешевле")
     return verdict

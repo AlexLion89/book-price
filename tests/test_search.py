@@ -24,11 +24,15 @@ class SearchTest(unittest.TestCase):
         self.assertTrue(found[0].counted)
 
     def test_dealers_when_no_avito(self):
-        r = [result("alib", *[Offer("alib", p, title="Булгаков М.А. Мастер и Маргарита.", ext_id=str(p)) for p in (1000, 1200, 1500)])]
+        r = [result("alib", *[Offer("alib", p, title="Булгаков М.А. Мастер и Маргарита.", text="М. Азбука. 2012г.", ext_id=str(p)) for p in (1000, 1200, 1500)])]
         v = evaluate(BOOK, classify(BOOK, r, {}), [], "excellent")
         self.assertEqual(v.scenario, "only_used")
         self.assertIn("букинист", v.reasons[0])
         self.assertEqual(v.start, 800)
+
+    def test_dealer_without_year_needs_a_human(self):
+        r = [result("alib", Offer("alib", 2000, title="Булгаков М. Мастер и Маргарита.", text="Самиздат", ext_id="s"))]
+        self.assertFalse(classify(BOOK, r, {})[0].counted)
 
     def test_manual_price(self):
         v = evaluate(BOOK, [], [Offer("ozon", 500)], "excellent")
