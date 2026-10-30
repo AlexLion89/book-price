@@ -86,6 +86,26 @@ class MatchTest(unittest.TestCase):
         self.assertEqual(match(hard, "Булгаков Мастер и Маргарита", desc="обложка целая").verdict, "maybe")
         self.assertEqual(match(MASTER, "Булгаков Мастер и Маргарита", desc="мягкая обложка").verdict, "maybe")
 
+    def test_other_volume_of_series(self):
+        book = Book(title="Сердце в броне", author="Аркадий Степной")
+        result = match(book, "Аркадий Степной Сердце в броне 3")
+        self.assertEqual(result.verdict, "other")
+        self.assertIn("3", result.reason)
+        self.assertEqual(match(book, "Степной. Сердце в броне").verdict, "maybe")
+        self.assertEqual(match(book, "Степной Сердце в броне 1").verdict, "maybe")
+
+    def test_same_volume_and_age_marks(self):
+        book = Book(title="Сердце в броне 2", author="Аркадий Степной")
+        self.assertEqual(match(book, "Степной Сердце в броне 2").verdict, "maybe")
+        self.assertEqual(match(book, "Степной Сердце в броне 3").verdict, "other")
+        kids = Book(title="Незнайка на Луне", author="Николай Носов")
+        self.assertEqual(match(kids, "Носов Незнайка на Луне 6+").verdict, "maybe")
+        self.assertEqual(match(kids, "Носов Незнайка на Луне. Часть 3-4").verdict, "other")
+
+    def test_codes_and_decades_are_not_volumes(self):
+        self.assertEqual(match(MASTER, "Булгаков: Мастер и Маргарита (BG-02)").verdict, "maybe")
+        self.assertEqual(match(MASTER, "Булгаков Мастер и Маргарита, самиздат 70-х").verdict, "maybe")
+
     def test_word_boundary_for_format(self):
         self.assertEqual(self.verdict(MASTER, "Мастер и Маргарита Булгаков, Томск, самовывоз"), "maybe")
 

@@ -133,6 +133,12 @@ class ExtractTest(unittest.TestCase):
                                   "title": "Мастер и Маргарита Азбука", "text": "Азбука / Мастер и Маргарита",
                                   "price": 439, "id": "996440118"}])
 
+    def test_rubles_written_as_word(self):
+        page = """<div><a href="https://meshok.net/item/123456_Bulgakov">Булгаков. Мастер и Маргарита, 1989</a>
+                  <span>Текущая ставка: 450 руб.</span></div>"""
+        offers = extract.tiles(self.load(page), r"meshok\.net/item/\d+", "meshok", currency="₽|руб")
+        self.assertEqual([(o.price, o.title) for o in offers], [(450, "Булгаков. Мастер и Маргарита, 1989")])
+
     def test_nothing_found(self):
         self.assertTrue(extract.nothing_found(self.load("<h1>Ничего не нашлось по запросу «978»</h1>")))
         self.assertFalse(extract.nothing_found(self.load(SHOP_PAGE)))

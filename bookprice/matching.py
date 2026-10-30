@@ -19,6 +19,8 @@ FOREIGN_FORMAT = [
 ]
 YEAR = re.compile(r"(?<!\d)(1[89]\d\d|20[0-4]\d)(?!\d)")
 BINDING_LABEL = {"soft": "мягкий", "hard": "твёрдый"}
+SERIES_NUMBER = re.compile(r"(?<![\w.,\-])([1-9]\d?)(?![\w%.,]|\s*\+|\s*-?\s*х)")
+MAX_VOLUME = 30
 PUBLISHER_NOISE = {"издательство", "издательский", "книжное", "книжный", "дом", "группа", "ооо", "зао"}
 FIRST_NAMES = set("""
 александр алексей анатолий андрей антон аркадий борис вадим валентин валерий василий виктор
@@ -92,6 +94,12 @@ def has_phrase(text_norm: str, phrase: str) -> bool:
     return re.search(r"\b" + re.escape(phrase) + r"\b", text_norm) is not None
 
 
+def series_numbers(title: str) -> set:
+    """Volume numbers in a title ("Сердце в броне 2"). 1 is not counted — the first book rarely carries it;
+    ages like "6+" and percentages are skipped."""
+    return {int(n) for n in SERIES_NUMBER.findall(title or "") if int(n) <= MAX_VOLUME} - {1}
+
+
 def binding_kind(text_norm: str) -> set:
     """"Обложка" is not a hint: hardcovers have one too. Only explicit soft/hard words count."""
     kinds = set()
@@ -135,6 +143,10 @@ def match(book: Book, listing_title: str, listing_text: str = "", desc: str = ""
 
     if exact_isbn:
         return MatchResult("yes", "найдено по ISBN")
+
+    extra = series_numbers(listing_title) - series_numbers(book.title)
+    if extra:
+        return MatchResult("other", f"другая книга серии или часть: «{min(extra)}»")
 
     mine, theirs = binding_kind(normalize(book.binding)), binding_kind(everything)
     if mine and theirs and not mine & theirs:

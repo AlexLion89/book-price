@@ -127,6 +127,16 @@ class Store:
         else:
             self._q("delete from manual where book_id = ? and source = ?", (book_id, source))
 
+    def sold_like(self, book_id: int, book: Book) -> List[dict]:
+        """Earlier sales of the same book: same ISBN; without ISBN — same title and author among books without ISBN (an old edition is not a reprint)."""
+        from .matching import normalize
+        key = (normalize(book.title), normalize(book.author))
+        rows = self._q("select id, isbn, title, author, sold_price, sold_at from books "
+                       "where status = 'sold' and sold_price is not null and id != ? order by sold_at desc", (book_id,))
+        return [dict(r) for r in rows
+                if (r["isbn"] == book.isbn if book.isbn
+                    else not r["isbn"] and (normalize(r["title"]), normalize(r["author"] or "")) == key)]
+
     def log_price(self, book_id: int, price: Optional[int], event: str) -> None:
         self._q("insert into price_log values (?, ?, ?, ?)", (book_id, now(), price, event))
 

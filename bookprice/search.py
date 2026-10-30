@@ -8,7 +8,7 @@ from .matching import MatchResult, match
 from .model import Book, Offer, SourceResult
 from .net import Http
 from .pricing import Verdict, suggest
-from .sources import alib, avito, chitai_gorod
+from .sources import alib, avito, chitai_gorod, meshok
 from .sources.shops import SHOPS
 
 log = logging.getLogger(__name__)
@@ -32,6 +32,7 @@ SOURCES: List[Source] = [
     *[Source(s.name, s.label, "shop", True, s.search) for s in SHOPS],
     Source(avito.NAME, avito.LABEL, "used", True, avito.search),
     Source(alib.NAME, alib.LABEL, "dealer", False, alib.search),
+    Source(meshok.NAME, meshok.LABEL, "dealer", True, meshok.search),
 ]
 BY_NAME = {s.name: s for s in SOURCES}
 
@@ -89,16 +90,21 @@ def classify(book: Book, results: List[SourceResult], marks: Dict[Tuple[str, str
     return found
 
 
-def evaluate(book: Book, found: List[Found], manual: List[Offer], condition: str) -> Verdict:
+def evaluate(book: Book, found: List[Found], manual: List[Offer], condition: str,
+             own_sales: Optional[List[dict]] = None) -> Verdict:
     counted = [f for f in found if f.counted]
     shops = [f.offer for f in counted if f.kind == "shop"] + [o for o in manual if BY_NAME[o.source].kind == "shop"]
     used = [f.offer for f in counted if f.kind == "used"] + [o for o in manual if BY_NAME[o.source].kind == "used"]
-    if used:
-        return suggest(shops, used, [], condition)
+    past = [float(s["sold_price"]) for s in own_sales or []]
     dealers = [f.offer for f in counted if f.kind == "dealer"]
-    if not dealers:
-        return suggest(shops, [], [], condition)
-    discounted = [Offer(source=o.source, price=o.price * DEALER_DISCOUNT) for o in dealers]
-    verdict = suggest(shops, discounted, [], condition, used_label="у букинистов alib (минус 20 %)")
-    verdict.reasons.insert(0, "на Авито похожих нет — ориентир по букинистам: на Авито обычно процентов на 20 дешевле")
+    if used or not dealers:
+        verdict = suggest(shops, used, past, condition)
+    else:
+        discounted = [Offer(source=o.source, price=o.price * DEALER_DISCOUNT) for o in dealers]
+        verdict = suggest(shops, discounted, past, condition, used_label="у букинистов (минус 20 %)")
+        verdict.reasons.insert(0, "на Авито похожих нет — ориентир по букинистам: на Авито обычно процентов на 20 дешевле")
+    if own_sales:
+        last = own_sales[0]
+        verdict.reasons.append(f"вы уже продавали такую: за {last['sold_price']} ₽ "
+                               f"{(last['sold_at'] or '')[:10]}" + (f" (всего продаж: {len(own_sales)})" if len(own_sales) > 1 else ""))
     return verdict

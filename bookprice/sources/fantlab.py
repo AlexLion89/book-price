@@ -58,10 +58,20 @@ def by_isbn(http: Http, isbn: str) -> Optional[Book]:
     return edition(http, int(matches[0]["edition_id"]), isbn)
 
 
-def by_title(http: Http, query: str, limit: int = 25) -> List[Book]:
-    d = http.json(f"{API}/search-editions", {"q": query})
+PAGE = 25
+
+
+def by_title(http: Http, query: str, limit: int = 150) -> List[Book]:
+    """Popular titles have 80+ editions and the API returns 25 per page in no useful order."""
+    matches = []
+    for page in range(1, limit // PAGE + 1):
+        d = http.json(f"{API}/search-editions", {"q": query, "page": page})
+        batch = d.get("matches") or []
+        matches += batch
+        if len(batch) < PAGE or len(matches) >= int(d.get("total_found") or 0):
+            break
     books = []
-    for m in (d.get("matches") or [])[:limit]:
+    for m in matches[:limit]:
         isbns = [s.strip() for s in (m.get("isbn") or "").split(",") if s.strip()]
         books.append(Book(
             title=m.get("name") or "",

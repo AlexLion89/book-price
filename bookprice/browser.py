@@ -102,7 +102,7 @@ class Browser:
         self.page.goto(url, wait_until="domcontentloaded", timeout=60000)
         self._last_visit = time.monotonic()
         if self.is_blocked():
-            self._wait_for_human(source)
+            self.wait_for_human(source)
         if ready:
             try:
                 self.page.wait_for_selector(ready, timeout=ready_timeout * 1000)
@@ -110,7 +110,7 @@ class Browser:
                 log.warning("%s: не дождался %s", source, ready)
         self.page.wait_for_timeout(1500)
 
-    def _wait_for_human(self, source: str) -> None:
+    def wait_for_human(self, source: str) -> None:
         log.warning("%s: проверка «не робот», жду человека", source)
         self.page.bring_to_front()
         self.on_captcha(source)

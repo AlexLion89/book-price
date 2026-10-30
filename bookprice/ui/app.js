@@ -31,13 +31,15 @@ async function api(method, path, body) {
 }
 
 function cover(url, cls = "cover") {
-  return url ? `<img class="${cls}" src="${esc(url)}" alt="" referrerpolicy="no-referrer" onerror="this.removeAttribute('src')">`
-             : `<div class="${cls}"></div>`;
+  const img = url ? `<img src="${esc(url)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">` : "";
+  return `<div class="${cls}">${img}</div>`;
 }
 
 async function route() {
   clearTimeout(pollTimer);
   const hash = location.hash || "#/";
+  document.querySelectorAll("nav [data-route]").forEach(b =>
+    b.classList.toggle("active", b.dataset.route === hash || (b.dataset.route === "#/" && hash.startsWith("#/book/"))));
   try {
     if (hash === "#/") return await renderList();
     if (hash === "#/add") return renderAdd();
@@ -55,14 +57,22 @@ async function route() {
 async function renderList() {
   const books = await api("GET", "/api/books");
   const due = books.filter(b => b.next_step);
+  const listed = books.filter(b => b.status === "listed").length;
+  const sold = books.filter(b => b.status === "sold").length;
   view.innerHTML = `
-    <div class="row" style="justify-content: space-between; margin-bottom: 16px">
-      <h1 style="margin: 0">Мои книги</h1>
+    <div class="hero">
+      <div class="fox">🦊</div>
+      <div class="grow">
+        <h1>Мои книги</h1>
+        <p>${books.length ? `На полке ${books.length} · на Авито ${listed} · продано ${sold}` : "Полка пока пуста — самое время найти, что продать."}</p>
+      </div>
       <a class="primary" href="#/add">+ Добавить книгу</a>
     </div>
-    ${due.length ? `<div class="alert">Пора снизить цену: ${due.map(b => `<a href="#/book/${b.id}">${esc(b.title)}</a> — до ${rub(b.next_step.price)}`).join(", ")}</div>` : ""}
+    ${due.length ? `<div class="alert">🔎 Пора снизить цену: ${due.map(b => `<a href="#/book/${b.id}">${esc(b.title)}</a> — до ${rub(b.next_step.price)}`).join(", ")}</div>` : ""}
     ${books.length ? `<div class="grid">${books.map(tile).join("")}</div>`
-      : `<div class="card">Книг пока нет. Нажмите «Добавить книгу» и введите ISBN — 13 цифр под штрихкодом на задней обложке.</div>`}`;
+      : `<div class="card empty"><div class="fox">🦊📚</div>
+          <h2>Ни одной улики</h2>
+          <p class="muted">Нажмите «Добавить книгу» и введите ISBN — 13 цифр под штрихкодом на задней обложке.</p></div>`}`;
 }
 
 function tile(b) {
@@ -81,6 +91,7 @@ function renderAdd() {
   const s = addState;
   const conditions = { new: "как новая", excellent: "отличное", good: "хорошее", marked: "с пометками или потёртостями" };
   view.innerHTML = `
+    <a class="back" href="#/">← Все книги</a>
     <h1>Новая книга</h1>
     <div class="card">
       ${s.mode === "isbn" ? `
@@ -94,9 +105,9 @@ function renderAdd() {
       : `
         <h2>Название и автор</h2>
         <form id="title-form" class="row">
-          <input id="t-title" placeholder="Название" style="width: 320px" autofocus>
-          <input id="t-author" placeholder="Автор" style="width: 220px">
-          <input id="t-year" placeholder="Год" style="width: 90px">
+          <input id="t-title" placeholder="Название" style="width: 320px" autofocus value="${esc((s.typed || {}).title || "")}">
+          <input id="t-author" placeholder="Автор" style="width: 220px" value="${esc((s.typed || {}).author || "")}">
+          <input id="t-year" placeholder="Год" style="width: 90px" value="${esc((s.typed || {}).year || "")}">
           <button class="primary">Найти издания</button>
         </form>
         <p><button class="link" data-mode="isbn">Есть ISBN</button></p>`}
@@ -146,10 +157,13 @@ function renderAdd() {
     toast("Ищу издания…", 2000);
     const { books } = await api("POST", "/api/find", { title, author });
     addState.typed = { title, author, year };
-    const near = books.filter(b => !year || !b.year || Math.abs(b.year - year) <= 3);
-    addState.candidates = near.length ? near : books;
+    const distance = b => (year && b.year ? Math.abs(b.year - year) : 999);
+    addState.candidates = books.slice().sort((a, b) => distance(a) - distance(b) || (b.year || 0) - (a.year || 0));
+    addState.showAll = false;
     renderAdd();
   };
+  const more = document.getElementById("more-editions");
+  if (more) more.onclick = () => { addState.showAll = true; renderAdd(); };
   view.querySelectorAll("[data-pick]").forEach(b => b.onclick = () => {
     const i = +b.dataset.pick;
     addState.book = i < 0 ? { ...addState.typed, isbn: "" } : addState.candidates[i];
@@ -166,11 +180,16 @@ function renderAdd() {
   };
 }
 
+const SHOWN_EDITIONS = 15;
+
 function candidatesHtml(list) {
+  const shown = addState.showAll ? list : list.slice(0, SHOWN_EDITIONS);
   return `<h2 style="margin-top: 16px">Какое издание у вас?</h2>
+    <p class="small muted">Изданий нашлось ${list.length}${addState.typed && addState.typed.year ? `, ближе к ${addState.typed.year} году — сверху` : ""}.</p>
     <div class="candidates">
-      ${list.map((b, i) => `<button class="ghost" data-pick="${i}"><strong>${esc(b.year || "год ?")}</strong> · ${esc(b.publisher || "издательство ?")}
+      ${shown.map((b, i) => `<button class="ghost" data-pick="${i}"><strong>${esc(b.year || "год ?")}</strong> · ${esc(b.publisher || "издательство ?")}
         · ${esc(b.title)} <span class="muted small">${esc(b.isbn || "")}</span></button>`).join("")}
+      ${list.length > shown.length ? `<p><button class="link" id="more-editions">показать все ${list.length}</button></p>` : ""}
       <button class="ghost" data-pick="-1">Моего издания нет в списке — взять, как я ввела</button>
     </div>`;
 }
@@ -185,7 +204,7 @@ async function renderBook(id) {
   const label = Object.fromEntries(d.sources.map(s => [s.name, s.label]));
 
   view.innerHTML = `
-    <p><a href="#/">← Все книги</a></p>
+    <a class="back" href="#/">← Все книги</a>
     <div class="card row" style="align-items: flex-start">
       ${cover(b.cover_url, "cover small")}
       <div style="flex: 1">
@@ -200,6 +219,7 @@ async function renderBook(id) {
     </div>
     ${running ? progressHtml(job, label) : ""}
     ${job && job.status === "error" ? `<div class="alert">Поиск сломался: ${esc(job.error)}. Нажмите «Искать заново»; если повторится — «Отчёт об ошибке».</div>` : ""}
+    ${running && !Object.keys(d.runs).length ? `<div class="card muted">Вердикт появится, когда лиса вернётся с уликами.</div>` : `
     ${verdictHtml(d)}
     ${statusHtml(d)}
     <div class="card">
@@ -208,23 +228,24 @@ async function renderBook(id) {
       <p><button class="ghost" id="copy">Скопировать</button></p>
     </div>
     <div class="card">
-      <div class="row" style="justify-content: space-between"><h2 style="margin: 0">Что нашлось</h2>
+      <div class="row" style="justify-content: space-between"><div><div class="kicker">Улики</div><h2 style="margin: 0">Что нашлось на площадках</h2></div>
         <button class="ghost" id="again" ${running ? "disabled" : ""}>Искать заново</button></div>
       <p class="small muted">Галочка — предложение учитывается в цене. Снимите её, если это другое издание или не та книга.</p>
       ${d.sources.map(s => sourceHtml(s, d)).join("")}
-    </div>`;
+    </div>`}`;
 
-  document.getElementById("cond").onchange = async e => { await api("POST", `/api/books/${id}`, { condition: e.target.value }); route(); };
-  document.getElementById("del").onclick = async () => {
+  const on = (elementId, event, fn) => { const el = document.getElementById(elementId); if (el) el[event] = fn; };
+  on("cond", "onchange", async e => { await api("POST", `/api/books/${id}`, { condition: e.target.value }); route(); });
+  on("del", "onclick", async () => {
     if (!confirm("Удалить книгу и всё, что о ней нашлось?")) return;
     await api("DELETE", `/api/books/${id}`);
     location.hash = "#/";
-  };
-  document.getElementById("copy").onclick = async () => {
+  });
+  on("copy", "onclick", async () => {
     await navigator.clipboard.writeText(d.ad_text);
     toast("Текст скопирован — вставьте его в описание объявления");
-  };
-  document.getElementById("again").onclick = async () => { await api("POST", `/api/books/${id}/search`); route(); };
+  });
+  on("again", "onclick", async () => { await api("POST", `/api/books/${id}/search`); route(); });
   view.querySelectorAll("input[data-ext]").forEach(c => c.onchange = async () => {
     await api("POST", `/api/books/${id}/mark`, { source: c.dataset.source, ext_id: c.dataset.ext, counted: c.checked });
     route();
@@ -255,7 +276,7 @@ function progressHtml(job, label) {
   const captcha = job.captcha
     ? `<div class="alert big">${esc(label[job.captcha] || job.captcha)} просит подтвердить, что вы не робот.
         Перейдите в окно Edge «Поиск цен» и пройдите проверку там — поиск продолжится сам.</div>` : "";
-  return `${captcha}<div class="card"><h2><span class="spinner"></span> Ищу цены — около минуты</h2>
+  return `${captcha}<div class="card"><h2><span class="spinner"></span> 🦊 Лиса идёт по следу — около минуты</h2>
     <div class="chips">${Object.entries(job.sources).map(([n, st]) =>
       `<span class="chip ${st}">${esc(label[n] || n)}: ${STATE_LABEL[st] || st}</span>`).join("")}</div></div>`;
 }
@@ -268,20 +289,20 @@ function verdictHtml(d) {
   }
   return `<div class="card">
     <div class="verdict">
-      <div><div class="muted small">Выставить за</div><div class="price">${rub(v.start)}</div></div>
-      <div><div class="muted small">Не опускаться ниже</div><div style="font-size: 24px; font-weight: 600">${rub(v.floor)}</div></div>
+      <div><div class="kicker">Вердикт</div><div class="muted small">Выставить за</div><div class="price">${rub(v.start)}</div></div>
+      <div><div class="muted small">Не опускаться ниже</div><div class="floor">${rub(v.floor)}</div></div>
     </div>
     ${v.schedule.length > 1 ? `<div class="small muted" style="margin-top: 10px">Если не продаётся — снижать раз в ${v.step_days} дней:</div>
       <div class="steps">${v.schedule.map(p => `<span>${rub(p)}</span>`).join("→")}</div>` : ""}
     ${v.as_lot ? `<div class="alert">Книга недорогая — выгоднее выставить её одним объявлением вместе с другими.</div>` : ""}
-    <ul class="small">${v.reasons.map(r => `<li>${esc(r)}</li>`).join("")}</ul>
+    <ul class="small reasons">${v.reasons.map(r => `<li>${esc(r)}</li>`).join("")}</ul>
   </div>`;
 }
 
 function statusHtml(d) {
   const b = d.book, v = d.verdict;
   if (b.status === "sold") {
-    return `<div class="card">Продана${b.sold_price ? " за " + rub(b.sold_price) : ""} ${day(b.sold_at)}. 🎉</div>`;
+    return `<div class="card"><div class="kicker">Дело закрыто</div><h2 style="margin: 0">Продана${b.sold_price ? " за " + rub(b.sold_price) : ""} ${day(b.sold_at)} 🎉</h2></div>`;
   }
   const soldForm = `<form data-price="sold" class="row">Продала за <input class="price" name="price" inputmode="numeric"> ₽
       <button class="ghost">Отметить проданной</button></form>`;
@@ -342,7 +363,8 @@ function rowHtml(f) {
 /* ---------- help ---------- */
 
 function renderHelp() {
-  view.innerHTML = `<h1>Как пользоваться</h1>
+  view.innerHTML = `<a class="back" href="#/">← Все книги</a>
+  <h1>Как пользоваться</h1>
   <div class="card">
     <ol>
       <li><strong>Добавьте книгу.</strong> Впишите ISBN — 13 цифр под штрихкодом на задней обложке. Если ISBN нет (старая книга) — название, автора и год, потом выберите своё издание из списка.</li>
@@ -351,7 +373,8 @@ function renderHelp() {
       <li><strong>Посмотрите, что нашлось.</strong> Снимите галочки у чужих изданий и комплектов — цена пересчитается.</li>
       <li><strong>Выставьте объявление</strong>, скопировав готовый текст, и отметьте в программе цену. Через неделю без продажи программа подскажет, до скольких снизить.</li>
     </ol>
-    <p>Если что-то не работает — нажмите «Отчёт об ошибке» вверху. На рабочем столе появится zip-файл: пришлите его тому, кто помогает с программой. Сама программа ничего никуда не отправляет.</p>
+    <p>Вернуться к списку книг — кнопка «Мои книги» вверху, ссылка «← Все книги» или клавиша Esc.</p>
+    <p>Если что-то не работает — нажмите «Отчёт об ошибке» вверху. На рабочем столе появится zip-файл: пришлите его тому, кто помогает с программой. В нём журнал работы и ваш список книг с найденными ценами — по нему видно, почему программа так посчитала. Сама программа ничего никуда не отправляет.</p>
   </div>
   <div class="card">
     <h2>Проверка площадок</h2>
@@ -382,6 +405,8 @@ document.querySelectorAll("nav [data-action]").forEach(btn => btn.onclick = asyn
   const action = btn.dataset.action;
   try {
     if (action === "help") location.hash = "#/help";
+    if (action === "home") location.hash = "#/";
+    if (action === "add") location.hash = "#/add";
     if (action === "report") {
       toast("Собираю отчёт…", 2000);
       const { path } = await api("POST", "/api/report");
@@ -409,4 +434,8 @@ document.querySelectorAll("nav [data-action]").forEach(btn => btn.onclick = asyn
 
 setInterval(() => fetch("/api/ping").catch(() => {}), 60000);
 window.addEventListener("hashchange", route);
+document.addEventListener("keydown", e => {
+  const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement && document.activeElement.tagName);
+  if (e.key === "Escape" && !typing && location.hash !== "#/") location.hash = "#/";
+});
 route();

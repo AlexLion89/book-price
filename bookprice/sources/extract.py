@@ -8,9 +8,9 @@ from ..model import Offer
 # A shop tile: the nearest block around a product link that has a price and no other product inside.
 # Survives renamed CSS classes — only the link format has to stay. Blocks marked data-bp-skip are ignored.
 TILES = r"""
-({linkPattern, max}) => {
+({linkPattern, max, currency}) => {
   const linkRe = new RegExp(linkPattern);
-  const priceRe = /(\d[\d\s]*)\s*₽/;
+  const priceRe = new RegExp('(\\d[\\d\\s]*)\\s*(?:' + (currency || '₽') + ')');
   const keyOf = href => href.split('?')[0].split('#')[0];
   const tiles = new Map();
   for (const a of document.querySelectorAll('a[href]')) {
@@ -42,8 +42,8 @@ NOTHING_FOUND = r"""
 """
 
 
-def tiles(browser, link_pattern: str, source: str, limit: int = 40) -> List[Offer]:
-    raw = browser.evaluate(TILES, {"linkPattern": link_pattern, "max": limit})
+def tiles(browser, link_pattern: str, source: str, limit: int = 40, currency: str = "₽") -> List[Offer]:
+    raw = browser.evaluate(TILES, {"linkPattern": link_pattern, "max": limit, "currency": currency})
     return [Offer(source=source, price=float(t["price"]), url=t["url"], title=t["title"], text=t["text"],
                   ext_id=t["url"]) for t in raw]
 

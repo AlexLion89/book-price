@@ -107,7 +107,14 @@ def suggest(
         verdict = _market(target * factor, "new_in_shops", reasons)
     elif used:
         a = percentile(used, 0.25)
-        reasons = [f"в магазинах нет; {used_label} похожих объявлений: {len(used)}, дешёвая четверть — до {a:.0f} ₽"]
+        sold_out = sorted(o.price for o in shop_offers if not o.in_stock)
+        was = ""
+        if len(sold_out) == 1:
+            was = f" (последняя цена новой — {sold_out[0]:.0f} ₽)"
+        elif sold_out:
+            was = f" (последние цены новой — {sold_out[0]:.0f}–{sold_out[-1]:.0f} ₽)"
+        reasons = [f"в магазинах нет в продаже{was}; {used_label} похожих объявлений: {len(used)}, "
+                   f"дешёвая четверть — до {a:.0f} ₽"]
         if len(used) < FEW_LISTINGS:
             reasons.append("объявлений мало — если они висят месяцами, их цена не рыночная")
         verdict = _market(a * SCARCE_UNDERCUT * factor, "only_used", reasons)

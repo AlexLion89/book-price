@@ -134,7 +134,7 @@ class App:
         results = self.store.results(book_id)
         found = classify(book, results, self.store.marks(book_id))
         manual = self.store.manual(book_id)
-        verdict = evaluate(book, found, manual, row["condition"])
+        verdict = evaluate(book, found, manual, row["condition"], self.store.sold_like(book_id, book))
         return {
             "book": {**row, **book.to_dict()},
             "conditions": CONDITION_LABEL,

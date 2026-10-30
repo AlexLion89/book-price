@@ -47,6 +47,10 @@ class SuggestTest(unittest.TestCase):
         self.assertEqual(v.scenario, "only_used")
         self.assertEqual(v.start, 1800)
 
+    def test_sold_out_price_is_shown(self):
+        v = suggest(shops(690, in_stock=False), avito(140, 160, 180, 200), [])
+        self.assertIn("последняя цена новой — 690 ₽", v.reasons[0])
+
     def test_few_listings_warns(self):
         v = suggest([], avito(2000), [])
         self.assertTrue(any("мало" in r for r in v.reasons))

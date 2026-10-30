@@ -14,7 +14,7 @@ root = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(root))
 from bookprice.model import Book, Offer, SourceResult  # noqa: E402
 from bookprice.search import classify, evaluate  # noqa: E402
-from bookprice.sources import avito, extract  # noqa: E402
+from bookprice.sources import avito, extract, meshok  # noqa: E402
 from bookprice.sources.shops import SHOPS, USED_MARK  # noqa: E402
 
 
@@ -23,6 +23,7 @@ ORIGIN = {
     "ozon": "https://www.ozon.ru/search/",
     "wildberries": "https://www.wildberries.ru/catalog/0/search.aspx",
     "market": "https://market.yandex.ru/search",
+    "meshok": "https://meshok.net/listing",
 }
 
 
@@ -46,6 +47,8 @@ def serve(html: str, url: str):
 def extract_offers(browser, source: str):
     if source == avito.NAME:
         return avito._offers(browser.evaluate(avito.ITEMS))
+    if source == meshok.NAME:
+        return extract.tiles(browser, meshok.ITEM_LINK, meshok.NAME, currency="₽|руб")
     shop = next(s for s in SHOPS if s.name == source)
     if shop.prepare:
         browser.evaluate(shop.prepare)
