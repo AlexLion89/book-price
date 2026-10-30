@@ -16,10 +16,10 @@ RECENT = 3 * 24 * 3600
 def build(data_dir: Path) -> Path:
     """Logs, recent page snapshots and the book database (found offers, marks) in one zip on the desktop.
     Nothing is sent anywhere — the user passes the file on by hand."""
-    target = paths.desktop() / f"отчёт-цена-книги-{datetime.now():%Y%m%d-%H%M}.zip"
+    target = paths.desktop() / f"отчёт-ценитель-{datetime.now():%Y%m%d-%H%M}.zip"
     cutoff = time.time() - RECENT
     with zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED) as z:
-        z.writestr("about.txt", f"Цена книги {__version__}\n{platform.platform()}\nPython {sys.version}\n")
+        z.writestr("about.txt", f"Ценитель {__version__}\n{platform.platform()}\nPython {sys.version}\n")
         if (data_dir / "books.sqlite").exists():
             z.write(data_dir / "books.sqlite", "books.sqlite")
         for folder in ("logs", "snapshots"):

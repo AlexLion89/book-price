@@ -34,7 +34,7 @@ def main():
     tag = f"v{__version__}"
     notes = (root / "docs" / "releases" / f"{__version__}.md").read_text(encoding="utf-8")
     assert "\r" not in notes, "в описании релиза не должно быть CR"
-    fields = {"tag_name": tag, "name": f"Цена книги {__version__}", "body": notes,
+    fields = {"tag_name": tag, "name": f"Ценитель {__version__}", "body": notes,
               "prerelease": "--prerelease" in sys.argv}
     try:
         release = call("GET", f"{API}/releases/tags/{tag}")

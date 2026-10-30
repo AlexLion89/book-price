@@ -15,5 +15,6 @@ a.pure = [m for m in a.pure if not m[0].startswith("bookprice")]
 a.datas = [d for d in a.datas if "__pycache__" not in d[0]]
 
 pyz = PYZ(a.pure)
-exe = EXE(pyz, a.scripts, [], exclude_binaries=True, name="BookPrice", console=False)
+exe = EXE(pyz, a.scripts, [], exclude_binaries=True, name="BookPrice", console=False,
+          icon=str(root / "bookprice" / "ui" / "img" / "fox.ico"))
 coll = COLLECT(exe, a.binaries, a.datas, name="BookPrice")

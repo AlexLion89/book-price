@@ -61,12 +61,11 @@ async function renderList() {
   const sold = books.filter(b => b.status === "sold").length;
   view.innerHTML = `
     <div class="hero">
-      <div class="fox">🦊</div>
       <div class="grow">
         <h1>Мои книги</h1>
         <p>${books.length ? `На полке ${books.length} · на Авито ${listed} · продано ${sold}` : "Полка пока пуста — самое время найти, что продать."}</p>
+        <a class="primary" href="#/add">+ Добавить книгу</a>
       </div>
-      <a class="primary" href="#/add">+ Добавить книгу</a>
     </div>
     ${due.length ? `<div class="alert">🔎 Пора снизить цену: ${due.map(b => `<a href="#/book/${b.id}">${esc(b.title)}</a> — до ${rub(b.next_step.price)}`).join(", ")}</div>` : ""}
     ${books.length ? `<div class="grid">${books.map(tile).join("")}</div>`

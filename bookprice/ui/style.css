@@ -20,7 +20,7 @@ header { display: flex; align-items: center; justify-content: space-between; pad
   background: var(--noir); color: var(--noir-ink); position: sticky; top: 0; z-index: 2;
   border-bottom: 3px solid var(--fox); }
 .logo { font-size: 22px; color: var(--noir-ink); text-decoration: none; display: flex; align-items: center; gap: 10px; }
-.logo .mark { font-size: 28px; }
+.logo .mark { width: 40px; height: 40px; border-radius: 9px; }
 .logo small { font-family: "Segoe UI", system-ui, sans-serif; font-size: 12px; color: var(--noir-muted); display: block; }
 nav { display: flex; gap: 4px; }
 nav button { background: none; border: 0; color: var(--noir-muted); font: inherit; cursor: pointer; padding: 7px 12px; border-radius: 8px; }
@@ -55,12 +55,15 @@ textarea { width: 100%; min-height: 150px; padding: 12px; }
 .small { font-size: 14px; }
 .kicker { font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--fox); font-weight: 700; margin-bottom: 4px; }
 
-.hero { display: flex; align-items: center; gap: 22px; background: var(--noir); color: var(--noir-ink);
-  border-radius: var(--radius); padding: 22px 26px; margin-bottom: 22px; }
-.hero .fox { font-size: 64px; line-height: 1; }
-.hero h1 { margin: 0 0 4px; color: var(--noir-ink); }
-.hero p { margin: 0; color: var(--noir-muted); }
-.hero .grow { flex: 1; }
+/* The illustration's own background is #1e2736: the block takes the same colour, and a fade hides the slightly
+   uneven left edge of the JPEG. Fixed height keeps the picture 375 px wide, so the fade stays in place. */
+.hero { display: flex; align-items: center; gap: 22px; color: var(--noir-ink); height: 250px;
+  background: linear-gradient(to left, rgba(30, 39, 54, 0) 285px, #1e2736 375px) no-repeat,
+              url(/img/hero.jpg) right center / auto 100% no-repeat #1e2736;
+  border-radius: var(--radius); padding: 26px 30px; margin-bottom: 22px; }
+.hero .grow { max-width: 55%; }
+.hero h1 { font-size: 34px; margin: 0 0 6px; color: var(--noir-ink); }
+.hero p { margin: 0 0 18px; color: var(--noir-muted); }
 
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 18px; }
 .book-tile { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px;

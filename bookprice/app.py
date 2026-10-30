@@ -25,7 +25,8 @@ from .store import Store, now
 log = logging.getLogger(__name__)
 UI = Path(__file__).parent / "ui"
 CONTENT_TYPES = {".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8",
-                 ".css": "text/css; charset=utf-8", ".png": "image/png", ".svg": "image/svg+xml"}
+                 ".css": "text/css; charset=utf-8", ".png": "image/png", ".svg": "image/svg+xml",
+                 ".jpg": "image/jpeg", ".ico": "image/x-icon"}
 IDLE_EXIT = 30 * 60
 CHECK = -1
 LOCAL_ORIGIN = re.compile(r"^http://(127\.0\.0\.1|localhost):\d+$")
