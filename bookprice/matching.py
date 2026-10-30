@@ -18,6 +18,7 @@ FOREIGN_FORMAT = [
     "закладка", "футболка", "пазл", "раскраска", "блокнот", "ежедневник",
 ]
 YEAR = re.compile(r"(?<!\d)(1[89]\d\d|20[0-4]\d)(?!\d)")
+PUBLISHER_NOISE = {"издательство", "издательский", "книжное", "книжный", "дом", "группа", "ооо", "зао"}
 FIRST_NAMES = set("""
 александр алексей анатолий андрей антон аркадий борис вадим валентин валерий василий виктор
 виталий владимир владислав вячеслав геннадий георгий глеб григорий даниил денис дмитрий евгений
@@ -90,10 +91,19 @@ def has_phrase(text_norm: str, phrase: str) -> bool:
     return re.search(r"\b" + re.escape(phrase) + r"\b", text_norm) is not None
 
 
-def match(book: Book, listing_title: str, listing_text: str = "", by_isbn: bool = False) -> MatchResult:
-    """by_isbn: the shop was searched by ISBN, so only weed out recommendations and merch."""
+def publisher_words(publisher: str) -> List[str]:
+    return [w for w in significant(publisher.split(",")[0]) if len(w) >= 4 and w not in PUBLISHER_NOISE]
+
+
+def match(book: Book, listing_title: str, listing_text: str = "", desc: str = "",
+          exact_isbn: bool = False, need_author: bool = True) -> MatchResult:
+    """exact_isbn: the shop finds exactly this ISBN — only merch and recommendations are weeded out.
+    need_author=False: a marketplace searched by ISBN, its titles often omit the author.
+    desc is free text (an Avito description): read for year and publisher only, since phrases like
+    "в том числе" would trip the format check."""
     full = normalize(listing_title + " " + listing_text)
     full_words = full.split()
+    everything = normalize(" ".join([listing_title, listing_text, desc]))
     title_norm = normalize(book.title)
 
     for phrase in FOREIGN_FORMAT:
@@ -101,7 +111,8 @@ def match(book: Book, listing_title: str, listing_text: str = "", by_isbn: bool 
             return MatchResult("no", f"похоже на другое: «{phrase}»")
 
     author_words = surnames(book.author)
-    if not by_isbn and author_words and not any(found_in(w, full_words, strict=True) for w in author_words):
+    if need_author and not exact_isbn and author_words and \
+            not any(found_in(w, full_words, strict=True) for w in author_words):
         return MatchResult("no", "нет автора")
 
     title_words = significant(book.title)
@@ -111,14 +122,17 @@ def match(book: Book, listing_title: str, listing_text: str = "", by_isbn: bool 
         if found < need:
             return MatchResult("no", f"из названия нашлось {found} слов из {len(title_words)}")
 
-    if by_isbn:
+    if exact_isbn:
         return MatchResult("yes", "найдено по ISBN")
 
     known = set(book.years())
     if known:
-        years = {int(y) for y in YEAR.findall(full)} - {int(y) for y in YEAR.findall(title_norm)}
+        years = {int(y) for y in YEAR.findall(everything)} - {int(y) for y in YEAR.findall(title_norm)}
         if known & years:
-            return MatchResult("yes", "совпали автор, название и год")
+            return MatchResult("yes", "совпал год издания")
         if years:
             return MatchResult("other", "другой год — скорее всего, другое издание")
-    return MatchResult("maybe", "совпали автор и название, издание не указано")
+    publisher = publisher_words(book.publisher)
+    if publisher and all(found_in(w, everything.split(), strict=True) for w in publisher):
+        return MatchResult("yes", "совпало издательство")
+    return MatchResult("maybe", "та же книга, издание не указано")

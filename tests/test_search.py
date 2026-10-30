@@ -3,7 +3,9 @@ import unittest
 from bookprice.model import Book, Offer, SourceResult
 from bookprice.search import classify, evaluate
 
-BOOK = Book(title="Мастер и Маргарита", author="Михаил Булгаков", year=2012, isbn="9785389016866")
+BOOK = Book(title="Мастер и Маргарита", author="Михаил Булгаков", year=2012, isbn="9785389016866",
+            publisher="Азбука, Азбука-Аттикус")
+OLD = Book(title="Незнайка на Луне", author="Николай Носов", year=1986)
 
 
 def result(source, *offers):
@@ -19,9 +21,36 @@ class SearchTest(unittest.TestCase):
         self.assertEqual([f.counted for f in found], [True, False])
         self.assertTrue(found[1].marked)
 
-    def test_shop_by_isbn_needs_no_author(self):
-        found = classify(BOOK, [result("ozon", Offer("ozon", 350, title="Мастер и Маргарита", ext_id="u"))], {})
+    def test_exact_isbn_shop_counts(self):
+        found = classify(BOOK, [result("chitai_gorod", Offer("chitai_gorod", 319, title="Мастер и Маргарита", ext_id="c"))], {})
+        self.assertEqual(found[0].verdict, "yes")
         self.assertTrue(found[0].counted)
+
+    def test_marketplace_counts_only_same_edition(self):
+        r = [result("ozon",
+                    Offer("ozon", 238, title="Мастер и Маргарита", ext_id="pocket"),
+                    Offer("ozon", 255, title="Мастер и Маргарита", text="255 ₽ Азбука Мастер и Маргарита", ext_id="azbuka"))]
+        found = {f.offer.ext_id: f for f in classify(BOOK, r, {})}
+        self.assertEqual(found["pocket"].verdict, "maybe")
+        self.assertFalse(found["pocket"].counted)
+        self.assertEqual(found["azbuka"].verdict, "yes")
+        self.assertTrue(found["azbuka"].counted)
+
+    def test_used_on_marketplace_is_a_dealer(self):
+        r = [result("ozon", Offer("ozon", 3978, title="Мастер и Маргарита | Книга б/у", note="б/у", ext_id="u"))]
+        found = classify(BOOK, r, {})
+        self.assertEqual(found[0].kind, "dealer")
+        self.assertFalse(found[0].counted)
+
+    def test_reprints_do_not_cap_an_old_edition(self):
+        r = [result("chitai_gorod", Offer("chitai_gorod", 960, title="Николай Носов — Незнайка на Луне", text="АСТ", ext_id="n"))]
+        self.assertFalse(classify(OLD, r, {})[0].counted)
+
+    def test_avito_year_from_description(self):
+        r = [result("avito", Offer("avito", 300, title="Булгаков Мастер и Маргарита", desc="1994 г. Карелия", ext_id="a"))]
+        found = classify(BOOK, r, {})
+        self.assertEqual(found[0].verdict, "other")
+        self.assertFalse(found[0].counted)
 
     def test_dealers_when_no_avito(self):
         r = [result("alib", *[Offer("alib", p, title="Булгаков М.А. Мастер и Маргарита.", text="М. Азбука. 2012г.", ext_id=str(p)) for p in (1000, 1200, 1500)])]

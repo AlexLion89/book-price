@@ -38,6 +38,7 @@ class Offer:
     place: str = ""
     age: str = ""
     note: str = ""
+    desc: str = ""
 
     def to_dict(self) -> dict:
         return asdict(self)

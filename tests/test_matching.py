@@ -62,6 +62,18 @@ class MatchTest(unittest.TestCase):
         book = Book(title="Мастер и Маргарита", author="Михаил Булгаков", year=2012, reprint_years=[2015, 2016])
         self.assertEqual(self.verdict(book, "Булгаков Мастер и Маргарита", "Азбука, 2016"), "yes")
 
+    def test_description_is_not_checked_for_format_words(self):
+        result = match(MASTER, "Булгаков Мастер и Маргарита", desc="в том числе закладка, 2019 год")
+        self.assertEqual(result.verdict, "yes")
+
+    def test_publisher_match(self):
+        book = Book(title="Мастер и Маргарита", author="Михаил Булгаков", publisher="Азбука, Азбука-Аттикус")
+        self.assertEqual(match(book, "Булгаков Мастер и Маргарита", desc="изд. Азбука").verdict, "yes")
+
+    def test_marketplace_title_without_author(self):
+        self.assertEqual(match(MASTER, "Мастер и Маргарита", need_author=False).verdict, "maybe")
+        self.assertEqual(match(MASTER, "Мастер и Маргарита").verdict, "no")
+
     def test_word_boundary_for_format(self):
         self.assertEqual(self.verdict(MASTER, "Мастер и Маргарита Булгаков, Томск, самовывоз"), "maybe")
 

@@ -14,6 +14,8 @@ from .sources.shops import SHOPS
 log = logging.getLogger(__name__)
 
 DEALER_DISCOUNT = 0.8
+EXACT_ISBN = {chitai_gorod.NAME}
+USED_NOTE = "б/у"
 
 
 @dataclass
@@ -71,11 +73,16 @@ class Found:
 def classify(book: Book, results: List[SourceResult], marks: Dict[Tuple[str, str], bool]) -> List[Found]:
     found = []
     for r in results:
-        kind = BY_NAME[r.source].kind if r.source in BY_NAME else "shop"
+        source_kind = BY_NAME[r.source].kind if r.source in BY_NAME else "shop"
         for o in r.offers:
-            m: MatchResult = match(book, o.title, o.text, by_isbn=kind == "shop" and bool(book.isbn))
-            # Booksellers list every old printing: only a matching year is trusted without a human look.
-            auto = m.verdict == "yes" if kind == "dealer" else m.counted
+            kind = "dealer" if source_kind == "shop" and o.note == USED_NOTE else source_kind
+            exact = kind == "shop" and bool(book.isbn) and r.source in EXACT_ISBN
+            m: MatchResult = match(book, o.title, o.text, o.desc, exact_isbn=exact,
+                                   need_author=not (kind == "shop" and book.isbn))
+            # Marketplaces answer an ISBN query with every edition of the title, booksellers list every old
+            # printing: a cheap pocket edition must not cap the price of a gift one. Only "same edition"
+            # counts there by default; Avito listings rarely name the edition, so "same book" is enough.
+            auto = m.counted if kind == "used" else m.verdict == "yes"
             key = (o.source, o.ext_id or o.url)
             marked = key in marks
             found.append(Found(o, kind, m.verdict, m.reason, marks[key] if marked else auto, marked))

@@ -5,8 +5,8 @@ from typing import List
 
 from ..model import Offer
 
-# Product links that sit in a small block with exactly one price-looking "₽" — a shop tile.
-# Works when shops rename their CSS classes: only the link format has to stay.
+# A shop tile: the nearest block around a product link that has a price and no other product inside.
+# Survives renamed CSS classes — only the link format has to stay. Blocks marked data-bp-skip are ignored.
 TILES = r"""
 ({linkPattern, max}) => {
   const linkRe = new RegExp(linkPattern);
@@ -14,7 +14,7 @@ TILES = r"""
   const keyOf = href => href.split('?')[0].split('#')[0];
   const tiles = new Map();
   for (const a of document.querySelectorAll('a[href]')) {
-    if (!linkRe.test(a.href)) continue;
+    if (!linkRe.test(a.href) || a.closest('[data-bp-skip]')) continue;
     const key = keyOf(a.href);
     let el = a.parentElement, tile = null;
     for (let i = 0; i < 8 && el; i++, el = el.parentElement) {

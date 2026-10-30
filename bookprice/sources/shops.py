@@ -1,6 +1,7 @@
 """Online shops opened in Edge: Ozon, Wildberries, Yandex Market. Search by ISBN when it is known."""
 from __future__ import annotations
 
+import re
 import urllib.parse
 from dataclasses import dataclass
 from typing import Callable, List
@@ -21,20 +22,42 @@ OZON_PRODUCT = r"""
 }
 """
 
+# Ozon shows its own search results in several tile grids, then "Возможно, вам понравится" with unrelated goods.
+OZON_SKIP_RECOMMENDATIONS = r"""
+() => {
+  const marker = [...document.querySelectorAll('h2, h3, span, div')].find(e =>
+    e.children.length <= 2 && /^(Возможно, вам понравится|Вам может понравиться|Похожие товары|Рекомендуем)/i
+      .test((e.innerText || '').trim()));
+  if (!marker) return 0;
+  let skipped = 0;
+  for (const grid of document.querySelectorAll('[data-widget="tileGridDesktop"]')) {
+    if (marker.compareDocumentPosition(grid) & Node.DOCUMENT_POSITION_FOLLOWING) {
+      grid.setAttribute('data-bp-skip', '1');
+      skipped++;
+    }
+  }
+  return skipped;
+}
+"""
+
+# Wildberries hashes its CSS classes; data-testid attributes and the link's aria-label stay.
 WB_CARDS = r"""
-() => [...document.querySelectorAll('.product-card')].map(c => {
-  const link = c.querySelector('a.product-card__link') || c.querySelector('a[href*="/catalog/"]');
-  const brand = c.querySelector('.product-card__brand');
-  const name = c.querySelector('.product-card__name');
-  const price = c.querySelector('.price__lower-price') || c.querySelector('[class*="price"]');
+() => [...document.querySelectorAll('article.product-card, [data-nm-id]')].filter(c => c.getAttribute('data-nm-id')).map(c => {
+  const link = c.querySelector('a[data-testid="product-card-link"]') || c.querySelector('a[href*="/catalog/"]');
+  const brand = c.querySelector('[data-testid="productBrand"]');
+  const name = c.querySelector('[data-testid="productName"]');
+  const price = c.querySelector('[data-testid="product-card-current-price"]') || c.querySelector('ins');
+  const title = (link && link.getAttribute('aria-label')) || (name && name.innerText) || '';
   return {
     url: link ? link.href.split('?')[0] : '',
-    title: [brand && brand.innerText, name && name.innerText].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim(),
+    title: title.replace(/\s+/g, ' ').trim(),
+    text: [brand && brand.innerText, name && name.innerText].filter(Boolean).join(' / ').replace(/\s+/g, ' ').trim(),
     price: parseInt(((price && price.innerText) || '').replace(/\D/g, ''), 10) || 0,
     id: c.getAttribute('data-nm-id') || '',
   };
 })
 """
+USED_MARK = re.compile(r"\bб/у\b|\bбу\b|уценк", re.I)
 
 MARKET_SNIPPETS = r"""
 () => [...document.querySelectorAll('[data-auto="snippet-title"], [data-auto="snippet-title-header"]')].map(t => {
@@ -59,6 +82,7 @@ class Shop:
     link_pattern: str
     ready: str
     specific: str = ""
+    prepare: str = ""
 
     def search_url(self, book: Book) -> str:
         return self.url(book.isbn or f"{book.title} {book.author}".strip())
@@ -67,7 +91,7 @@ class Shop:
         if not self.specific:
             return []
         raw = browser.evaluate(self.specific) or []
-        return [Offer(source=self.name, price=float(r["price"]), url=r["url"], title=r["title"],
+        return [Offer(source=self.name, price=float(r["price"]), url=r["url"], title=r["title"], text=r.get("text", ""),
                       ext_id=r.get("id") or r["url"]) for r in raw if r.get("price") and r.get("url")]
 
     def search(self, browser, book: Book) -> SourceResult:
@@ -85,7 +109,12 @@ class Shop:
             if extract.nothing_found(browser):
                 browser.snapshot(self.name)
                 return result
+            if self.prepare:
+                browser.evaluate(self.prepare)
             result.offers = self._from_specific(browser) or extract.tiles(browser, self.link_pattern, self.name)
+            for o in result.offers:
+                if USED_MARK.search(o.title):
+                    o.note = "б/у"
             if not result.offers:
                 result.snapshot = browser.snapshot(self.name, force=True)
             else:
@@ -101,9 +130,10 @@ def _q(base: str, key: str, extra: str = ""):
 
 
 OZON = Shop("ozon", "Озон", _q("https://www.ozon.ru/search/", "text", "&from_global=true"),
-            r"ozon\.ru/product/", '[data-widget="searchResultsV2"], [data-widget="webPrice"]')
+            r"ozon\.ru/product/", '[data-widget="tileGridDesktop"], [data-widget="webPrice"]',
+            prepare=OZON_SKIP_RECOMMENDATIONS)
 WILDBERRIES = Shop("wildberries", "Wildberries", _q("https://www.wildberries.ru/catalog/0/search.aspx", "search"),
-                   r"wildberries\.ru/catalog/\d+/detail", ".product-card", WB_CARDS)
+                   r"wildberries\.ru/catalog/\d+/detail", "[data-nm-id]", WB_CARDS)
 MARKET = Shop("market", "Яндекс Маркет", _q("https://market.yandex.ru/search", "text"),
               r"market\.yandex\.ru/(product--|card/)", '[data-auto="snippet-title"]', MARKET_SNIPPETS)
 

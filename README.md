@@ -37,6 +37,8 @@
   `python tools/release.py [--prerelease]` — релиз с архивом и инструкцией. Токен GitHub (fine-grained,
   Contents: write только на этот репозиторий) — в `~/.github/book-price.token`.
 - Отладка: `BOOKPRICE_ONLY=chitai_gorod,alib` — искать только на перечисленных площадках.
+- Разбор присланной проверки площадок: `python tools/replay.py проверка-площадок-….zip` — прогоняет
+  текущие извлекатели по снимкам страниц офлайн и печатает, что найдено и какой вышел бы вердикт.
 - Тесты: `python -m unittest discover -s tests -t .` Разбор внутри Edge пропускается без Playwright.
 
 Python 3.9 и новее.

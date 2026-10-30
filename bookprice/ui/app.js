@@ -319,7 +319,7 @@ function sourceHtml(s, d) {
   return `<div class="source-head"><h2 style="margin: 12px 0 4px">${esc(s.label)}</h2>
       <span>${state} ${run && run.search_url ? `· <a href="${esc(run.search_url)}" target="_blank">открыть поиск</a>` : ""}</span></div>
     ${on.length ? `<table>${on.map(rowHtml).join("")}</table>` : ""}
-    ${off.length ? `<p><button class="link small" data-toggle="${s.name}">${show ? "скрыть" : "показать"} неподходящие (${off.length})</button></p>
+    ${off.length ? `<p><button class="link small" data-toggle="${s.name}">${show ? "скрыть" : "показать"} остальные (${off.length})</button></p>
       ${show ? `<table>${off.map(rowHtml).join("")}</table>` : ""}` : ""}
     ${canManual ? `<form data-manual="${s.name}" class="row small" style="margin: 6px 0 4px">
       ${manual ? `Вписано вручную: <strong>${rub(manual)}</strong>` : "Нашли цену сами?"}
@@ -335,6 +335,7 @@ function rowHtml(f) {
     <td class="p">${rub(o.price)}</td>
     <td><a href="${esc(o.url)}" target="_blank">${esc(o.title || "без названия")}</a>
       ${o.text ? `<div class="small muted">${esc(o.text.slice(0, 160))}</div>` : ""}
+      ${o.desc ? `<div class="small muted">${esc(o.desc.slice(0, 200))}</div>` : ""}
       <div class="small muted">${esc(meta)}${meta ? " · " : ""}${esc(f.reason)}</div></td></tr>`;
 }
 
