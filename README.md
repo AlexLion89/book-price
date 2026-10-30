@@ -33,6 +33,9 @@
   `%LOCALAPPDATA%\BookPrice\updates`, запуск берёт самую свежую совместимую версию. Если обновлению
   нужны новые пакеты — поднять `REQUIRES_RUNTIME` и выпустить новый zip.
 - Сборка: `python tools/build.py` (нужны `playwright` и `pyinstaller`), результат — в `../dist`.
+- Выпуск: поднять `__version__`, написать `docs/releases/X.Y.Z.md`, коммит, тег `vX.Y.Z`, push тега,
+  `python tools/release.py [--prerelease]` — релиз с архивом и инструкцией. Токен GitHub (fine-grained,
+  Contents: write только на этот репозиторий) — в `~/.github/book-price.token`.
 - Отладка: `BOOKPRICE_ONLY=chitai_gorod,alib` — искать только на перечисленных площадках.
 - Тесты: `python -m unittest discover -s tests -t .` Разбор внутри Edge пропускается без Playwright.
 
