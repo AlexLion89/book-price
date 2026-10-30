@@ -91,7 +91,8 @@ class Searcher(threading.Thread):
             job["captcha"] = name
 
         if self.browser is None:
-            self.browser = Browser(self.app.data_dir, on_captcha=captcha)
+            home = f"http://127.0.0.1:{self.app.port}/search-window.html" if self.app.port else ""
+            self.browser = Browser(self.app.data_dir, on_captcha=captcha, home=home)
         self.browser.on_captcha = captcha
         only = [s for s in os.environ.get("BOOKPRICE_ONLY", "").split(",") if s] or None
         results = run(book, self.app.http, self.browser, progress, only)
@@ -125,6 +126,7 @@ class App:
         self.searcher = Searcher(self)
         self.last_seen = time.monotonic()
         self.server: Optional[ThreadingHTTPServer] = None
+        self.port = 0
         self.restart = False
 
     def book_view(self, book_id: int) -> dict:
@@ -341,6 +343,7 @@ def make_handler(app: App) -> Callable:
 def serve(app: App, port: int) -> ThreadingHTTPServer:
     server = ThreadingHTTPServer(("127.0.0.1", port), make_handler(app))
     app.server = server
+    app.port = port
     app.searcher.start()
 
     def watchdog() -> None:

@@ -35,8 +35,9 @@ class Browser:
     """
 
     def __init__(self, data_dir: Path, on_captcha: Optional[Callable[[str], None]] = None,
-                 headless: bool = False, keep_snapshots: bool = False) -> None:
+                 headless: bool = False, keep_snapshots: bool = False, home: str = "") -> None:
         self.data_dir = data_dir
+        self.home = home
         self.on_captcha = on_captcha or (lambda source: None)
         self.headless = headless
         self.keep_snapshots = keep_snapshots
@@ -58,8 +59,14 @@ class Browser:
             locale="ru-RU",
             viewport={"width": 1280, "height": 900},
             args=["--disable-blink-features=AutomationControlled"],
+            ignore_default_args=["--enable-automation"],
         )
         self._page = self._ctx.pages[0] if self._ctx.pages else self._ctx.new_page()
+        if self.home:
+            try:
+                self._page.goto(self.home, timeout=10000)
+            except Exception:
+                log.warning("не открылась страница окна поиска")
 
     def close(self) -> None:
         try:
