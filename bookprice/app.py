@@ -13,7 +13,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Callable, Dict, Optional
 
-from . import __version__, catalog, report, updater
+from . import __version__, catalog, check, report, updater
 from .browser import Browser
 from .listing import ad_text, next_step
 from .model import Book
@@ -27,6 +27,7 @@ UI = Path(__file__).parent / "ui"
 CONTENT_TYPES = {".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8",
                  ".css": "text/css; charset=utf-8", ".png": "image/png", ".svg": "image/svg+xml"}
 IDLE_EXIT = 30 * 60
+CHECK = -1
 LOCAL_ORIGIN = re.compile(r"^http://(127\.0\.0\.1|localhost):\d+$")
 
 
@@ -36,9 +37,10 @@ class Searcher(threading.Thread):
     def __init__(self, app: "App") -> None:
         super().__init__(daemon=True, name="searcher")
         self.app = app
-        self.jobs: "queue.Queue[int]" = queue.Queue()
+        self.jobs: "queue.Queue[Optional[int]]" = queue.Queue()
         self.state: Dict[int, dict] = {}
         self.browser: Optional[Browser] = None
+        self.check: dict = {"status": "idle", "lines": [], "path": ""}
 
     def submit(self, book_id: int) -> dict:
         job = self.state.get(book_id)
@@ -49,14 +51,24 @@ class Searcher(threading.Thread):
         self.jobs.put(book_id)
         return job
 
+    def submit_check(self, isbn: str = "") -> dict:
+        if self.check["status"] not in ("queued", "running"):
+            self.check = {"status": "queued", "lines": [], "path": "", "isbn": isbn}
+            self.jobs.put(CHECK)
+        return self.check
+
     def busy(self) -> bool:
-        return any(j["status"] in ("queued", "running") for j in self.state.values())
+        active = ("queued", "running")
+        return self.check["status"] in active or any(j["status"] in active for j in self.state.values())
 
     def run(self) -> None:
         while True:
             book_id = self.jobs.get()
             if book_id is None:
                 break
+            if book_id == CHECK:
+                self._check()
+                continue
             job = self.state[book_id]
             job["status"] = "running"
             try:
@@ -89,6 +101,17 @@ class Searcher(threading.Thread):
             retry = [r.source for r in results if "closed" in (r.error or "").lower()]
             results = [r for r in results if r.source not in retry] + run(book, self.app.http, self.browser, progress, retry)
         self.app.store.save_results(book_id, results)
+
+    def _check(self) -> None:
+        state = self.check
+        state["status"] = "running"
+        try:
+            path = check.run_check(self.app.data_dir, state["lines"].append, state.get("isbn") or None)
+            state["path"], state["status"] = str(path), "done"
+        except Exception as e:
+            log.exception("проверка площадок")
+            state["lines"].append(f"Сбой: {type(e).__name__}: {e}")
+            state["status"] = "error"
 
     def stop(self) -> None:
         self.jobs.put(None)
@@ -225,6 +248,14 @@ def make_handler(app: App) -> Callable:
         app.store.update(int(book_id), status="sold", sold_price=price, sold_at=now())
         app.store.log_price(int(book_id), price, "sold")
         return app.book_view(int(book_id))
+
+    @route("POST", "/api/check")
+    def start_check(body):
+        return app.searcher.submit_check(body.get("isbn", ""))
+
+    @route("GET", "/api/check")
+    def check_state(body):
+        return app.searcher.check
 
     @route("POST", "/api/report")
     def make_report(body):

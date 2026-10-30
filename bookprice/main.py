@@ -12,6 +12,7 @@ from pathlib import Path
 
 from . import __version__, paths
 from .app import App, serve
+from .install import first_run
 
 PORT = 8769
 EDGE = [
@@ -51,6 +52,8 @@ def main() -> None:
     setup_logging(data_dir)
     log = logging.getLogger("bookprice")
     url = f"http://127.0.0.1:{PORT}/"
+    if not first_run():
+        return
     if already_running(url):
         open_window(url)
         return

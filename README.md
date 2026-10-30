@@ -7,12 +7,32 @@
 посетителей, а серверы — нет. Никакого ИИ: издание определяется по ISBN, объявления отбираются
 фильтром, сомнительные человек отмечает сам.
 
+## Как пользоваться
+
+1. Скачать `BookPrice-<версия>.zip` из [Releases](https://github.com/AlexLion89/book-price/releases).
+2. Правой кнопкой по архиву → «Извлечь всё…» (например, в «Документы», не во временную папку).
+3. Открыть `BookPrice.exe` в распакованной папке. Windows один раз предупредит («Windows защитила
+   ваш компьютер») — «Подробнее» → «Выполнить в любом случае». На рабочем столе появится ярлык
+   «Цена книги».
+
+Данные (книги, цены, журнал) лежат в `%LOCALAPPDATA%\BookPrice` и не зависят от папки программы.
+
 ## Для разработки
 
 - `bookprice/pricing.py` — правило цены и график снижения.
 - `bookprice/matching.py` — «то же издание или нет» для объявлений.
 - `bookprice/catalog.py` — карточка книги по ISBN (FantLab + Читай-город) и поиск изданий по названию.
-- `bookprice/sources/` — по модулю на площадку: `chitai_gorod`, `alib`, `fantlab`.
-- Тесты: `python -m unittest discover -s tests -t .`
+- `bookprice/sources/` — по модулю на площадку: `chitai_gorod`, `alib`, `fantlab` (HTTP),
+  `avito`, `shops` (Озон, Wildberries, Маркет — в Edge), `extract` — разбор внутри страницы.
+- `bookprice/search.py` — обход площадок и вердикт; `browser.py` — окно Edge, капча, снимки.
+- `bookprice/app.py`, `bookprice/ui/` — локальный сервер на 127.0.0.1:8769 и интерфейс;
+  `store.py` — SQLite.
+- `bookprice/check.py` — проверка площадок со снимками страниц (кнопка в «Справке»).
+- `bookprice/updater.py` + `run.py` — обновления: новые теги `vX.Y.Z` скачиваются в
+  `%LOCALAPPDATA%\BookPrice\updates`, запуск берёт самую свежую совместимую версию. Если обновлению
+  нужны новые пакеты — поднять `REQUIRES_RUNTIME` и выпустить новый zip.
+- Сборка: `python tools/build.py` (нужны `playwright` и `pyinstaller`), результат — в `../dist`.
+- Отладка: `BOOKPRICE_ONLY=chitai_gorod,alib` — искать только на перечисленных площадках.
+- Тесты: `python -m unittest discover -s tests -t .` Разбор внутри Edge пропускается без Playwright.
 
 Python 3.9 и новее.

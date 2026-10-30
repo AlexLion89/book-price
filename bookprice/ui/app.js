@@ -351,7 +351,28 @@ function renderHelp() {
       <li><strong>Выставьте объявление</strong>, скопировав готовый текст, и отметьте в программе цену. Через неделю без продажи программа подскажет, до скольких снизить.</li>
     </ol>
     <p>Если что-то не работает — нажмите «Отчёт об ошибке» вверху. На рабочем столе появится zip-файл: пришлите его тому, кто помогает с программой. Сама программа ничего никуда не отправляет.</p>
+  </div>
+  <div class="card">
+    <h2>Проверка площадок</h2>
+    <p class="small muted">Для того, кто помогает с программой: прогоняет все площадки на двух книгах и сохраняет снимки страниц в zip на рабочем столе. Занимает пару минут.</p>
+    <div class="row"><input id="check-isbn" placeholder="ещё ISBN, необязательно" style="width: 260px"><button class="ghost" id="check">Проверить площадки</button></div>
+    <pre id="check-log" class="small" style="white-space: pre-wrap"></pre>
   </div>`;
+  document.getElementById("check").onclick = async () => {
+    await api("POST", "/api/check", { isbn: document.getElementById("check-isbn").value.trim() });
+    pollCheck();
+  };
+  pollCheck();
+}
+
+async function pollCheck() {
+  const box = document.getElementById("check-log");
+  if (!box) return;
+  const st = await api("GET", "/api/check");
+  box.textContent = st.lines.join("\n");
+  const running = st.status === "queued" || st.status === "running";
+  document.getElementById("check").disabled = running;
+  if (running) pollTimer = setTimeout(pollCheck, 1500);
 }
 
 /* ---------- header ---------- */

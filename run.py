@@ -28,13 +28,8 @@ def pick_update() -> None:
 
 
 if __name__ == "__main__":
-    if "--check" in sys.argv:
-        sys.argv.remove("--check")
-        pick_update()
-        from bookprice import check
-        check.main(sys.argv[1:])
-        input("\nНажмите Enter, чтобы закрыть окно")
-    else:
-        pick_update()
-        from bookprice import main
-        main.main()
+    if getattr(sys, "frozen", False):
+        sys.path.insert(0, getattr(sys, "_MEIPASS", str(Path(sys.executable).parent)))
+    pick_update()
+    from bookprice import main
+    main.main()
