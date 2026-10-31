@@ -21,6 +21,8 @@ header { display: flex; align-items: center; justify-content: space-between; pad
   border-bottom: 3px solid var(--fox); }
 .logo { font-size: 22px; color: var(--noir-ink); text-decoration: none; display: flex; align-items: center; gap: 10px; }
 .logo .mark { width: 40px; height: 40px; border-radius: 9px; }
+.logo .version { font-family: "Segoe UI", system-ui, sans-serif; font-size: 11px; color: var(--noir-muted);
+  border: 1px solid rgba(255, 255, 255, .25); border-radius: 99px; padding: 1px 7px; vertical-align: 3px; }
 .logo small { font-family: "Segoe UI", system-ui, sans-serif; font-size: 12px; color: var(--noir-muted); display: block; }
 nav { display: flex; gap: 4px; }
 nav button { background: none; border: 0; color: var(--noir-muted); font: inherit; cursor: pointer; padding: 7px 12px; border-radius: 8px; }

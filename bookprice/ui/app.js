@@ -463,9 +463,8 @@ async function updateNow(ask) {
   view.innerHTML = `<div class="card"><span class="spinner"></span> Обновляюсь до ${esc(r.version)} — окно откроется заново…</div>`;
 }
 
-async function offerUpdate() {
+function offerUpdate(st) {
   const banner = document.getElementById("update-banner");
-  const st = await api("GET", "/api/update-status").catch(() => null);
   const u = st && st.available;
   if (!u || sessionStorage.getItem("update-later") === u.version) return;
   banner.innerHTML = `<div class="grow"><strong>Вышла новая версия ${esc(u.version)}</strong> (у вас ${esc(st.version)}).
@@ -479,8 +478,15 @@ async function offerUpdate() {
   };
 }
 
-setTimeout(offerUpdate, 8000);
-setInterval(offerUpdate, 30 * 60000);
+// Ask again every 3 s until the program has heard back from GitHub, then every half hour.
+async function watchUpdates() {
+  const st = await api("GET", "/api/update-status").catch(() => null);
+  if (st) document.getElementById("version").textContent = "версия " + st.version;
+  offerUpdate(st);
+  setTimeout(watchUpdates, st && st.checked ? 30 * 60000 : 3000);
+}
+
+watchUpdates();
 setInterval(() => fetch("/api/ping").catch(() => {}), 60000);
 // Closing this window turns the program off; a reload asks for the page again at once and cancels that.
 window.addEventListener("pagehide", () => navigator.sendBeacon("/api/closed"));

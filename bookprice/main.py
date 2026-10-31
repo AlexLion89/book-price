@@ -11,7 +11,7 @@ from pathlib import Path
 from . import __version__, paths
 from .app import App, serve
 from .install import first_run
-from .window import close_window, open_window
+from .window import OwnedWindow, close_window, find_browser, open_window
 
 PORT = 8769
 
@@ -33,6 +33,19 @@ def already_running(url: str) -> bool:
         return False
 
 
+def close_leftover_window(profile: Path, log: logging.Logger) -> None:
+    """Called once the port is ours, so no other copy is alive: a window with our profile was left by an older
+    version after an update."""
+    try:
+        pid = find_browser(profile)
+    except Exception:
+        log.exception("поиск оставшегося окна")
+        return
+    if pid:
+        log.info("закрываю окно, оставшееся от прошлого запуска")
+        OwnedWindow(pid).close()
+
+
 def main() -> None:
     data_dir = paths.data_dir()
     setup_logging(data_dir)
@@ -42,16 +55,24 @@ def main() -> None:
     if not first_run():
         return
     if already_running(url):
-        open_window(url, profile)
+        open_window(url, profile, own=False)
         return
     log.info("запуск %s из %s", __version__, Path(__file__).parent)
     app = App(data_dir)
-    server = serve(app, PORT)
+    try:
+        server = serve(app, PORT)
+    except OSError:
+        if not already_running(url):
+            raise
+        log.info("другая копия запустилась одновременно с этой и сама откроет окно")
+        return
+    close_leftover_window(profile, log)
     if "--no-window" not in sys.argv:
         app.ui = open_window(url, profile)
     try:
         server.serve_forever()
     finally:
+        server.server_close()
         app.searcher.stop()
         app.searcher.join(timeout=20)
         close_window(app.ui)

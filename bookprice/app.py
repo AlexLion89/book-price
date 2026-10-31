@@ -30,8 +30,10 @@ CONTENT_TYPES = {".html": "text/html; charset=utf-8", ".js": "text/javascript; c
                  ".css": "text/css; charset=utf-8", ".png": "image/png", ".svg": "image/svg+xml",
                  ".jpg": "image/jpeg", ".ico": "image/x-icon"}
 IDLE_EXIT = 30 * 60
-UPDATE_FIRST_CHECK = 5
+BIND_TRIES = 20
+UPDATE_FIRST_CHECK = 1
 UPDATE_EVERY = 6 * 3600
+UPDATE_RETRY = 10 * 60
 UI_GONE = 5
 CHECK = -1
 LOCAL_ORIGIN = re.compile(r"^http://(127\.0\.0\.1|localhost):\d+$")
@@ -152,6 +154,7 @@ class App:
         self.ui = None
         self.ui_closed_at: Optional[float] = None
         self.update_info: Optional[dict] = None
+        self.update_checked = False
 
     def book_view(self, book_id: int) -> dict:
         book, row = self.store.book(book_id)
@@ -299,7 +302,8 @@ def make_handler(app: App) -> Callable:
 
     @route("GET", "/api/update-status")
     def update_status(body):
-        return {"version": __version__, "available": app.update_info, "busy": app.searcher.busy()}
+        return {"version": __version__, "available": app.update_info, "checked": app.update_checked,
+                "busy": app.searcher.busy()}
 
     @route("POST", "/api/quit")
     def quit_app(body):
@@ -382,8 +386,22 @@ def make_handler(app: App) -> Callable:
     return Handler
 
 
+class Server(ThreadingHTTPServer):
+    # With SO_REUSEADDR Windows lets a second socket listen on a taken port: two copies of the program would both
+    # answer, and the second window would talk to either.
+    allow_reuse_address = False
+
+
 def serve(app: App, port: int) -> ThreadingHTTPServer:
-    server = ThreadingHTTPServer(("127.0.0.1", port), make_handler(app))
+    # After an update the old copy may still be letting go of the port for a moment.
+    for attempt in range(BIND_TRIES):
+        try:
+            server = Server(("127.0.0.1", port), make_handler(app))
+            break
+        except OSError:
+            if attempt == BIND_TRIES - 1:
+                raise
+            time.sleep(0.5)
     app.server = server
     app.port = port
     app.searcher.start()
@@ -396,7 +414,7 @@ def serve(app: App, port: int) -> ThreadingHTTPServer:
             now = time.monotonic()
             # Our window is our own Edge process: it ends when the window is closed. The page's own goodbye is a
             # fallback — Edge often exits before sending it; a reload asks for the page again and cancels it.
-            window_gone = app.ui is not None and app.ui.poll() is not None
+            window_gone = app.ui is not None and not app.ui.alive()
             closed_at = app.ui_closed_at
             closed = closed_at is not None and app.last_seen <= closed_at + 0.5 and now - closed_at > UI_GONE
             if window_gone or closed or now - app.last_seen > IDLE_EXIT:
@@ -411,11 +429,14 @@ def serve(app: App, port: int) -> ThreadingHTTPServer:
         while True:
             try:
                 app.update_info = updater.available(app.http)
+                app.update_checked = True
                 if app.update_info:
                     log.info("вышла версия %s", app.update_info["version"])
+                pause = UPDATE_EVERY
             except Exception as e:
                 log.info("обновления не проверены: %s", e)
-            time.sleep(UPDATE_EVERY)
+                pause = UPDATE_RETRY
+            time.sleep(pause)
 
     threading.Thread(target=look_for_updates, daemon=True, name="updates").start()
     return server
