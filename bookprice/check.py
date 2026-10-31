@@ -15,7 +15,7 @@ from .browser import Browser
 from .model import Book
 from .net import Http
 from .search import BY_NAME, classify, run
-from .sources import chitai_gorod, ratings
+from .sources import chitai_gorod, probe, ratings
 
 log = logging.getLogger(__name__)
 
@@ -63,6 +63,11 @@ def run_check(data_dir: Path, say: Callable[[str], None], extra_isbn: Optional[s
                 say(f"  {BY_NAME[r.source].label}: {state}")
             report.append({"book": book.to_dict(), "results": [r.to_dict() for r in results],
                            "found": [f.to_dict() for f in found]})
+        if not only or "probe" in only:
+            say("Разведка магазинов (ещё не в поиске) — по ISBN:")
+            probe.scout(browser, SAMPLES[0], "isbn", say)
+            say("Разведка магазинов — по названию:")
+            probe.scout(browser, "Незнайка на Луне Носов", "title", say)
     finally:
         browser.close()
         (work / "results.json").write_text(json.dumps(report, ensure_ascii=False, indent=1), encoding="utf-8")
