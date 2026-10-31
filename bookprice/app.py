@@ -324,6 +324,9 @@ def make_handler(app: App) -> Callable:
                         return self._json(200, fn(body, *hit.groups()))
                     except (ValueError, KeyError) as e:
                         return self._json(400, {"error": str(e)})
+                    except ConnectionError:
+                        # The window went away (closed, reloaded) before the answer was written — nothing to report.
+                        return None
                     except Exception as e:
                         log.error("%s %s: %s", method, path, traceback.format_exc())
                         return self._json(500, {"error": f"{type(e).__name__}: {e}"})
