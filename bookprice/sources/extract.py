@@ -77,14 +77,24 @@ TILES = r"""
 }
 """
 
-NOTHING_RE = r"/ничего не на(шлось|йдено)|товаров сейчас нет|по вашему запросу товары не найдены|по запросу .{0,60} не найдено|не нашли/i"
+# Whole phrases: Labirint has "Пока не нашли для себя ничего в Лабиринте?" on every page, results or not.
+NOTHING_RE = (r"/ничего не на(шлось|йдено)|товаров сейчас нет|по вашему запросу товары не найдены|"
+              r"по запросу .{0,60} не найдено|мы ничего не нашли/i")
 NOTHING_FOUND = f"() => {NOTHING_RE}.test(((document.body && document.body.innerText) || '').slice(0, 5000))"
 
 
-def link_or_nothing(link_css: str) -> str:
-    """A page-ready check: a product link is on the page, or the shop says it found nothing."""
-    return (f"() => !!document.querySelector({json.dumps(link_css)}) || "
-            f"{NOTHING_RE}.test(((document.body && document.body.innerText) || '').slice(0, 5000))")
+# A visible search box on a shop's home page.
+SEARCH_INPUT = ", ".join([
+    'input[type="search"]', 'input[name="q"]', 'input[name="query"]', 'input[name="search"]', 'input[name="text"]',
+    'input[name*="search" i]', 'input[placeholder*="оиск"]', 'input[placeholder*="айти"]', 'input[placeholder*="ниг"]',
+])
+
+
+def link_or_nothing(link_pattern: str) -> str:
+    """A page-ready check: a product link (not just any catalogue link) is on the page, or the shop says it
+    found nothing."""
+    return (f"() => [...document.querySelectorAll('a[href]')].some(a => new RegExp({json.dumps(link_pattern)}).test(a.href))"
+            f" || {NOTHING_RE}.test(((document.body && document.body.innerText) || '').slice(0, 5000))")
 
 
 def tiles(browser, link_pattern: str, source: str, limit: int = 40, currency: str = "₽") -> List[Offer]:

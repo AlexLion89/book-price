@@ -8,6 +8,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Callable, Optional
 
+from .sources.extract import SEARCH_INPUT
+
 log = logging.getLogger(__name__)
 
 BLOCK_MARKERS = [
@@ -102,6 +104,23 @@ class Browser:
         self._polite_pause(pause)
         log.info("%s: открываю %s", source, url)
         self.page.goto(url, wait_until="domcontentloaded", timeout=60000)
+        self.arrived(source, ready, ready_timeout)
+
+    def search_form(self, home: str, query: str, source: str, ready: str, ready_timeout: float = 15) -> str:
+        """Search through the form on a shop's home page — for shops whose result pages cannot be opened by
+        address. Returns the address of the results."""
+        self.open(home, source, ready=SEARCH_INPUT, ready_timeout=20)
+        box = next((b for b in self.page.query_selector_all(SEARCH_INPUT) if b.is_visible()), None)
+        if not box:
+            raise RuntimeError("на главной странице нет поля поиска")
+        box.fill(query)
+        with self.page.expect_navigation(wait_until="domcontentloaded", timeout=60000):
+            box.press("Enter")
+        log.info("%s: результаты поиска — %s", source, self.page.url)
+        self.arrived(source, ready, ready_timeout)
+        return self.page.url
+
+    def arrived(self, source: str, ready: str = "", ready_timeout: float = 15) -> None:
         self._last_visit = time.monotonic()
         if self.is_blocked():
             self.wait_for_human(source)

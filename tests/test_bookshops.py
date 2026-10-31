@@ -1,5 +1,7 @@
 """Bookshop pages shaped like the scouting snapshots of 31.10.2026, read inside a real Edge."""
+import tempfile
 import unittest
+from pathlib import Path
 
 from bookprice.model import Book, Offer, SourceResult
 from bookprice.search import classify, out_of_print
@@ -151,6 +153,44 @@ class BookshopPagesTest(unittest.TestCase):
         b = self.load("<p>По вашему запросу товары не найдены.</p>")
         self.assertTrue(b.evaluate(RESPUBLICA.ready))
         self.assertTrue(extract.nothing_found(b))
+
+
+BG_HOME = """<title>Библио-Глобус</title><form action="/Search" method="post">
+  <input type="text" name="search" placeholder="Поиск..."></form>"""
+BG_RESULTS = """<title>Результаты поиска</title><div class="row products">
+  <div class="card"><h5 class="card-title">Незнайка на Луне <span class="card-author">Носов Н.Н.</span></h5>
+    <div class="price_item_wrapper"><span class="price_item_title">Цена в магазине:</span> 1689 ₽</div>
+    <a href="https://www.biblio-globus.ru/product/10827165">Подробнее</a></div></div>"""
+
+
+class FormSearchTest(unittest.TestCase):
+    def test_shop_searched_through_its_home_form(self):
+        try:
+            from bookprice.browser import Browser
+            browser = Browser(Path(tempfile.mkdtemp(prefix="bp-form-")), headless=True)
+            browser.start()
+        except Exception:
+            raise unittest.SkipTest("нет Playwright или Edge")
+        pages = {"https://www.biblio-globus.ru/": BG_HOME, "https://www.biblio-globus.ru/Search": BG_RESULTS}
+        seen = []
+
+        def handler(route):
+            url = route.request.url
+            seen.append((route.request.method, url))
+            if url in pages:
+                route.fulfill(body=pages[url], content_type="text/html; charset=utf-8")
+            else:
+                route.abort()
+
+        try:
+            browser.page.route("**/*", handler)
+            result = BIBLIOGLOBUS.search(browser, Book(title="Незнайка на Луне", author="Николай Носов"))
+        finally:
+            browser.close()
+        self.assertEqual(result.error, "")
+        self.assertEqual(result.search_url, "https://www.biblio-globus.ru/Search")
+        self.assertIn(("POST", "https://www.biblio-globus.ru/Search"), seen)
+        self.assertEqual([(o.price, o.title) for o in result.offers], [(1689, "Незнайка на Луне Носов Н.Н.")])
 
 
 class BookshopKindTest(unittest.TestCase):

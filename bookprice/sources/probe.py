@@ -6,6 +6,8 @@ from __future__ import annotations
 import logging
 from typing import Callable, List, Tuple
 
+from .extract import SEARCH_INPUT
+
 log = logging.getLogger(__name__)
 
 # spbdk.ru and mdk-arbat.ru, the old addresses, no longer open (31.10.2026).
@@ -13,10 +15,6 @@ SHOPS: List[Tuple[str, str, str]] = [
     ("dkspb", "Дом книги (СПб)", "https://dk-spb.ru/"),
     ("moscowbooks", "Московский дом книги", "https://www.moscowbooks.ru/"),
 ]
-SEARCH_INPUT = ", ".join([
-    'input[type="search"]', 'input[name="q"]', 'input[name="query"]', 'input[name="search"]', 'input[name="text"]',
-    'input[name*="search" i]', 'input[placeholder*="оиск"]', 'input[placeholder*="айти"]', 'input[placeholder*="ниг"]',
-])
 PRICES = r"() => ((document.body && document.body.innerText) || '').match(/₽|руб/g)?.length || 0"
 
 

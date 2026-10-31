@@ -111,6 +111,8 @@ class Shop:
     # A bookshop, not a marketplace: its sellers are the shop itself, tiles say when a book is out of stock,
     # and a single answer to an ISBN query is that very edition.
     bookshop: bool = False
+    # Searched through the form on this home page: the shop answers its results address with 404.
+    home: str = ""
 
     def search_url(self, book: Book) -> str:
         return self.url(book.isbn or f"{book.title} {book.author}".strip())
@@ -140,7 +142,12 @@ class Shop:
     def search(self, browser, book: Book) -> SourceResult:
         result = SourceResult(source=self.name, search_url=self.search_url(book))
         try:
-            browser.open(result.search_url, self.name, ready=self.ready, ready_timeout=8 if self.bookshop else 15)
+            timeout = 12 if self.bookshop else 15
+            if self.home:
+                query = book.isbn or f"{book.title} {book.author}".strip()
+                result.search_url = browser.search_form(self.home, query, self.name, self.ready, timeout)
+            else:
+                browser.open(result.search_url, self.name, ready=self.ready, ready_timeout=timeout)
             if self.name == "ozon":
                 product = browser.evaluate(OZON_PRODUCT)
                 if product and product.get("price"):
@@ -176,25 +183,24 @@ MARKET = Shop("market", "Яндекс Маркет", _q("https://market.yandex.r
               r"market\.yandex\.ru/(product--|card/)", '[data-auto="snippet-title"]', MARKET_SNIPPETS)
 
 
-def _bookshop(name: str, label: str, url: Callable[[str], str], link_pattern: str, link_css: str,
-              currency: str = "₽") -> Shop:
+def _bookshop(name: str, label: str, url: Callable[[str], str], link_pattern: str, currency: str = "₽",
+              home: str = "") -> Shop:
     # Ready when a product link shows up or the shop says it has nothing: a miss must not cost the full wait.
-    return Shop(name, label, url, link_pattern, extract.link_or_nothing(link_css), prepare=SKIP_RECOMMENDATIONS,
-                currency=currency, bookshop=True)
+    return Shop(name, label, url, link_pattern, extract.link_or_nothing(link_pattern), prepare=SKIP_RECOMMENDATIONS,
+                currency=currency, bookshop=True, home=home)
 
 
 # Addresses and page layout from the scouting snapshots of 31.10.2026 (check-home-5 in the task folder).
 LABIRINT = _bookshop("labirint", "Лабиринт",
                      lambda q: f"https://www.labirint.ru/search/{urllib.parse.quote(q, safe='')}/?stype=0",
-                     r"labirint\.ru/books/\d+", 'a[href*="/books/"]')
-BOOK24 = _bookshop("book24", "Book24", _q("https://book24.ru/search/", "q"), r"book24\.ru/product/",
-                   'a[href*="/product/"]')
-BOOKVOED = _bookshop("bookvoed", "Буквоед", _q("https://www.bookvoed.ru/search", "q"), r"bookvoed\.ru/product/",
-                     'a[href*="/product/"]')
+                     r"labirint\.ru/books/\d+")
+BOOK24 = _bookshop("book24", "Book24", _q("https://book24.ru/search/", "q"), r"book24\.ru/product/")
+BOOKVOED = _bookshop("bookvoed", "Буквоед", _q("https://www.bookvoed.ru/search", "q"), r"bookvoed\.ru/product/")
 # Respublica draws the ruble sign with CSS: its prices are bare numbers in the page text.
 RESPUBLICA = _bookshop("respublica", "Республика", _q("https://www.respublica.ru/search", "query"),
-                       r"respublica\.ru/knigi/.+/\d+-", 'a[href*="/knigi/"]', currency="")
+                       r"respublica\.ru/knigi/.+/\d+-", currency="")
+# Biblio-Globus answers /catalog/search?query=… with 404 (check-home-6): only its own form leads to results.
 BIBLIOGLOBUS = _bookshop("biblioglobus", "Библио-Глобус", _q("https://www.biblio-globus.ru/catalog/search", "query"),
-                         r"biblio-globus\.ru/product/\d+", 'a[href*="/product/"]')
+                         r"biblio-globus\.ru/product/\d+", home="https://www.biblio-globus.ru/")
 
 SHOPS = [OZON, WILDBERRIES, MARKET, LABIRINT, BOOK24, BOOKVOED, RESPUBLICA, BIBLIOGLOBUS]
