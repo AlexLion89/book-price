@@ -7,6 +7,8 @@ from typing import List
 
 from .model import Book
 
+SERIES_REASON = "другая книга серии или часть"
+
 STOP_WORDS = {
     "и", "в", "во", "на", "с", "со", "о", "об", "по", "за", "из", "к", "у", "а", "но", "не",
     "или", "the", "a", "an", "of", "and",
@@ -157,7 +159,7 @@ def match(book: Book, listing_title: str, listing_text: str = "", desc: str = ""
     last_word = ([w for w in title_words if not w.isdigit()] or [""])[-1]
     extra = series_numbers(listing_title, last_word) - series_numbers(book.title)
     if extra:
-        return MatchResult("other", f"другая книга серии или часть: «{min(extra)}»")
+        return MatchResult("other", f"{SERIES_REASON}: «{min(extra)}»")
 
     mine, theirs = binding_kind(normalize(book.binding)), binding_kind(everything)
     if mine and theirs and not mine & theirs:

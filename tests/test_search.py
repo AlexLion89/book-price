@@ -93,5 +93,35 @@ class SearchTest(unittest.TestCase):
         self.assertEqual(v.start, 400)
 
 
+MO_YAN = Book(title="Устал рождаться и умирать", author="Мо Янь", year=2014, isbn="9785367032819", publisher="Амфора")
+AVITO_MO_YAN = result("avito", *[Offer("avito", p, title="Мо Янь Устал рождаться и умирать", ext_id=str(p))
+                                 for p in (1200, 1500, 1700, 2000)])
+
+
+class ReprintTest(unittest.TestCase):
+    def reasons(self, *results):
+        return evaluate(MO_YAN, classify(MO_YAN, [*results, AVITO_MO_YAN], {}), [], "excellent").reasons
+
+    def test_reprint_sold_new_is_mentioned_but_does_not_count(self):
+        reasons = self.reasons(
+            result("chitai_gorod", Offer("chitai_gorod", 799, title="Мо Янь — Устал рождаться и умирать", in_stock=False)),
+            result("moscowbooks", Offer("moscowbooks", 2176, title="Устал рождаться и умирать", text="Мо Янь"),
+                   Offer("moscowbooks", 2023, title="Устал рождаться и умирать", text="Мо Янь"),
+                   Offer("moscowbooks", 1309, title="Нежелательные: как наука решает", text="Иванов")))
+        self.assertIn("в магазинах есть другие издания — от 2023 ₽ (Московский дом книги)", " ".join(reasons))
+        self.assertTrue(reasons[0].startswith("в магазинах нет в продаже"))
+
+    def test_no_note_when_the_edition_itself_is_in_a_shop(self):
+        reasons = self.reasons(
+            result("chitai_gorod", Offer("chitai_gorod", 2500, title="Мо Янь — Устал рождаться и умирать")),
+            result("moscowbooks", Offer("moscowbooks", 2023, title="Устал рождаться и умирать", text="Мо Янь")))
+        self.assertFalse(any("другие издания" in r for r in reasons))
+
+    def test_another_volume_is_not_a_reprint(self):
+        reasons = self.reasons(
+            result("labirint", Offer("labirint", 900, title="Устал рождаться и умирать. Часть 2", text="Мо Янь")))
+        self.assertFalse(any("другие издания" in r for r in reasons))
+
+
 if __name__ == "__main__":
     unittest.main()

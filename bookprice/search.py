@@ -6,7 +6,7 @@ from datetime import date
 from typing import Callable, Dict, List, Optional, Tuple
 
 from . import copymarks
-from .matching import YEAR, MatchResult, match
+from .matching import SERIES_REASON, YEAR, MatchResult, match
 from .model import Book, Offer, SourceResult
 from .net import Http
 from .pricing import LOT_THRESHOLD, Verdict, round_price, suggest
@@ -135,6 +135,15 @@ def evaluate_with_dossier(book: Book, found: List[Found], manual: List[Offer], c
         discounted = [Offer(source=o.source, price=o.price * DEALER_DISCOUNT) for o in dealers]
         verdict = suggest(shops, discounted, past, condition, used_label="у букинистов (минус 20 %)")
         verdict.reasons.insert(0, "на Авито похожих нет — ориентир по букинистам: на Авито обычно процентов на 20 дешевле")
+    if not any(o.in_stock for o in shops):
+        # "Нет в продаже" is about this edition; a reprint sold new is worth knowing, though it does not set the price.
+        reprints = [f.offer for f in found if f.kind == "shop" and not f.counted and f.offer.in_stock
+                    and (f.verdict == "maybe" or (f.verdict == "other" and not f.reason.startswith(SERIES_REASON)))]
+        if reprints:
+            cheapest = min(reprints, key=lambda o: o.price)
+            label = BY_NAME[cheapest.source].label if cheapest.source in BY_NAME else cheapest.source
+            verdict.reasons.append(f"в магазинах есть другие издания — от {cheapest.price:.0f} ₽ ({label}); в цену они "
+                                   f"не идут, а если это ваше издание — отметьте его галочкой в списке ниже")
     exact = [f.offer for f in found if exact_offer(f.offer)]
     sold_out = bool(exact) and not any(o.in_stock for o in exact)
     dossier = assess(book, len(used), any(o.in_stock for o in shops), sold_out)
