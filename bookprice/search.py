@@ -18,6 +18,7 @@ log = logging.getLogger(__name__)
 
 DEALER_DISCOUNT = 0.8
 EXACT_ISBN = {chitai_gorod.NAME}
+MARKETPLACES = {s.name for s in SHOPS if not s.bookshop}
 USED_NOTE = "б/у"
 # A marketplace title naming a print year this old is an old copy on resale, not a new book.
 OLD_STOCK_YEARS = 3
@@ -76,9 +77,13 @@ class Found:
         return d
 
 
+def exact_offer(o: Offer) -> bool:
+    return o.source in EXACT_ISBN or o.by_isbn
+
+
 def out_of_print(results: List[SourceResult]) -> bool:
-    """The exact-ISBN shop knows the book but cannot sell it: then marketplace sellers are resellers of old stock."""
-    exact = [o for r in results if r.source in EXACT_ISBN for o in r.offers]
+    """Shops know this very ISBN but cannot sell it: then marketplace sellers are resellers of old stock."""
+    exact = [o for r in results for o in r.offers if exact_offer(o)]
     return bool(exact) and not any(o.in_stock for o in exact)
 
 
@@ -96,9 +101,9 @@ def classify(book: Book, results: List[SourceResult], marks: Dict[Tuple[str, str
         source_kind = BY_NAME[r.source].kind if r.source in BY_NAME else "shop"
         for o in r.offers:
             kind = source_kind
-            if source_kind == "shop" and r.source not in EXACT_ISBN and resold(o, sold_out):
+            if r.source in MARKETPLACES and resold(o, sold_out):
                 kind = "dealer"
-            exact = kind == "shop" and bool(book.isbn) and r.source in EXACT_ISBN
+            exact = kind == "shop" and bool(book.isbn) and exact_offer(o)
             m: MatchResult = match(book, o.title, o.text, o.desc, exact_isbn=exact,
                                    need_author=not (kind == "shop" and book.isbn))
             # Marketplaces answer an ISBN query with every edition of the title, booksellers list every old
@@ -130,7 +135,7 @@ def evaluate_with_dossier(book: Book, found: List[Found], manual: List[Offer], c
         discounted = [Offer(source=o.source, price=o.price * DEALER_DISCOUNT) for o in dealers]
         verdict = suggest(shops, discounted, past, condition, used_label="у букинистов (минус 20 %)")
         verdict.reasons.insert(0, "на Авито похожих нет — ориентир по букинистам: на Авито обычно процентов на 20 дешевле")
-    exact = [f.offer for f in found if f.offer.source in EXACT_ISBN]
+    exact = [f.offer for f in found if exact_offer(f.offer)]
     sold_out = bool(exact) and not any(o.in_stock for o in exact)
     dossier = assess(book, len(used), any(o.in_stock for o in shops), sold_out)
     if verdict.scenario == "only_used" and dossier.premium:

@@ -15,7 +15,7 @@ sys.path.insert(0, str(root))
 from bookprice.model import Book, Offer, SourceResult  # noqa: E402
 from bookprice.search import classify, evaluate  # noqa: E402
 from bookprice.sources import avito, extract, meshok  # noqa: E402
-from bookprice.sources.shops import SHOPS, USED_MARK  # noqa: E402
+from bookprice.sources.shops import SHOPS  # noqa: E402
 
 
 ORIGIN = {
@@ -24,6 +24,11 @@ ORIGIN = {
     "wildberries": "https://www.wildberries.ru/catalog/0/search.aspx",
     "market": "https://market.yandex.ru/search",
     "meshok": "https://meshok.net/listing",
+    "labirint": "https://www.labirint.ru/search/q/",
+    "book24": "https://book24.ru/search/",
+    "bookvoed": "https://www.bookvoed.ru/search",
+    "respublica": "https://www.respublica.ru/search",
+    "biblioglobus": "https://www.biblio-globus.ru/catalog/search",
 }
 
 
@@ -44,19 +49,13 @@ def serve(html: str, url: str):
     return handler
 
 
-def extract_offers(browser, source: str):
+def extract_offers(browser, source: str, book: Book):
     if source == avito.NAME:
         return avito._offers(browser.evaluate(avito.ITEMS))
     if source == meshok.NAME:
         return extract.tiles(browser, meshok.ITEM_LINK, meshok.NAME, currency="₽|руб")
     shop = next(s for s in SHOPS if s.name == source)
-    if shop.prepare:
-        browser.evaluate(shop.prepare)
-    offers = shop._from_specific(browser) or extract.tiles(browser, shop.link_pattern, shop.name)
-    for o in offers:
-        if USED_MARK.search(o.title):
-            o.note = "б/у"
-    return offers
+    return [] if extract.nothing_found(browser) else shop.read(browser, book)
 
 
 def main(zip_path: str) -> None:
@@ -77,12 +76,15 @@ def main(zip_path: str) -> None:
         for source, files in by_source.items():
             if source not in ORIGIN:
                 continue
-            for f in files:
+            # Avito saves two pages per book (city and delivery), shops one.
+            per_book = 2 if source == avito.NAME else 1
+            for i, f in enumerate(files):
+                book = Book(**report[min(i // per_book, len(report) - 1)]["book"])
                 # Served from the site's own address: relative links ("/product/...") resolve as in the live page.
                 page.unroute("**/*")
                 page.route("**/*", serve(f.read_text(encoding="utf-8"), ORIGIN[source]))
                 page.goto(ORIGIN[source], wait_until="domcontentloaded")
-                replayed.setdefault(source, []).append(extract_offers(Page(page), source))
+                replayed.setdefault(source, []).append(extract_offers(Page(page), source, book))
         browser.close()
 
     for n, item in enumerate(report):

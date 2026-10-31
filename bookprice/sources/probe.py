@@ -8,14 +8,10 @@ from typing import Callable, List, Tuple
 
 log = logging.getLogger(__name__)
 
+# spbdk.ru and mdk-arbat.ru, the old addresses, no longer open (31.10.2026).
 SHOPS: List[Tuple[str, str, str]] = [
-    ("respublica", "Республика", "https://www.respublica.ru/"),
-    ("bookvoed", "Буквоед", "https://www.bookvoed.ru/"),
-    ("spbdk", "Дом книги (СПб)", "https://www.spbdk.ru/"),
-    ("mdk", "Московский дом книги", "https://www.mdk-arbat.ru/"),
-    ("biblioglobus", "Библио-Глобус", "https://www.biblio-globus.ru/"),
-    ("book24", "Book24", "https://book24.ru/"),
-    ("labirint", "Лабиринт", "https://www.labirint.ru/"),
+    ("dkspb", "Дом книги (СПб)", "https://dk-spb.ru/"),
+    ("moscowbooks", "Московский дом книги", "https://www.moscowbooks.ru/"),
 ]
 SEARCH_INPUT = ", ".join([
     'input[type="search"]', 'input[name="q"]', 'input[name="query"]', 'input[name="search"]', 'input[name="text"]',

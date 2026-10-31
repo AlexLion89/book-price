@@ -41,6 +41,8 @@ class Offer:
     age: str = ""
     note: str = ""
     desc: str = ""
+    # A bookshop answered the ISBN query with this product alone: the same edition, as in Chitai-gorod.
+    by_isbn: bool = False
 
     def to_dict(self) -> dict:
         return asdict(self)

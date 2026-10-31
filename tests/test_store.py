@@ -1,8 +1,9 @@
+import sqlite3
 import tempfile
 import unittest
 from pathlib import Path
 
-from bookprice.model import Book
+from bookprice.model import Book, Offer, SourceResult
 from bookprice.search import evaluate
 from bookprice.store import Store
 
@@ -32,6 +33,28 @@ class StoreTest(unittest.TestCase):
         no_isbn = Book(title="Мастер и Маргарита", author="Михаил Булгаков")
         current = self.store.add_book(no_isbn)
         self.assertEqual([s["sold_price"] for s in self.store.sold_like(current, no_isbn)], [350])
+
+    def test_exact_isbn_answer_is_kept(self):
+        book_id = self.store.add_book(MASTER)
+        offers = [Offer(source="bookvoed", price=319, title="Мастер и Маргарита", by_isbn=True),
+                  Offer(source="labirint", price=450, title="Мастер и Маргарита")]
+        self.store.save_results(book_id, [SourceResult(source="bookvoed", offers=offers[:1]),
+                                          SourceResult(source="labirint", offers=offers[1:])])
+        kept = {r.source: r.offers[0].by_isbn for r in self.store.results(book_id)}
+        self.assertEqual(kept, {"bookvoed": True, "labirint": False})
+
+    def test_database_of_an_older_version_opens(self):
+        path = Path(self.dir.name) / "old.sqlite"
+        db = sqlite3.connect(str(path))
+        db.execute("create table offers(book_id integer, source text, ext_id text, price real, url text, title text,"
+                   " text text, in_stock integer, place text, age text, note text, description text)")
+        db.execute("insert into offers values (1, 'ozon', 'x', 500, '', 'Мастер', '', 1, '', '', '', '')")
+        db.commit()
+        db.close()
+        old = Store(path)
+        old.db.execute("insert into source_runs values (1, 'ozon', '', '', '', '')")
+        self.assertFalse(old.results(1)[0].offers[0].by_isbn)
+        old.db.close()
 
     def test_own_sale_is_history_and_a_reason(self):
         sales = [{"sold_price": 800, "sold_at": "2026-09-01T10:00:00"}]

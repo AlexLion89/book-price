@@ -18,7 +18,7 @@ create table if not exists books(
   copy_marks text);
 create table if not exists offers(
   book_id integer, source text, ext_id text, price real, url text, title text, text text,
-  in_stock integer, place text, age text, note text, description text);
+  in_stock integer, place text, age text, note text, description text, by_isbn integer);
 create index if not exists offers_book on offers(book_id);
 create table if not exists source_runs(
   book_id integer, source text, search_url text, error text, snapshot text, at text,
@@ -45,8 +45,9 @@ class Store:
         with self.lock:
             self.db.executescript(SCHEMA)
             columns = {r[1] for r in self.db.execute("pragma table_info(offers)")}
-            if "description" not in columns:
-                self.db.execute("alter table offers add column description text")
+            for column, kind in (("description", "text"), ("by_isbn", "integer")):
+                if column not in columns:
+                    self.db.execute(f"alter table offers add column {column} {kind}")
             columns = {r[1] for r in self.db.execute("pragma table_info(books)")}
             for column in ("facts", "copy_marks"):
                 if column not in columns:
@@ -99,9 +100,9 @@ class Store:
                 self.db.execute("delete from offers where book_id = ? and source = ?", (book_id, r.source))
                 self.db.executemany(
                     "insert into offers(book_id, source, ext_id, price, url, title, text, in_stock, place, age, note,"
-                    " description) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    " description, by_isbn) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     [(book_id, o.source, o.ext_id or o.url, o.price, o.url, o.title, o.text, int(o.in_stock),
-                      o.place, o.age, o.note, o.desc) for o in r.offers])
+                      o.place, o.age, o.note, o.desc, int(o.by_isbn)) for o in r.offers])
                 self.db.execute("insert or replace into source_runs values (?, ?, ?, ?, ?, ?)",
                                 (book_id, r.source, r.search_url, r.error, r.snapshot, now()))
             self.db.execute("update books set searched_at = ? where id = ?", (now(), book_id))
@@ -115,7 +116,7 @@ class Store:
                 runs[r["source"]].offers.append(Offer(
                     source=r["source"], price=r["price"], url=r["url"], title=r["title"], text=r["text"],
                     in_stock=bool(r["in_stock"]), ext_id=r["ext_id"], place=r["place"], age=r["age"], note=r["note"],
-                    desc=r["description"] or ""))
+                    desc=r["description"] or "", by_isbn=bool(r["by_isbn"])))
         return list(runs.values())
 
     def marks(self, book_id: int) -> Dict[Tuple[str, str], bool]:

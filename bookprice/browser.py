@@ -107,18 +107,25 @@ class Browser:
             self.wait_for_human(source)
         if ready:
             try:
-                self.page.wait_for_selector(ready, timeout=ready_timeout * 1000)
+                self._wait_ready(ready, ready_timeout)
             except Exception:
                 # Avito swaps the page for "Доступ ограничен" after it has loaded: look again before giving up.
                 if not self.is_blocked():
-                    log.warning("%s: не дождался %s", source, ready)
+                    log.warning("%s: не дождался %s", source, ready[:120])
                 else:
                     self.wait_for_human(source)
                     try:
-                        self.page.wait_for_selector(ready, timeout=ready_timeout * 1000)
+                        self._wait_ready(ready, ready_timeout)
                     except Exception:
-                        log.warning("%s: после проверки не дождался %s", source, ready)
+                        log.warning("%s: после проверки не дождался %s", source, ready[:120])
         self.page.wait_for_timeout(1500)
+
+    def _wait_ready(self, ready: str, timeout: float) -> None:
+        """ready is a CSS selector or a JS predicate "() => …"."""
+        if ready.lstrip().startswith("()"):
+            self.page.wait_for_function(ready, timeout=timeout * 1000)
+        else:
+            self.page.wait_for_selector(ready, timeout=timeout * 1000)
 
     def wait_for_human(self, source: str) -> None:
         log.warning("%s: проверка «не робот», жду человека", source)
