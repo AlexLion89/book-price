@@ -30,6 +30,7 @@ ORIGIN = {
     "respublica": "https://www.respublica.ru/search",
     "biblioglobus": "https://www.biblio-globus.ru/Search",
     "dkspb": "https://dk-spb.ru/catalog/",
+    "moscowbooks": "https://www.moscowbooks.ru/search/",
 }
 
 

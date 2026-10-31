@@ -11,11 +11,9 @@ from .extract import SEARCH_INPUT
 
 log = logging.getLogger(__name__)
 
-# (key, label, home page, results address with {q} or "" to use the form). Moscowbooks' form is taken over by
-# instant suggestions: Enter there stays on the home page (check-home-6), its form action is /search/?text=.
-SHOPS: List[Tuple[str, str, str, str]] = [
-    ("moscowbooks", "Московский дом книги", "https://www.moscowbooks.ru/", "https://www.moscowbooks.ru/search/?text={q}"),
-]
+# (key, label, home page, results address with {q} or "" to use the form). Empty: every scouted shop is in the
+# search now (Moscowbooks since 0.5.3).
+SHOPS: List[Tuple[str, str, str, str]] = []
 PRICES = r"() => ((document.body && document.body.innerText) || '').match(/₽|руб/g)?.length || 0"
 
 

@@ -1,5 +1,5 @@
 """Online shops opened in Edge: marketplaces (Ozon, Wildberries, Yandex Market) and bookshops (Labirint, Book24,
-Bookvoed, Respublica, Biblio-Globus, Dom Knigi SPb). Search by ISBN when it is known."""
+Bookvoed, Respublica, Biblio-Globus, Dom Knigi SPb, Moscowbooks). Search by ISBN when it is known."""
 from __future__ import annotations
 
 import re
@@ -113,9 +113,14 @@ class Shop:
     bookshop: bool = False
     # Searched through the form on this home page: the shop answers its results address with 404.
     home: str = ""
+    # The shop's search does not understand ISBNs (Moscowbooks answers one with 97 unrelated books).
+    by_title: bool = False
+
+    def query(self, book: Book) -> str:
+        return (not self.by_title and book.isbn) or f"{book.title} {book.author}".strip()
 
     def search_url(self, book: Book) -> str:
-        return self.url(book.isbn or f"{book.title} {book.author}".strip())
+        return self.url(self.query(book))
 
     def read(self, browser, book: Book) -> List[Offer]:
         """Offers on the opened page of search results."""
@@ -128,7 +133,7 @@ class Shop:
                 o.note = "б/у"
             if self.bookshop and OUT_OF_STOCK.search(o.text):
                 o.in_stock, o.note = False, "нет в наличии"
-        if self.bookshop and book.isbn and len(offers) == 1:
+        if self.bookshop and book.isbn and self.query(book) == book.isbn and len(offers) == 1:
             offers[0].by_isbn = True
         return offers
 
@@ -144,10 +149,19 @@ class Shop:
         try:
             timeout = 12 if self.bookshop else 15
             if self.home:
-                query = book.isbn or f"{book.title} {book.author}".strip()
-                result.search_url = browser.search_form(self.home, query, self.name, self.ready, timeout)
+                url = browser.search_form(self.home, self.query(book), self.name, self.ready, timeout)
+                # A results page reached by POST cannot be opened again by its address: link the home page.
+                result.search_url = url if "?" in url else self.home
             else:
                 browser.open(result.search_url, self.name, ready=self.ready, ready_timeout=timeout)
+                if self.bookshop and browser.forbidden():
+                    # Respublica answered 403 to searches opened straight by address (check-home-7) and served
+                    # the same search after its home page had been visited.
+                    root = urllib.parse.urlsplit(result.search_url)
+                    browser.open(f"{root.scheme}://{root.netloc}/", self.name)
+                    browser.open(result.search_url, self.name, ready=self.ready, ready_timeout=timeout)
+                    if browser.forbidden():
+                        raise Forbidden("сайт не пустил (403)")
             if self.name == "ozon":
                 product = browser.evaluate(OZON_PRODUCT)
                 if product and product.get("price"):
@@ -183,11 +197,15 @@ MARKET = Shop("market", "Яндекс Маркет", _q("https://market.yandex.r
               r"market\.yandex\.ru/(product--|card/)", '[data-auto="snippet-title"]', MARKET_SNIPPETS)
 
 
+class Forbidden(Exception):
+    pass
+
+
 def _bookshop(name: str, label: str, url: Callable[[str], str], link_pattern: str, currency: str = "₽",
-              home: str = "") -> Shop:
+              home: str = "", by_title: bool = False) -> Shop:
     # Ready when a product link shows up or the shop says it has nothing: a miss must not cost the full wait.
     return Shop(name, label, url, link_pattern, extract.link_or_nothing(link_pattern), prepare=SKIP_RECOMMENDATIONS,
-                currency=currency, bookshop=True, home=home)
+                currency=currency, bookshop=True, home=home, by_title=by_title)
 
 
 # Addresses and page layout from the scouting snapshots of 31.10.2026 (check-home-5 in the task folder).
@@ -207,4 +225,8 @@ BIBLIOGLOBUS = _bookshop("biblioglobus", "Библио-Глобус", _q("https:
 DKSPB = _bookshop("dkspb", "Дом книги (СПб)", _q("https://dk-spb.ru/catalog/", "q"),
                   r"dk-spb\.ru/catalog/[^/?#]+-\d+/?(?:[?#]|$)")
 
-SHOPS = [OZON, WILDBERRIES, MARKET, LABIRINT, BOOK24, BOOKVOED, RESPUBLICA, BIBLIOGLOBUS, DKSPB]
+# Moscow's Dom Knigi on the Arbat sells as moscowbooks.ru; its form goes to /search/?text= (check-home-7).
+MOSCOWBOOKS = _bookshop("moscowbooks", "Московский дом книги", _q("https://www.moscowbooks.ru/search/", "text"),
+                        r"moscowbooks\.ru/book/\d+", by_title=True)
+
+SHOPS = [OZON, WILDBERRIES, MARKET, LABIRINT, BOOK24, BOOKVOED, RESPUBLICA, BIBLIOGLOBUS, DKSPB, MOSCOWBOOKS]

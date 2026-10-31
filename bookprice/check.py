@@ -63,7 +63,7 @@ def run_check(data_dir: Path, say: Callable[[str], None], extra_isbn: Optional[s
                 say(f"  {BY_NAME[r.source].label}: {state}")
             report.append({"book": book.to_dict(), "results": [r.to_dict() for r in results],
                            "found": [f.to_dict() for f in found]})
-        if not only or "probe" in only:
+        if probe.SHOPS and (not only or "probe" in only):
             say("Разведка магазинов (ещё не в поиске) — по ISBN:")
             probe.scout(browser, SAMPLES[0], "isbn", say)
             say("Разведка магазинов — по названию:")

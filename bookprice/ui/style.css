@@ -59,7 +59,7 @@ textarea { width: 100%; min-height: 150px; padding: 12px; }
 
 /* The illustration's own background is #1e2736: the block takes the same colour, and a fade hides the slightly
    uneven left edge of the JPEG. Fixed height keeps the picture 375 px wide, so the fade stays in place. */
-.hero { display: flex; align-items: center; gap: 22px; color: var(--noir-ink); height: 250px;
+.hero { display: flex; align-items: center; gap: 22px; color: var(--noir-ink); height: clamp(170px, 27vh, 250px);
   background: linear-gradient(to left, rgba(30, 39, 54, 0) 285px, #1e2736 375px) no-repeat,
               url(/img/hero.jpg) right center / auto 100% no-repeat #1e2736;
   border-radius: var(--radius); padding: 26px 30px; margin-bottom: 22px; }
@@ -113,6 +113,14 @@ input[type=radio] { accent-color: var(--fox); }
 .radio label { cursor: pointer; }
 .empty { text-align: center; padding: 40px 20px; }
 .empty .fox { font-size: 72px; }
+.empty img.art { height: clamp(110px, 24vh, 220px); }
+/* Small laptop screens: the start page fits without scrolling. */
+@media (max-height: 820px) {
+  header { padding: 8px 24px; }
+  main { padding: 16px 24px; }
+  .empty { padding: 18px 20px; }
+  .hero h1 { font-size: 28px; }
+}
 table.facts td:first-child { width: 270px; }
 table.facts td { border-top: 0; padding: 4px 6px; }
 .marks { display: flex; flex-wrap: wrap; gap: 4px 18px; margin-top: 4px; }

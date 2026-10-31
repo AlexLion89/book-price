@@ -78,9 +78,11 @@ TILES = r"""
 }
 """
 
-# Whole phrases: Labirint has "Пока не нашли для себя ничего в Лабиринте?" on every page, results or not.
+# Whole phrases: Labirint has "Пока не нашли для себя ничего в Лабиринте?" on every page, results or not; its
+# miss says only "Все, что мы нашли в Лабиринте по запросу «…» Товары" with no count after "Товары".
 NOTHING_RE = (r"/ничего не на(шлось|йдено)|товаров сейчас нет|по вашему запросу товары не найдены|"
-              r"по запросу .{0,60} не найдено|мы ничего не нашли/i")
+              r"по запросу .{0,60} не найдено|мы ничего не нашли|"
+              r"мы нашли в лабиринте по запросу «[^»]{1,100}»\s+товары(?!\s*\d)/i")
 NOTHING_FOUND = f"() => {NOTHING_RE}.test(((document.body && document.body.innerText) || '').slice(0, 5000))"
 
 

@@ -54,14 +54,18 @@ class Browser:
             return
         from playwright.sync_api import sync_playwright
         self._pw = sync_playwright().start()
+        # The visible window is maximized and the page takes the window's size: a fixed page taller than a laptop
+        # screen hides the bottom of Avito's captcha, its slider included.
+        size = {"viewport": {"width": 1280, "height": 900}} if self.headless else {"no_viewport": True}
         self._ctx = self._pw.chromium.launch_persistent_context(
             str(self.data_dir / "edge-profile"),
             channel="msedge",
             headless=self.headless,
             locale="ru-RU",
-            viewport={"width": 1280, "height": 900},
-            args=["--disable-blink-features=AutomationControlled", "--disable-sync", "--no-first-run"],
+            args=["--disable-blink-features=AutomationControlled", "--disable-sync", "--no-first-run",
+                  *([] if self.headless else ["--start-maximized"])],
             ignore_default_args=["--enable-automation"],
+            **size,
         )
         self._page = self._ctx.pages[0] if self._ctx.pages else self._ctx.new_page()
         if self.home:
@@ -119,6 +123,12 @@ class Browser:
         log.info("%s: результаты поиска — %s", source, self.page.url)
         self.arrived(source, ready, ready_timeout)
         return self.page.url
+
+    def forbidden(self) -> bool:
+        try:
+            return self.page.title().strip().lower().startswith("403 forbidden")
+        except Exception:
+            return False
 
     def arrived(self, source: str, ready: str = "", ready_timeout: float = 15) -> None:
         self._last_visit = time.monotonic()

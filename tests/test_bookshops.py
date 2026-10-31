@@ -6,7 +6,7 @@ from pathlib import Path
 from bookprice.model import Book, Offer, SourceResult
 from bookprice.search import classify, out_of_print
 from bookprice.sources import extract
-from bookprice.sources.shops import BIBLIOGLOBUS, BOOK24, BOOKVOED, DKSPB, LABIRINT, RESPUBLICA
+from bookprice.sources.shops import BIBLIOGLOBUS, BOOK24, BOOKVOED, DKSPB, LABIRINT, MOSCOWBOOKS, RESPUBLICA
 from tests.test_extract import FakeBrowser, edge
 
 MASTER = Book(title="Мастер и Маргарита", author="Михаил Булгаков", isbn="9785389016866", year=2012)
@@ -170,6 +170,20 @@ class BookshopPagesTest(unittest.TestCase):
         offers = extract.tiles(self.load(page), r"moscowbooks\.ru/book/\d+", "moscowbooks")
         self.assertEqual([o.price for o in offers], [1851])
 
+    def test_title_search_with_one_answer_is_not_exact(self):
+        page = """<div><a href="https://www.moscowbooks.ru/book/1/">Мастер и Маргарита</a><span>Булгаков М. А.</span>
+                  <b>450 ₽</b></div>"""
+        offers = MOSCOWBOOKS.read(self.load(page), MASTER)
+        self.assertEqual([(o.price, o.by_isbn) for o in offers], [(450, False)])
+
+    def test_labirint_miss_has_no_count(self):
+        b = self.load("<h1>Все, что мы нашли в Лабиринте по запросу «9785367032819»</h1><div>Товары</div>"
+                      "<p>Пока не нашли для себя ничего в Лабиринте?</p>")
+        self.assertTrue(extract.nothing_found(b))
+        b = self.load("<h1>Все, что мы нашли в Лабиринте по запросу «Незнайка»</h1><div>Товары 9</div>"
+                      "<p>Пока не нашли для себя ничего в Лабиринте?</p>")
+        self.assertFalse(extract.nothing_found(b))
+
     def test_page_ready_on_miss(self):
         b = self.load("<p>По вашему запросу товары не найдены.</p>")
         self.assertTrue(b.evaluate(RESPUBLICA.ready))
@@ -209,12 +223,49 @@ class FormSearchTest(unittest.TestCase):
         finally:
             browser.close()
         self.assertEqual(result.error, "")
-        self.assertEqual(result.search_url, "https://www.biblio-globus.ru/Search")
+        self.assertEqual(result.search_url, "https://www.biblio-globus.ru/")
         self.assertIn(("POST", "https://www.biblio-globus.ru/Search"), seen)
         self.assertEqual([(o.price, o.title) for o in result.offers], [(1689, "Незнайка на Луне Носов Н.Н.")])
 
 
+class ForbiddenTest(unittest.TestCase):
+    def test_search_retried_after_home_page_on_403(self):
+        try:
+            from bookprice.browser import Browser
+            browser = Browser(Path(tempfile.mkdtemp(prefix="bp-403-")), headless=True)
+            browser.start()
+        except Exception:
+            raise unittest.SkipTest("нет Playwright или Edge")
+        browser._polite_pause = lambda pause=None: None
+        state = {"home": False}
+
+        def handler(route):
+            url = route.request.url
+            if url == "https://www.respublica.ru/":
+                state["home"] = True
+                route.fulfill(body="<title>Республика</title>", content_type="text/html; charset=utf-8")
+            elif url.startswith("https://www.respublica.ru/search") and not state["home"]:
+                route.fulfill(status=403, body="<title>403 Forbidden</title><h1>403 Forbidden</h1>",
+                              content_type="text/html")
+            elif url.startswith("https://www.respublica.ru/search"):
+                route.fulfill(body=RESPUBLICA_TITLE, content_type="text/html; charset=utf-8")
+            else:
+                route.abort()
+
+        try:
+            browser.page.route("**/*", handler)
+            result = RESPUBLICA.search(browser, Book(title="Незнайка на Луне", author="Николай Носов"))
+        finally:
+            browser.close()
+        self.assertEqual(result.error, "")
+        self.assertEqual([o.price for o in result.offers], [2550])
+
+
 class BookshopKindTest(unittest.TestCase):
+    def test_shop_that_cannot_search_isbn_gets_the_title(self):
+        self.assertIn("text=%D0%9C%D0%B0%D1%81%D1%82%D0%B5%D1%80", MOSCOWBOOKS.search_url(MASTER))
+        self.assertEqual(BOOKVOED.search_url(MASTER), "https://www.bookvoed.ru/search?q=9785389016866")
+
     def test_bookshop_is_never_a_reseller(self):
         book = Book(title="Мастер и Маргарита", author="Михаил Булгаков", isbn="9785389016866", year=2012)
         cg = Offer(source="chitai_gorod", price=799, title="Мастер и Маргарита", in_stock=False)

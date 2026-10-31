@@ -72,7 +72,7 @@ def open_window(url: str, profile: Path, own: bool = True) -> Optional[OwnedWind
     if not edge:
         webbrowser.open(url)
         return None
-    subprocess.Popen([str(edge), f"--user-data-dir={profile}", *QUIET_EDGE, f"--app={url}", "--window-size=1150,900"])
+    subprocess.Popen([str(edge), f"--user-data-dir={profile}", *QUIET_EDGE, f"--app={url}", "--start-maximized"])
     if not own:
         return None
     for _ in range(FIND_TRIES):
