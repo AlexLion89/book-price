@@ -118,6 +118,13 @@ table.facts td { border-top: 0; padding: 4px 6px; }
 .sleuth { display: flex; gap: 18px; align-items: center; }
 .sleuth img { width: 130px; flex: none; }
 
+#update-banner { background: var(--forest); color: #fff; padding: 10px 28px; display: flex; gap: 14px;
+  align-items: center; flex-wrap: wrap; }
+#update-banner[hidden] { display: none; }
+#update-banner .grow { flex: 1; min-width: 300px; }
+#update-banner button.primary { padding: 8px 16px; }
+#update-banner button.later { background: none; border: 1px solid rgba(255, 255, 255, .5); color: #fff;
+  border-radius: var(--radius); padding: 7px 14px; font: inherit; cursor: pointer; }
 #toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); background: var(--noir); color: var(--noir-ink);
   padding: 12px 18px; border-radius: var(--radius); max-width: 80%; z-index: 5; border-left: 4px solid var(--fox); }
 .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--line); border-top-color: var(--fox);

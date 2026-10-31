@@ -440,17 +440,7 @@ document.querySelectorAll("nav [data-action]").forEach(btn => btn.onclick = asyn
       const { path } = await api("POST", "/api/report");
       toast(`Отчёт сохранён на рабочем столе: ${path.split(/[\\/]/).pop()}`, 8000);
     }
-    if (action === "update") {
-      toast("Проверяю обновления…", 2000);
-      const r = await api("POST", "/api/update");
-      if (r.error) return toast(r.error, 6000);
-      if (!r.updated) return toast(`У вас последняя версия (${r.version})`);
-      if (confirm(`Скачана версия ${r.version}. Перезапустить программу сейчас?`)) {
-        await api("POST", "/api/restart");
-        view.innerHTML = `<div class="card"><span class="spinner"></span> Перезапускаюсь — окно откроется заново…</div>`;
-        setTimeout(() => location.reload(), 6000);
-      }
-    }
+    if (action === "update") await updateNow(true);
     if (action === "quit") {
       if (!confirm("Закрыть программу? Окно поиска тоже закроется.")) return;
       await api("POST", "/api/quit");
@@ -460,6 +450,37 @@ document.querySelectorAll("nav [data-action]").forEach(btn => btn.onclick = asyn
   } catch (e) { toast(e.message, 6000); }
 });
 
+async function updateNow(ask) {
+  const st = await api("GET", "/api/update-status");
+  if (st.busy) return toast("Сейчас идёт поиск — дождитесь его конца и обновите", 6000);
+  toast("Проверяю обновления…", 2000);
+  const r = await api("POST", "/api/update");
+  if (r.error) return toast(r.error, 6000);
+  if (!r.updated) return toast(`У вас последняя версия (${r.version})`);
+  if (ask && !confirm(`Скачана версия ${r.version}. Перезапустить программу сейчас?`)) return;
+  await api("POST", "/api/restart");
+  document.getElementById("update-banner").hidden = true;
+  view.innerHTML = `<div class="card"><span class="spinner"></span> Обновляюсь до ${esc(r.version)} — окно откроется заново…</div>`;
+}
+
+async function offerUpdate() {
+  const banner = document.getElementById("update-banner");
+  const st = await api("GET", "/api/update-status").catch(() => null);
+  const u = st && st.available;
+  if (!u || sessionStorage.getItem("update-later") === u.version) return;
+  banner.innerHTML = `<div class="grow"><strong>Вышла новая версия ${esc(u.version)}</strong> (у вас ${esc(st.version)}).
+      ${esc(u.summary)}</div>
+    <button class="primary" id="update-now">Обновить сейчас</button><button class="later" id="update-later">Позже</button>`;
+  banner.hidden = false;
+  document.getElementById("update-now").onclick = () => updateNow(false).catch(e => toast(e.message, 6000));
+  document.getElementById("update-later").onclick = () => {
+    sessionStorage.setItem("update-later", u.version);
+    banner.hidden = true;
+  };
+}
+
+setTimeout(offerUpdate, 8000);
+setInterval(offerUpdate, 30 * 60000);
 setInterval(() => fetch("/api/ping").catch(() => {}), 60000);
 // Closing this window turns the program off; a reload asks for the page again at once and cancels that.
 window.addEventListener("pagehide", () => navigator.sendBeacon("/api/closed"));

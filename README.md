@@ -40,7 +40,7 @@
 - `bookprice/app.py`, `bookprice/ui/` — локальный сервер на 127.0.0.1:8769 и интерфейс;
   `store.py` — SQLite.
 - `bookprice/check.py` — проверка площадок со снимками страниц (кнопка в «Справке»).
-- `bookprice/updater.py` + `run.py` — обновления: новые теги `vX.Y.Z` скачиваются в
+- `bookprice/updater.py` + `run.py` — обновления: последний опубликованный релиз (тег `vX.Y.Z`) скачивается в
   `%LOCALAPPDATA%\BookPrice\updates`, запуск берёт самую свежую совместимую версию. Если обновлению
   нужны новые пакеты — поднять `REQUIRES_RUNTIME` и выпустить новый zip.
 - Сборка: `python tools/build.py` (нужны `playwright` и `pyinstaller`), результат — в `../dist`.

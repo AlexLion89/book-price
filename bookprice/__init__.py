@@ -1,4 +1,4 @@
-__version__ = "0.4.0"
+__version__ = "0.4.1"
 
 # Bump when an update needs packages the installed .exe does not have: such an update is not applied
 # by the launcher, the user gets a new installer instead.

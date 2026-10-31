@@ -30,6 +30,8 @@ CONTENT_TYPES = {".html": "text/html; charset=utf-8", ".js": "text/javascript; c
                  ".css": "text/css; charset=utf-8", ".png": "image/png", ".svg": "image/svg+xml",
                  ".jpg": "image/jpeg", ".ico": "image/x-icon"}
 IDLE_EXIT = 30 * 60
+UPDATE_FIRST_CHECK = 5
+UPDATE_EVERY = 6 * 3600
 UI_GONE = 5
 CHECK = -1
 LOCAL_ORIGIN = re.compile(r"^http://(127\.0\.0\.1|localhost):\d+$")
@@ -149,6 +151,7 @@ class App:
         self.restart = False
         self.ui = None
         self.ui_closed_at: Optional[float] = None
+        self.update_info: Optional[dict] = None
 
     def book_view(self, book_id: int) -> dict:
         book, row = self.store.book(book_id)
@@ -294,6 +297,10 @@ def make_handler(app: App) -> Callable:
     def update_app(body):
         return updater.check_and_download(app.http, app.data_dir)
 
+    @route("GET", "/api/update-status")
+    def update_status(body):
+        return {"version": __version__, "available": app.update_info, "busy": app.searcher.busy()}
+
     @route("POST", "/api/quit")
     def quit_app(body):
         app.quit()
@@ -398,4 +405,17 @@ def serve(app: App, port: int) -> ThreadingHTTPServer:
                 return
 
     threading.Thread(target=watchdog, daemon=True, name="watchdog").start()
+
+    def look_for_updates() -> None:
+        time.sleep(UPDATE_FIRST_CHECK)
+        while True:
+            try:
+                app.update_info = updater.available(app.http)
+                if app.update_info:
+                    log.info("вышла версия %s", app.update_info["version"])
+            except Exception as e:
+                log.info("обновления не проверены: %s", e)
+            time.sleep(UPDATE_EVERY)
+
+    threading.Thread(target=look_for_updates, daemon=True, name="updates").start()
     return server
