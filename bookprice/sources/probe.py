@@ -1,35 +1,39 @@
-"""Scouting of bookshops not yet in the search: used only by the site check. Each shop is searched through the
-form on its home page — no guessing of its search URL — and the result page is kept as a snapshot, so a parser
-can be written from what the user's Edge actually saw."""
+"""Scouting of bookshops not yet in the search: used only by the site check. A shop is searched by its results
+address when the form on its home page shows where that is, otherwise through the form itself; the result page is
+kept as a snapshot, so a parser can be written from what the user's Edge actually saw."""
 from __future__ import annotations
 
 import logging
+import urllib.parse
 from typing import Callable, List, Tuple
 
 from .extract import SEARCH_INPUT
 
 log = logging.getLogger(__name__)
 
-# spbdk.ru and mdk-arbat.ru, the old addresses, no longer open (31.10.2026).
-SHOPS: List[Tuple[str, str, str]] = [
-    ("dkspb", "Дом книги (СПб)", "https://dk-spb.ru/"),
-    ("moscowbooks", "Московский дом книги", "https://www.moscowbooks.ru/"),
+# (key, label, home page, results address with {q} or "" to use the form). Moscowbooks' form is taken over by
+# instant suggestions: Enter there stays on the home page (check-home-6), its form action is /search/?text=.
+SHOPS: List[Tuple[str, str, str, str]] = [
+    ("moscowbooks", "Московский дом книги", "https://www.moscowbooks.ru/", "https://www.moscowbooks.ru/search/?text={q}"),
 ]
 PRICES = r"() => ((document.body && document.body.innerText) || '').match(/₽|руб/g)?.length || 0"
 
 
 def scout(browser, query: str, tag: str, say: Callable[[str], None]) -> None:
-    for key, label, home in SHOPS:
+    for key, label, home, results in SHOPS:
         name = f"probe-{key}-{tag}"
         try:
-            browser.open(home, name, ready=SEARCH_INPUT, ready_timeout=20)
-            box = next((b for b in browser.page.query_selector_all(SEARCH_INPUT) if b.is_visible()), None)
-            if not box:
-                say(f"  {label}: на главной не нашлось видимое поле поиска")
-                browser.snapshot(name, force=True)
-                continue
-            box.fill(query)
-            box.press("Enter")
+            if results:
+                browser.open(results.format(q=urllib.parse.quote(query)), name)
+            else:
+                browser.open(home, name, ready=SEARCH_INPUT, ready_timeout=20)
+                box = next((b for b in browser.page.query_selector_all(SEARCH_INPUT) if b.is_visible()), None)
+                if not box:
+                    say(f"  {label}: на главной не нашлось видимое поле поиска")
+                    browser.snapshot(name, force=True)
+                    continue
+                box.fill(query)
+                box.press("Enter")
             browser.page.wait_for_timeout(7000)
             if browser.is_blocked():
                 browser.wait_for_human(name)

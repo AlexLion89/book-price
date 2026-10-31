@@ -15,7 +15,8 @@ TILES = r"""
 ({linkPattern, max, currency}) => {
   const linkRe = new RegExp(linkPattern);
   const number = '(\\d{1,3}(?:\\s\\d{3})+|\\d+)';
-  const priceRe = new RegExp(currency ? number + '\\s*(?:' + currency + ')' : number + '(?![\\d%.,])', 'g');
+  // Kopecks are allowed before the ruble sign ("1 851.00 ₽" at Moscowbooks) and dropped.
+  const priceRe = new RegExp(currency ? number + '(?:[.,]\\d{1,2})?\\s*(?:' + currency + ')' : number + '(?![\\d%.,])', 'g');
   // Per class token: old-price, price__old, price-val-old, strikePrice, line-through — but not Meshok's
   // withStrikePrice, the block holding both prices.
   const OLD_TOKEN = /^(old|strike|crossed|line-through)([-_A-Z]|price|$)|[-_](old|strike|crossed)([-_]|$)/i;

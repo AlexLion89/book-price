@@ -6,7 +6,7 @@ from pathlib import Path
 from bookprice.model import Book, Offer, SourceResult
 from bookprice.search import classify, out_of_print
 from bookprice.sources import extract
-from bookprice.sources.shops import BIBLIOGLOBUS, BOOK24, BOOKVOED, LABIRINT, RESPUBLICA
+from bookprice.sources.shops import BIBLIOGLOBUS, BOOK24, BOOKVOED, DKSPB, LABIRINT, RESPUBLICA
 from tests.test_extract import FakeBrowser, edge
 
 MASTER = Book(title="Мастер и Маргарита", author="Михаил Булгаков", isbn="9785389016866", year=2012)
@@ -99,6 +99,18 @@ MESHOK_LOT = """
 """
 
 
+DKSPB_PAGE = """
+<div class="catalog-items">
+  <div class="item"><a href="https://dk-spb.ru/catalog/neznayka-na-lune-ill-o-gorbushina-900147591"><img alt=""></a>
+    <a class="item-title" href="https://dk-spb.ru/catalog/neznayka-na-lune-ill-o-gorbushina-900147591">Незнайка на Луне (илл. О. Горбушина)</a>
+    <div>1 750 ₽</div><button>В корзину</button></div>
+  <div class="item"><a href="https://dk-spb.ru/catalog/master-i-margarita-5810">Мастер и Маргарита</a>
+    <span>Нет в наличии</span><button>В лист ожидания</button></div>
+  <a href="https://dk-spb.ru/catalog/knigi/detskaya-literatura/">Детская литература — от 99 ₽</a>
+</div>
+"""
+
+
 class BookshopPagesTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -148,6 +160,15 @@ class BookshopPagesTest(unittest.TestCase):
         offers = extract.tiles(self.load(MESHOK_LOT), r"meshok\.net/item/\d+", "meshok", currency="₽|руб")
         self.assertEqual([o.price for o in offers], [6000])
         self.assertNotIn("baton", offers[0].title)
+
+    def test_dom_knigi_products_not_categories(self):
+        offers = DKSPB.read(self.load(DKSPB_PAGE), Book(title="Незнайка на Луне"))
+        self.assertEqual([(o.price, o.title) for o in offers], [(1750, "Незнайка на Луне (илл. О. Горбушина)")])
+
+    def test_kopecks_are_dropped(self):
+        page = """<div><a href="https://www.moscowbooks.ru/book/50091533/">Незнайка на Луне</a><b>1 851.00 ₽</b></div>"""
+        offers = extract.tiles(self.load(page), r"moscowbooks\.ru/book/\d+", "moscowbooks")
+        self.assertEqual([o.price for o in offers], [1851])
 
     def test_page_ready_on_miss(self):
         b = self.load("<p>По вашему запросу товары не найдены.</p>")

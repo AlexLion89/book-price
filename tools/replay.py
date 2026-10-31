@@ -28,7 +28,8 @@ ORIGIN = {
     "book24": "https://book24.ru/search/",
     "bookvoed": "https://www.bookvoed.ru/search",
     "respublica": "https://www.respublica.ru/search",
-    "biblioglobus": "https://www.biblio-globus.ru/catalog/search",
+    "biblioglobus": "https://www.biblio-globus.ru/Search",
+    "dkspb": "https://dk-spb.ru/catalog/",
 }
 
 

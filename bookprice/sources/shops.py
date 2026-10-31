@@ -1,5 +1,5 @@
 """Online shops opened in Edge: marketplaces (Ozon, Wildberries, Yandex Market) and bookshops (Labirint, Book24,
-Bookvoed, Respublica, Biblio-Globus). Search by ISBN when it is known."""
+Bookvoed, Respublica, Biblio-Globus, Dom Knigi SPb). Search by ISBN when it is known."""
 from __future__ import annotations
 
 import re
@@ -203,4 +203,8 @@ RESPUBLICA = _bookshop("respublica", "Республика", _q("https://www.res
 BIBLIOGLOBUS = _bookshop("biblioglobus", "Библио-Глобус", _q("https://www.biblio-globus.ru/catalog/search", "query"),
                          r"biblio-globus\.ru/product/\d+", home="https://www.biblio-globus.ru/")
 
-SHOPS = [OZON, WILDBERRIES, MARKET, LABIRINT, BOOK24, BOOKVOED, RESPUBLICA, BIBLIOGLOBUS]
+# Saint Petersburg's Dom Knigi moved from spbdk.ru to dk-spb.ru; layout from check-home-6.
+DKSPB = _bookshop("dkspb", "Дом книги (СПб)", _q("https://dk-spb.ru/catalog/", "q"),
+                  r"dk-spb\.ru/catalog/[^/?#]+-\d+/?(?:[?#]|$)")
+
+SHOPS = [OZON, WILDBERRIES, MARKET, LABIRINT, BOOK24, BOOKVOED, RESPUBLICA, BIBLIOGLOBUS, DKSPB]
