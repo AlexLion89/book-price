@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import logging
+from datetime import date
 from dataclasses import asdict, dataclass
 from typing import Callable, Dict, List, Optional, Tuple
 
-from .matching import MatchResult, match
+from .matching import YEAR, MatchResult, match
 from .model import Book, Offer, SourceResult
 from .net import Http
 from .pricing import Verdict, suggest
@@ -16,6 +17,8 @@ log = logging.getLogger(__name__)
 DEALER_DISCOUNT = 0.8
 EXACT_ISBN = {chitai_gorod.NAME}
 USED_NOTE = "б/у"
+# A marketplace title naming a print year this old is an old copy on resale, not a new book.
+OLD_STOCK_YEARS = 3
 
 
 @dataclass
@@ -71,12 +74,28 @@ class Found:
         return d
 
 
+def out_of_print(results: List[SourceResult]) -> bool:
+    """The exact-ISBN shop knows the book but cannot sell it: then marketplace sellers are resellers of old stock."""
+    exact = [o for r in results if r.source in EXACT_ISBN for o in r.offers]
+    return bool(exact) and not any(o.in_stock for o in exact)
+
+
+def resold(o: Offer, sold_out: bool) -> bool:
+    if o.note == USED_NOTE or sold_out:
+        return True
+    years = [int(y) for y in YEAR.findall(o.title)]
+    return bool(years) and max(years) <= date.today().year - OLD_STOCK_YEARS
+
+
 def classify(book: Book, results: List[SourceResult], marks: Dict[Tuple[str, str], bool]) -> List[Found]:
     found = []
+    sold_out = bool(book.isbn) and out_of_print(results)
     for r in results:
         source_kind = BY_NAME[r.source].kind if r.source in BY_NAME else "shop"
         for o in r.offers:
-            kind = "dealer" if source_kind == "shop" and o.note == USED_NOTE else source_kind
+            kind = source_kind
+            if source_kind == "shop" and r.source not in EXACT_ISBN and resold(o, sold_out):
+                kind = "dealer"
             exact = kind == "shop" and bool(book.isbn) and r.source in EXACT_ISBN
             m: MatchResult = match(book, o.title, o.text, o.desc, exact_isbn=exact,
                                    need_author=not (kind == "shop" and book.isbn))

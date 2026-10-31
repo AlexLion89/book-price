@@ -21,6 +21,7 @@ YEAR = re.compile(r"(?<!\d)(1[89]\d\d|20[0-4]\d)(?!\d)")
 BINDING_LABEL = {"soft": "мягкий", "hard": "твёрдый"}
 SERIES_NUMBER = re.compile(r"(?<![\w.,\-])([1-9]\d?)(?![\w%.,]|\s*\+|\s*-?\s*х)")
 MAX_VOLUME = 30
+VOLUME_WORDS = {"книга", "кн", "часть", "ч", "том", "т", "выпуск", "вып"}
 PUBLISHER_NOISE = {"издательство", "издательский", "книжное", "книжный", "дом", "группа", "ооо", "зао"}
 FIRST_NAMES = set("""
 александр алексей анатолий андрей антон аркадий борис вадим валентин валерий василий виктор
@@ -94,10 +95,19 @@ def has_phrase(text_norm: str, phrase: str) -> bool:
     return re.search(r"\b" + re.escape(phrase) + r"\b", text_norm) is not None
 
 
-def series_numbers(title: str) -> set:
+def series_numbers(title: str, after: str = "") -> set:
     """Volume numbers in a title ("Сердце в броне 2"). 1 is not counted — the first book rarely carries it;
-    ages like "6+" and percentages are skipped."""
-    return {int(n) for n in SERIES_NUMBER.findall(title or "") if int(n) <= MAX_VOLUME} - {1}
+    ages like "6+" and percentages are skipped. With `after` (the book's last title word) only a number right
+    after it or after "книга/часть/том" counts: shop tiles carry delivery terms and other numbers."""
+    numbers = set()
+    for m in SERIES_NUMBER.finditer(title or ""):
+        n = int(m.group(1))
+        if not 1 < n <= MAX_VOLUME:
+            continue
+        before = words(title[:m.start()])[-3:]
+        if not after or any(found_in(after, [w]) for w in before) or (before and before[-1] in VOLUME_WORDS):
+            numbers.add(n)
+    return numbers
 
 
 def binding_kind(text_norm: str) -> set:
@@ -144,7 +154,8 @@ def match(book: Book, listing_title: str, listing_text: str = "", desc: str = ""
     if exact_isbn:
         return MatchResult("yes", "найдено по ISBN")
 
-    extra = series_numbers(listing_title) - series_numbers(book.title)
+    last_word = ([w for w in title_words if not w.isdigit()] or [""])[-1]
+    extra = series_numbers(listing_title, last_word) - series_numbers(book.title)
     if extra:
         return MatchResult("other", f"другая книга серии или часть: «{min(extra)}»")
 

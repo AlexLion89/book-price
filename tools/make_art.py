@@ -1,6 +1,6 @@
 """Prepare UI pictures from the originals: python tools/make_art.py <folder with fox-*.jpg|png>
 
-Writes bookprice/ui/img/: hero.jpg, fox-64.png, fox-192.png, fox.ico and, when present, search.png.
+Writes bookprice/ui/img/: hero.jpg, fox-64.png, fox-192.png, fox.ico and, from fox-search.png, search.png.
 Resizing runs in Edge's canvas — no imaging library is bundled with the program.
 """
 import base64
@@ -11,8 +11,8 @@ from pathlib import Path
 root = Path(__file__).resolve().parent.parent
 OUT = root / "bookprice" / "ui" / "img"
 BG = "#1E2736"
-# The icon original has a noisy, not transparent background and coloured streaks at its sides:
-# a square around the face and the book avoids the streaks.
+# A JPEG icon (GPT drew "transparency" as noise with coloured streaks at the sides) is cut to a square around
+# the face and the book on a dark tile; a PNG with real transparency is used whole.
 ICON_CROP = (95, 40, 1070)
 ICO_SIZES = [256, 128, 64, 48, 32, 24, 16]
 
@@ -69,14 +69,17 @@ def main(folder: Path) -> None:
         (OUT / "hero.jpg").write_bytes(render(hero, size=1280, type="image/jpeg", quality=0.86))
 
         icon = find(folder, "fox-icon")
-        crop = [ICON_CROP[0], ICON_CROP[1], ICON_CROP[2], ICON_CROP[2]]
-        pngs = {s: render(icon, crop=crop, size=s, bg=BG, round=0.18) for s in ICO_SIZES}
+        if icon.suffix.lower() == ".png":
+            style = {}
+        else:
+            style = {"crop": [ICON_CROP[0], ICON_CROP[1], ICON_CROP[2], ICON_CROP[2]], "bg": BG, "round": 0.18}
+        pngs = {s: render(icon, size=s, **style) for s in ICO_SIZES}
         (OUT / "fox.ico").write_bytes(ico(pngs))
         (OUT / "fox-64.png").write_bytes(pngs[64])
-        (OUT / "fox-192.png").write_bytes(render(icon, crop=crop, size=192, bg=BG, round=0.18))
+        (OUT / "fox-192.png").write_bytes(render(icon, size=192, **style))
 
-        search = find(folder, "fox-search-solid")
-        if search:
+        search = folder / "fox-search.png"
+        if search.exists():
             (OUT / "search.png").write_bytes(render(search, size=480))
         browser.close()
     for f in sorted(OUT.iterdir()):

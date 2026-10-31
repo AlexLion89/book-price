@@ -102,6 +102,12 @@ class MatchTest(unittest.TestCase):
         self.assertEqual(match(kids, "Носов Незнайка на Луне 6+").verdict, "maybe")
         self.assertEqual(match(kids, "Носов Незнайка на Луне. Часть 3-4").verdict, "other")
 
+    def test_numbers_far_from_title_are_not_volumes(self):
+        book = Book(title="Сердце в броне", author="Аркадий Степной")
+        lot = "Степной Аркадий Сердце в броне. Условия и стоимость доставки 12 мес"
+        self.assertEqual(match(book, lot).verdict, "maybe")
+        self.assertEqual(match(book, "Степной. Сердце в броне. Книга 2").verdict, "other")
+
     def test_codes_and_decades_are_not_volumes(self):
         self.assertEqual(match(MASTER, "Булгаков: Мастер и Маргарита (BG-02)").verdict, "maybe")
         self.assertEqual(match(MASTER, "Булгаков Мастер и Маргарита, самиздат 70-х").verdict, "maybe")

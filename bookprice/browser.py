@@ -82,8 +82,8 @@ class Browser:
         self.start()
         return self._page
 
-    def _polite_pause(self) -> None:
-        wait = random.uniform(*PAUSE) - (time.monotonic() - self._last_visit)
+    def _polite_pause(self, pause=PAUSE) -> None:
+        wait = random.uniform(*pause) - (time.monotonic() - self._last_visit)
         if wait > 0:
             time.sleep(wait)
 
@@ -91,13 +91,15 @@ class Browser:
         if BLOCK_URL.search(self.page.url):
             return True
         try:
+            if any(m in self.page.title().lower() for m in BLOCK_MARKERS):
+                return True
             text = self.page.inner_text("body", timeout=3000)[:3000].lower()
         except Exception:
             return False
         return len(text) < 3000 and any(m in text for m in BLOCK_MARKERS)
 
-    def open(self, url: str, source: str, ready: str = "", ready_timeout: float = 15) -> None:
-        self._polite_pause()
+    def open(self, url: str, source: str, ready: str = "", ready_timeout: float = 15, pause=PAUSE) -> None:
+        self._polite_pause(pause)
         log.info("%s: открываю %s", source, url)
         self.page.goto(url, wait_until="domcontentloaded", timeout=60000)
         self._last_visit = time.monotonic()
@@ -107,7 +109,15 @@ class Browser:
             try:
                 self.page.wait_for_selector(ready, timeout=ready_timeout * 1000)
             except Exception:
-                log.warning("%s: не дождался %s", source, ready)
+                # Avito swaps the page for "Доступ ограничен" after it has loaded: look again before giving up.
+                if not self.is_blocked():
+                    log.warning("%s: не дождался %s", source, ready)
+                else:
+                    self.wait_for_human(source)
+                    try:
+                        self.page.wait_for_selector(ready, timeout=ready_timeout * 1000)
+                    except Exception:
+                        log.warning("%s: после проверки не дождался %s", source, ready)
         self.page.wait_for_timeout(1500)
 
     def wait_for_human(self, source: str) -> None:

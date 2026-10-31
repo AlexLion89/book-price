@@ -2,15 +2,25 @@
 format is not known to be stable, the form is."""
 from __future__ import annotations
 
-from ..model import Book, SourceResult
+import re
+
+from ..model import Book, Offer, SourceResult
 from . import alib, extract
 
 NAME = "meshok"
 LABEL = "Мешок (аукцион)"
 SITE = "https://meshok.net/"
+LEADING_PRICE = re.compile(r"^\s*[\d\s]+(₽|руб\.?)\s*")
 ITEM_LINK = r"meshok\.net/item/\d+"
 SEARCH_INPUT = ('input[type="search"], input[name="search"], input[name*="search" i], '
                 'input[placeholder*="оиск"], input[placeholder*="айти"]')
+
+
+def clean(offer: Offer) -> Offer:
+    """A lot's link wraps the whole card: "170 ₽ Книга … / А. Степной, 2009 г. Условия и стоимость доставки …"."""
+    title = LEADING_PRICE.sub("", offer.title)
+    offer.title = title.split("Условия")[0].strip(" .,")
+    return offer
 
 
 def search(browser, book: Book) -> SourceResult:
@@ -31,7 +41,7 @@ def search(browser, book: Book) -> SourceResult:
         if extract.nothing_found(browser):
             browser.snapshot(NAME)
             return result
-        result.offers = extract.tiles(browser, ITEM_LINK, NAME, currency="₽|руб")
+        result.offers = [clean(o) for o in extract.tiles(browser, ITEM_LINK, NAME, currency="₽|руб")]
         result.snapshot = browser.snapshot(NAME, force=not result.offers)
     except Exception as e:
         result.error = f"{type(e).__name__}: {e}"

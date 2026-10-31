@@ -12,6 +12,8 @@ LABEL = "Авито"
 SITE = "https://www.avito.ru"
 CITY = "sankt-peterburg"
 CATEGORY = "knigi_i_zhurnaly"
+# Avito answers frequent queries with "Доступ ограничен: проблема с IP" — longer pauses than other sites.
+PAUSE = (6.0, 10.0)
 ITEM_LINK = r"avito\.ru/[^/]+/knigi_i_zhurnaly/[^/?#]+_\d{6,}"
 
 # Avito mixes other cities into a city search (delivery). The city is only in the link's title attribute:
@@ -78,7 +80,7 @@ def search(browser, book: Book) -> SourceResult:
     seen = set()
     try:
         for url in (city_url, delivery_url):
-            browser.open(url, NAME, ready='[data-marker="item"]')
+            browser.open(url, NAME, ready='[data-marker="item"]', pause=PAUSE)
             raw = browser.evaluate(ITEMS)
             offers = _offers(raw) or extract.tiles(browser, ITEM_LINK, NAME)
             if not offers and not extract.nothing_found(browser):

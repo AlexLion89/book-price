@@ -46,6 +46,19 @@ class SearchTest(unittest.TestCase):
         r = [result("chitai_gorod", Offer("chitai_gorod", 960, title="Николай Носов — Незнайка на Луне", text="АСТ", ext_id="n"))]
         self.assertFalse(classify(OLD, r, {})[0].counted)
 
+    def test_marketplace_resellers_when_out_of_print(self):
+        r = [result("chitai_gorod", Offer("chitai_gorod", 209, title="Мастер и Маргарита", in_stock=False, ext_id="c")),
+             result("ozon", Offer("ozon", 254, title="Булгаков Мастер и Маргарита Азбука 2012г", ext_id="o"))]
+        found = {f.offer.source: f for f in classify(BOOK, r, {})}
+        self.assertEqual(found["ozon"].kind, "dealer")
+        v = evaluate(BOOK, list(found.values()), [], "excellent")
+        self.assertNotEqual(v.scenario, "new_in_shops")
+
+    def test_old_print_year_in_title_is_resale(self):
+        r = [result("ozon", Offer("ozon", 254, title="Степной А. Сердце в броне Альфа-книга 2009г", ext_id="o"))]
+        book = Book(title="Сердце в броне", author="Аркадий Степной", year=2009, isbn="9785992203721")
+        self.assertEqual(classify(book, r, {})[0].kind, "dealer")
+
     def test_avito_year_from_description(self):
         r = [result("avito", Offer("avito", 300, title="Булгаков Мастер и Маргарита", desc="1994 г. Карелия", ext_id="a"))]
         found = classify(BOOK, r, {})
@@ -57,7 +70,7 @@ class SearchTest(unittest.TestCase):
         v = evaluate(BOOK, classify(BOOK, r, {}), [], "excellent")
         self.assertEqual(v.scenario, "only_used")
         self.assertIn("букинист", v.reasons[0])
-        self.assertEqual(v.start, 800)
+        self.assertEqual(v.start, 900)
 
     def test_dealer_without_year_needs_a_human(self):
         r = [result("alib", Offer("alib", 2000, title="Булгаков М. Мастер и Маргарита.", text="Самиздат", ext_id="s"))]
@@ -66,7 +79,7 @@ class SearchTest(unittest.TestCase):
     def test_manual_price(self):
         v = evaluate(BOOK, [], [Offer("ozon", 500)], "excellent")
         self.assertEqual(v.scenario, "new_in_shops")
-        self.assertEqual(v.start, 300)
+        self.assertEqual(v.start, 400)
 
 
 if __name__ == "__main__":

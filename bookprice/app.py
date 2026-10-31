@@ -28,6 +28,7 @@ CONTENT_TYPES = {".html": "text/html; charset=utf-8", ".js": "text/javascript; c
                  ".css": "text/css; charset=utf-8", ".png": "image/png", ".svg": "image/svg+xml",
                  ".jpg": "image/jpeg", ".ico": "image/x-icon"}
 IDLE_EXIT = 30 * 60
+UI_GONE = 5
 CHECK = -1
 LOCAL_ORIGIN = re.compile(r"^http://(127\.0\.0\.1|localhost):\d+$")
 
@@ -78,6 +79,9 @@ class Searcher(threading.Thread):
             except Exception as e:
                 log.exception("поиск книги %s", book_id)
                 job["status"], job["error"] = "error", f"{type(e).__name__}: {e}"
+            if self.jobs.empty() and self.browser:
+                # The search window is needed only while searching; its profile keeps cookies for next time.
+                self.browser.close()
         if self.browser:
             self.browser.close()
 
@@ -129,6 +133,8 @@ class App:
         self.server: Optional[ThreadingHTTPServer] = None
         self.port = 0
         self.restart = False
+        self.ui = None
+        self.ui_closed_at: Optional[float] = None
 
     def book_view(self, book_id: int) -> dict:
         book, row = self.store.book(book_id)
@@ -274,6 +280,11 @@ def make_handler(app: App) -> Callable:
         app.quit()
         return {"ok": True}
 
+    @route("POST", "/api/closed")
+    def ui_closed(body):
+        app.ui_closed_at = time.monotonic()
+        return {"ok": True}
+
     @route("POST", "/api/restart")
     def restart_app(body):
         app.restart = True
@@ -350,9 +361,17 @@ def serve(app: App, port: int) -> ThreadingHTTPServer:
 
     def watchdog() -> None:
         while True:
-            time.sleep(60)
-            if time.monotonic() - app.last_seen > IDLE_EXIT and not app.searcher.busy():
-                log.info("окно закрыто давно — выключаюсь")
+            time.sleep(2)
+            if app.searcher.busy():
+                continue
+            now = time.monotonic()
+            # Our window is our own Edge process: it ends when the window is closed. The page's own goodbye is a
+            # fallback — Edge often exits before sending it; a reload asks for the page again and cancels it.
+            window_gone = app.ui is not None and app.ui.poll() is not None
+            closed_at = app.ui_closed_at
+            closed = closed_at is not None and app.last_seen <= closed_at + 0.5 and now - closed_at > UI_GONE
+            if window_gone or closed or now - app.last_seen > IDLE_EXIT:
+                log.info("окно программы закрыто — выключаюсь")
                 app.quit()
                 return
 

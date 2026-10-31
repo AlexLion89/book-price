@@ -20,15 +20,19 @@ CONDITION_LABEL = {
     "marked": "с пометками или потёртостями",
 }
 
-NEW_PRICE_CAP = 0.6
-UNDERCUT_COMPETITORS = 0.95
-SCARCE_UNDERCUT = 0.93
+# A used copy sells for up to ~80 % of a new one in shops (the owner's rule of thumb: new at 500, Avito at 400).
+NEW_PRICE_CAP = 0.8
+# Start a little under the middle of comparable listings and step down towards their cheap quarter:
+# cheap listings sell and vanish, so the cheap quarter is where a listing ends up, not where it starts.
+START_UNDERCUT = 0.95
+FLOOR_MIN = 0.7
+FLOOR_MAX = 0.9
 FEW_LISTINGS = 3
 HISTORY_START_FACTOR = 1.9
 STEP_PERCENT = 10
 STEP_DAYS = 7
 MARKET_FLOOR_FACTOR = 0.8
-LOT_THRESHOLD = 250
+LOT_THRESHOLD = 200
 
 
 @dataclass
@@ -95,29 +99,33 @@ def suggest(
     used = drop_outliers([o.price for o in used_offers])
     history = list(past_prices) + [o.price for o in shop_offers if not o.in_stock]
 
+    sold_out = sorted(o.price for o in shop_offers if not o.in_stock)
+    if used:
+        middle, cheap = percentile(used, 0.5), percentile(used, 0.25)
+        market = (f"{used_label} похожих объявлений: {len(used)}, середина — {middle:.0f} ₽, "
+                  f"дешёвая четверть — {cheap:.0f} ₽")
+        start = middle * START_UNDERCUT
+        floor = min(max(cheap, start * FLOOR_MIN), start * FLOOR_MAX)
     if in_stock:
         new_min = min(in_stock)
         cap = new_min * NEW_PRICE_CAP
         reasons = [f"новая в магазинах от {new_min:.0f} ₽ — б/у дороже {cap:.0f} ₽ обычно не берут"]
-        target = cap
         if used:
-            a = percentile(used, 0.25)
-            reasons.append(f"{used_label} похожих объявлений: {len(used)}, дешёвая четверть — до {a:.0f} ₽")
-            target = min(a * UNDERCUT_COMPETITORS, cap)
-        verdict = _market(target * factor, "new_in_shops", reasons)
+            reasons.append(market)
+            start, floor = min(start, cap), min(floor, cap * MARKET_FLOOR_FACTOR)
+        else:
+            start, floor = cap, cap * MARKET_FLOOR_FACTOR
+        verdict = _market(start * factor, floor * factor, "new_in_shops", reasons)
     elif used:
-        a = percentile(used, 0.25)
-        sold_out = sorted(o.price for o in shop_offers if not o.in_stock)
         was = ""
         if len(sold_out) == 1:
             was = f" (последняя цена новой — {sold_out[0]:.0f} ₽)"
         elif sold_out:
             was = f" (последние цены новой — {sold_out[0]:.0f}–{sold_out[-1]:.0f} ₽)"
-        reasons = [f"в магазинах нет в продаже{was}; {used_label} похожих объявлений: {len(used)}, "
-                   f"дешёвая четверть — до {a:.0f} ₽"]
+        reasons = [f"в магазинах нет в продаже{was}", market]
         if len(used) < FEW_LISTINGS:
-            reasons.append("объявлений мало — если они висят месяцами, их цена не рыночная")
-        verdict = _market(a * SCARCE_UNDERCUT * factor, "only_used", reasons)
+            reasons.append("объявлений мало — цена приблизительная; если они висят месяцами, она завышена")
+        verdict = _market(start * factor, floor * factor, "only_used", reasons)
     elif history:
         last = max(history)
         verdict = Verdict(
@@ -141,11 +149,6 @@ def suggest(
     return verdict
 
 
-def _market(target: float, scenario: str, reasons: List[str]) -> Verdict:
-    start = round_price(target)
-    return Verdict(
-        scenario=scenario,
-        start=start,
-        floor=round_price(start * MARKET_FLOOR_FACTOR),
-        reasons=reasons,
-    )
+def _market(start: float, floor: float, scenario: str, reasons: List[str]) -> Verdict:
+    start_price = round_price(start)
+    return Verdict(scenario=scenario, start=start_price, floor=min(round_price(floor), start_price), reasons=reasons)

@@ -69,7 +69,7 @@ async function renderList() {
     </div>
     ${due.length ? `<div class="alert">🔎 Пора снизить цену: ${due.map(b => `<a href="#/book/${b.id}">${esc(b.title)}</a> — до ${rub(b.next_step.price)}`).join(", ")}</div>` : ""}
     ${books.length ? `<div class="grid">${books.map(tile).join("")}</div>`
-      : `<div class="card empty"><div class="fox">🦊📚</div>
+      : `<div class="card empty"><img src="/img/search.png" alt="" style="width: 220px">
           <h2>Ни одной улики</h2>
           <p class="muted">Нажмите «Добавить книгу» и введите ISBN — 13 цифр под штрихкодом на задней обложке.</p></div>`}`;
 }
@@ -218,7 +218,7 @@ async function renderBook(id) {
     </div>
     ${running ? progressHtml(job, label) : ""}
     ${job && job.status === "error" ? `<div class="alert">Поиск сломался: ${esc(job.error)}. Нажмите «Искать заново»; если повторится — «Отчёт об ошибке».</div>` : ""}
-    ${running && !Object.keys(d.runs).length ? `<div class="card muted">Вердикт появится, когда лиса вернётся с уликами.</div>` : `
+    ${running && !Object.keys(d.runs).length ? `<div class="card muted">Вердикт появится, когда лиса вернётся с уликами — обычно через минуту.</div>` : `
     ${verdictHtml(d)}
     ${statusHtml(d)}
     <div class="card">
@@ -275,9 +275,10 @@ function progressHtml(job, label) {
   const captcha = job.captcha
     ? `<div class="alert big">${esc(label[job.captcha] || job.captcha)} просит подтвердить, что вы не робот.
         Перейдите в окно Edge «Поиск цен» и пройдите проверку там — поиск продолжится сам.</div>` : "";
-  return `${captcha}<div class="card"><h2><span class="spinner"></span> 🦊 Лиса идёт по следу — около минуты</h2>
+  return `${captcha}<div class="card sleuth"><img src="/img/search.png" alt="">
+    <div><h2><span class="spinner"></span> Лиса идёт по следу — около минуты</h2>
     <div class="chips">${Object.entries(job.sources).map(([n, st]) =>
-      `<span class="chip ${st}">${esc(label[n] || n)}: ${STATE_LABEL[st] || st}</span>`).join("")}</div></div>`;
+      `<span class="chip ${st}">${esc(label[n] || n)}: ${STATE_LABEL[st] || st}</span>`).join("")}</div></div></div>`;
 }
 
 function verdictHtml(d) {
@@ -367,12 +368,12 @@ function renderHelp() {
   <div class="card">
     <ol>
       <li><strong>Добавьте книгу.</strong> Впишите ISBN — 13 цифр под штрихкодом на задней обложке. Если ISBN нет (старая книга) — название, автора и год, потом выберите своё издание из списка.</li>
-      <li><strong>Выберите состояние</strong> и нажмите «Найти цены». Откроется отдельное окно Edge «Поиск цен» — в нём программа сама ходит по магазинам и Авито. Трогать его не нужно, закрывать тоже: можно свернуть.</li>
+      <li><strong>Выберите состояние</strong> и нажмите «Найти цены». Откроется отдельное окно Edge «Поиск цен» — в нём программа сама ходит по магазинам и Авито. Трогать его не нужно: когда поиск закончится, оно закроется само.</li>
       <li><strong>Если площадка спросит «вы не робот?»</strong> — программа напишет об этом крупно. Перейдите в окно «Поиск цен», пройдите проверку, дальше поиск пойдёт сам.</li>
       <li><strong>Посмотрите, что нашлось.</strong> Снимите галочки у чужих изданий и комплектов — цена пересчитается.</li>
       <li><strong>Выставьте объявление</strong>, скопировав готовый текст, и отметьте в программе цену. Через неделю без продажи программа подскажет, до скольких снизить.</li>
     </ol>
-    <p>Вернуться к списку книг — кнопка «Мои книги» вверху, ссылка «← Все книги» или клавиша Esc.</p>
+    <p>Вернуться к списку книг — кнопка «Мои книги» вверху, ссылка «← Все книги» или клавиша Esc. Закрыть программу — кнопка «Выйти» или просто закрыть это окно. Ваши собственные окна Edge программа не трогает.</p>
     <p>Если что-то не работает — нажмите «Отчёт об ошибке» вверху. На рабочем столе появится zip-файл: пришлите его тому, кто помогает с программой. В нём журнал работы и ваш список книг с найденными ценами — по нему видно, почему программа так посчитала. Сама программа ничего никуда не отправляет.</p>
   </div>
   <div class="card">
@@ -418,7 +419,7 @@ document.querySelectorAll("nav [data-action]").forEach(btn => btn.onclick = asyn
       if (!r.updated) return toast(`У вас последняя версия (${r.version})`);
       if (confirm(`Скачана версия ${r.version}. Перезапустить программу сейчас?`)) {
         await api("POST", "/api/restart");
-        view.innerHTML = `<div class="card"><span class="spinner"></span> Перезапускаюсь…</div>`;
+        view.innerHTML = `<div class="card"><span class="spinner"></span> Перезапускаюсь — окно откроется заново…</div>`;
         setTimeout(() => location.reload(), 6000);
       }
     }
@@ -432,6 +433,8 @@ document.querySelectorAll("nav [data-action]").forEach(btn => btn.onclick = asyn
 });
 
 setInterval(() => fetch("/api/ping").catch(() => {}), 60000);
+// Closing this window turns the program off; a reload asks for the page again at once and cancels that.
+window.addEventListener("pagehide", () => navigator.sendBeacon("/api/closed"));
 window.addEventListener("hashchange", route);
 document.addEventListener("keydown", e => {
   const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement && document.activeElement.tagName);

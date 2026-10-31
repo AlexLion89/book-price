@@ -28,28 +28,33 @@ class HelpersTest(unittest.TestCase):
 
 
 class SuggestTest(unittest.TestCase):
-    def test_new_in_shops_caps_at_sixty_percent(self):
+    def test_owner_example_new_500_avito_400(self):
         v = suggest(shops(500, 650), avito(400, 420, 450, 500), [])
         self.assertEqual(v.scenario, "new_in_shops")
-        self.assertEqual(v.start, 300)
-        self.assertEqual(v.floor, 240)
+        self.assertEqual(v.start, 400)
+        self.assertEqual(v.floor, 320)
 
     def test_cheap_avito_beats_cap(self):
         v = suggest(shops(1000), avito(300, 350, 400, 450), [])
-        self.assertEqual(v.start, 320)
+        self.assertEqual(v.start, 360)
 
     def test_new_in_shops_without_avito(self):
         v = suggest(shops(800), [], [])
-        self.assertEqual(v.start, 480)
+        self.assertEqual(v.start, 650)
 
     def test_only_used(self):
         v = suggest(shops(900, in_stock=False), avito(1800, 2000, 2200, 2500), [])
         self.assertEqual(v.scenario, "only_used")
-        self.assertEqual(v.start, 1800)
+        self.assertEqual(v.start, 2000)
+        self.assertEqual(v.floor, 1800)
 
     def test_sold_out_price_is_shown(self):
         v = suggest(shops(690, in_stock=False), avito(140, 160, 180, 200), [])
         self.assertIn("последняя цена новой — 690 ₽", v.reasons[0])
+
+    def test_two_listings_start_in_the_middle(self):
+        v = suggest(shops(209, in_stock=False), avito(170, 279), [])
+        self.assertEqual((v.start, v.floor), (210, 190))
 
     def test_few_listings_warns(self):
         v = suggest([], avito(2000), [])
@@ -74,7 +79,7 @@ class SuggestTest(unittest.TestCase):
 
     def test_condition(self):
         v = suggest(shops(1000), [], [], condition="marked")
-        self.assertEqual(v.start, 330)
+        self.assertEqual(v.start, 440)
 
     def test_cheap_goes_to_lot(self):
         v = suggest(shops(300), [], [])

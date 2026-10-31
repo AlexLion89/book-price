@@ -28,7 +28,10 @@
 - `bookprice/catalog.py` — карточка книги по ISBN (FantLab + Читай-город) и поиск изданий по названию.
 - `bookprice/sources/` — по модулю на площадку: `chitai_gorod`, `alib`, `fantlab` (HTTP),
   `avito`, `shops` (Озон, Wildberries, Маркет — в Edge), `extract` — разбор внутри страницы.
-- `bookprice/search.py` — обход площадок и вердикт; `browser.py` — окно Edge, капча, снимки.
+- `bookprice/search.py` — обход площадок и вердикт; `browser.py` — окно поиска Edge, капча, снимки
+  (закрывается после каждого поиска).
+- `bookprice/window.py` — окно программы: Edge в режиме приложения с отдельным профилем, то есть свой процесс;
+  закрывается по номеру своего процесса и никогда не трогает собственный Edge пользователя.
 - `bookprice/app.py`, `bookprice/ui/` — локальный сервер на 127.0.0.1:8769 и интерфейс;
   `store.py` — SQLite.
 - `bookprice/check.py` — проверка площадок со снимками страниц (кнопка в «Справке»).
