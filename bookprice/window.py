@@ -89,13 +89,13 @@ def open_window(url: str, profile: Path, own: bool = True) -> Optional[OwnedWind
 
 
 def windows_of(pid: int) -> List[int]:
-    from ctypes import wintypes
+    # Plain ctypes types: ctypes.wintypes is missing from programs built before 0.2.2, and updates run on them.
     user32 = ctypes.windll.user32
     found = []
 
-    @ctypes.WINFUNCTYPE(wintypes.BOOL, wintypes.HWND, wintypes.LPARAM)
+    @ctypes.WINFUNCTYPE(ctypes.c_int, ctypes.c_void_p, ctypes.c_void_p)
     def collect(hwnd, _):
-        owner = wintypes.DWORD()
+        owner = ctypes.c_ulong()
         user32.GetWindowThreadProcessId(hwnd, ctypes.byref(owner))
         if owner.value == pid and user32.IsWindowVisible(hwnd):
             found.append(hwnd)
@@ -106,5 +106,10 @@ def windows_of(pid: int) -> List[int]:
 
 
 def close_window(window: Optional[OwnedWindow]) -> None:
-    if window is not None:
+    """Never raises: a window left open must not stop the program from quitting or restarting."""
+    if window is None:
+        return
+    try:
         window.close()
+    except Exception:
+        log.exception("окно программы не закрылось")

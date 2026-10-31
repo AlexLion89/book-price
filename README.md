@@ -43,6 +43,11 @@
 - `bookprice/updater.py` + `run.py` — обновления: последний опубликованный релиз (тег `vX.Y.Z`) скачивается в
   `%LOCALAPPDATA%\BookPrice\updates`, запуск берёт самую свежую совместимую версию. Если обновлению
   нужны новые пакеты — поднять `REQUIRES_RUNTIME` и выпустить новый zip.
+- Обновление работает на той программе, которую пользователь когда-то распаковал, а PyInstaller кладёт в неё
+  только модули, импортированные кодом той сборки (в сборках до 0.2.2 нет даже `ctypes.wintypes`).
+  `tests/test_runtime.py` сверяет все импорты кода со списком модулей, общих для всех выпущенных сборок
+  (`tests/runtime1_modules.txt`, получен `python tools/runtime_modules.py ../dist/BookPrice-*.zip`).
+  Модуль не из списка — обойтись без него или поднять `REQUIRES_RUNTIME`.
 - Сборка: `python tools/build.py` (нужны `playwright` и `pyinstaller`), результат — в `../dist`.
 - Выпуск: поднять `__version__`, написать `docs/releases/X.Y.Z.md`, коммит, тег `vX.Y.Z`, push тега,
   `python tools/release.py [--prerelease]` — релиз с архивом и инструкцией. Токен GitHub (fine-grained,

@@ -38,12 +38,11 @@ def close_leftover_window(profile: Path, log: logging.Logger) -> None:
     version after an update."""
     try:
         pid = find_browser(profile)
+        if pid:
+            log.info("закрываю окно, оставшееся от прошлого запуска")
+            OwnedWindow(pid).close()
     except Exception:
-        log.exception("поиск оставшегося окна")
-        return
-    if pid:
-        log.info("закрываю окно, оставшееся от прошлого запуска")
-        OwnedWindow(pid).close()
+        log.exception("окно от прошлого запуска не закрылось")
 
 
 def main() -> None:
