@@ -58,7 +58,7 @@ class Browser:
             headless=self.headless,
             locale="ru-RU",
             viewport={"width": 1280, "height": 900},
-            args=["--disable-blink-features=AutomationControlled"],
+            args=["--disable-blink-features=AutomationControlled", "--disable-sync", "--no-first-run"],
             ignore_default_args=["--enable-automation"],
         )
         self._page = self._ctx.pages[0] if self._ctx.pages else self._ctx.new_page()

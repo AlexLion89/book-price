@@ -20,6 +20,8 @@ EDGE = [
     Path(os.environ.get("ProgramFiles", r"C:\Program Files")) / "Microsoft/Edge/Application/msedge.exe",
 ]
 WM_CLOSE = 0x0010
+# A fresh Edge profile offers to sign in and sync with the Windows account; the program's windows need neither.
+QUIET_EDGE = ["--no-first-run", "--no-default-browser-check", "--disable-sync"]
 # A process that is gone this fast handed the window to an Edge already running with the same profile
 # (a second launch of the program): that window is not ours to close.
 HANDOFF_SECONDS = 2
@@ -31,8 +33,7 @@ def open_window(url: str, profile: Path) -> Optional[subprocess.Popen]:
     if not edge:
         webbrowser.open(url)
         return None
-    proc = subprocess.Popen([str(edge), f"--user-data-dir={profile}", "--no-first-run", "--no-default-browser-check",
-                             f"--app={url}", "--window-size=1150,900"])
+    proc = subprocess.Popen([str(edge), f"--user-data-dir={profile}", *QUIET_EDGE, f"--app={url}", "--window-size=1150,900"])
     time.sleep(HANDOFF_SECONDS)
     return proc if proc.poll() is None else None
 

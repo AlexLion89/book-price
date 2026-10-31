@@ -65,11 +65,13 @@ class Site:
     label: str
     search: Callable[[str], str]
     link_pattern: str
+    # LiveLib checks the browser first: its results appear 15–16 s after opening.
+    wait: float = 15
 
 
 SITES = [
     Site("livelib", "LiveLib", lambda q: "https://www.livelib.ru/find/books/" + urllib.parse.quote(q),
-         r"livelib\.ru/book/\d+"),
+         r"livelib\.ru/book/\d+", wait=30),
     Site("litres", "ЛитРес", lambda q: "https://www.litres.ru/search/?" + urllib.parse.urlencode({"q": q}),
          r"litres\.ru/(book|audiobook)/[^/]+/[^/]+-\d+/?$"),
 ]
@@ -94,7 +96,7 @@ def collect(browser, book: Book, say: Callable[[str], None] = lambda s: None) ->
     facts: Dict[str, object] = {}
     for site in SITES:
         try:
-            browser.open(site.search(query(book)), site.key, ready='a[href*="/book/"]')
+            browser.open(site.search(query(book)), site.key, ready='a[href*="/book/"]', ready_timeout=site.wait)
             browser.snapshot(f"{site.key}-search")
             chosen = pick(book, browser.evaluate(CANDIDATES, {"linkPattern": site.link_pattern, "max": 20}) or [])
             if not chosen:
