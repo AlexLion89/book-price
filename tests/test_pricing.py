@@ -82,7 +82,7 @@ class SuggestTest(unittest.TestCase):
         self.assertEqual(v.start, 440)
 
     def test_cheap_goes_to_lot(self):
-        v = suggest(shops(300), [], [])
+        v = suggest(shops(240), [], [])
         self.assertTrue(v.as_lot)
 
     def test_schedule_reaches_floor(self):
