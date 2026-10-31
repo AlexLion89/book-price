@@ -113,6 +113,8 @@ input[type=radio] { accent-color: var(--fox); }
 .empty .fox { font-size: 72px; }
 table.facts td:first-child { width: 270px; }
 table.facts td { border-top: 0; padding: 4px 6px; }
+.marks { display: flex; flex-wrap: wrap; gap: 4px 18px; margin-top: 4px; }
+.marks label { cursor: pointer; }
 .sleuth { display: flex; gap: 18px; align-items: center; }
 .sleuth img { width: 130px; flex: none; }
 

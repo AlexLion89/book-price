@@ -15,7 +15,7 @@ from .browser import Browser
 from .model import Book
 from .net import Http
 from .search import BY_NAME, classify, run
-from .sources import chitai_gorod
+from .sources import chitai_gorod, ratings
 
 log = logging.getLogger(__name__)
 
@@ -51,6 +51,9 @@ def run_check(data_dir: Path, say: Callable[[str], None], extra_isbn: Optional[s
                 say(f"{sample}: книга не найдена в справочниках")
                 continue
             say(f"{book.author} — {book.title} ({book.year or 'год ?'})")
+            if not only or "ratings" in only:
+                say("  оценки читателей:")
+                book.facts.update(ratings.collect(browser, book, say))
             results = run(book, http, browser, lambda name, state: state == "running" and say(f"  {BY_NAME[name].label}…"),
                           only)
             found = classify(book, results, {})

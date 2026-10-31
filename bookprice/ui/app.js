@@ -214,6 +214,11 @@ async function renderBook(id) {
           <select id="cond">${Object.entries(d.conditions).map(([k, t]) => `<option value="${k}" ${k === b.condition ? "selected" : ""}>${t}</option>`).join("")}</select>
           <button class="link" id="del">удалить книгу</button>
         </div>
+        <div class="small" style="margin-top: 10px">Особенности экземпляра <span class="muted">— отметьте, если есть:</span>
+          <div class="marks">${d.copy_mark_options.map(m => `<label><input type="checkbox" data-mark="${m.key}"
+            ${d.copy_marks.includes(m.key) ? "checked" : ""}> ${esc(m.label)}
+            <span class="muted">${m.effect > 0 ? "+" : "−"}${Math.round(Math.abs(m.effect) * 100)} %</span></label>`).join("")}</div>
+        </div>
       </div>
     </div>
     ${running ? progressHtml(job, label) : ""}
@@ -236,6 +241,11 @@ async function renderBook(id) {
 
   const on = (elementId, event, fn) => { const el = document.getElementById(elementId); if (el) el[event] = fn; };
   on("cond", "onchange", async e => { await api("POST", `/api/books/${id}`, { condition: e.target.value }); route(); });
+  view.querySelectorAll("input[data-mark]").forEach(c => c.onchange = async () => {
+    const marks = [...view.querySelectorAll("input[data-mark]:checked")].map(x => x.dataset.mark);
+    await api("POST", `/api/books/${id}`, { copy_marks: marks });
+    route();
+  });
   on("del", "onclick", async () => {
     if (!confirm("Удалить книгу и всё, что о ней нашлось?")) return;
     await api("DELETE", `/api/books/${id}`);
@@ -278,6 +288,7 @@ function progressHtml(job, label) {
         Перейдите в окно Edge «Поиск цен» и пройдите проверку там — поиск продолжится сам.</div>` : "";
   return `${captcha}<div class="card sleuth"><img src="/img/search.png" alt="">
     <div><h2><span class="spinner"></span> Лиса идёт по следу — около минуты</h2>
+    ${job.stage ? `<p class="small muted" style="margin-top: -6px">${esc(job.stage)}</p>` : ""}
     <div class="chips">${Object.entries(job.sources).map(([n, st]) =>
       `<span class="chip ${st}">${esc(label[n] || n)}: ${STATE_LABEL[st] || st}</span>`).join("")}</div></div></div>`;
 }

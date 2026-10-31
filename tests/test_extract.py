@@ -2,7 +2,8 @@
 skipped when Playwright or Edge is missing."""
 import unittest
 
-from bookprice.sources import avito, extract
+from bookprice.model import Book
+from bookprice.sources import avito, extract, ratings
 from bookprice.sources.shops import OZON_SKIP_RECOMMENDATIONS, USED_MARK, WB_CARDS
 
 AVITO_PAGE = """
@@ -138,6 +139,26 @@ class ExtractTest(unittest.TestCase):
                   <span>Текущая ставка: 450 руб.</span></div>"""
         offers = extract.tiles(self.load(page), r"meshok\.net/item/\d+", "meshok", currency="₽|руб")
         self.assertEqual([(o.price, o.title) for o in offers], [(450, "Булгаков. Мастер и Маргарита, 1989")])
+
+    def test_rating_from_json_ld(self):
+        page = """<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Book",
+                  "name": "Сердце в броне", "aggregateRating": {"@type": "AggregateRating", "ratingValue": "8,6",
+                  "ratingCount": "1 234", "bestRating": "10"}}</script>"""
+        self.assertEqual(self.load(page).evaluate(ratings.RATING), {"value": 8.6, "count": 1234, "best": 10})
+
+    def test_rating_from_microdata(self):
+        page = """<div itemprop="aggregateRating" itemscope><meta itemprop="ratingValue" content="4.4">
+                  <span itemprop="ratingCount">512</span></div>"""
+        self.assertEqual(self.load(page).evaluate(ratings.RATING), {"value": 4.4, "count": 512, "best": 5})
+
+    def test_pick_book_from_search(self):
+        page = """<div class="item"><a href="https://www.livelib.ru/book/111-serdtse-v-brone-2">Сердце в броне 2</a>
+                    <a href="https://www.livelib.ru/author/1-stepnoj">Аркадий Степной</a></div>
+                  <div class="item"><a href="https://www.livelib.ru/book/222-serdtse-v-brone">Сердце в броне</a>
+                    <a href="https://www.livelib.ru/author/1-stepnoj">Аркадий Степной</a></div>"""
+        found = self.load(page).evaluate(ratings.CANDIDATES, {"linkPattern": r"livelib\.ru/book/\d+", "max": 20})
+        book = Book(title="Сердце в броне", author="Аркадий Степной")
+        self.assertEqual(ratings.pick(book, found)["href"], "https://www.livelib.ru/book/222-serdtse-v-brone")
 
     def test_nothing_found(self):
         self.assertTrue(extract.nothing_found(self.load("<h1>Ничего не нашлось по запросу «978»</h1>")))

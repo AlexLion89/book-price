@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
+from . import copymarks
 from .model import Book
 from .pricing import CONDITION_LABEL, STEP_DAYS, round_price
 
@@ -20,7 +21,7 @@ def binding_text(raw: str) -> str:
     return BINDING.get(raw, raw)
 
 
-def ad_text(book: Book, condition: str) -> str:
+def ad_text(book: Book, condition: str, copy_marks: Optional[List[str]] = None) -> str:
     title = f"{book.author} — {book.title}" if book.author else book.title
     details = [book.publisher, f"{book.year} г." if book.year else "", binding_text(book.binding),
                f"{book.pages} стр." if book.pages else ""]
@@ -30,6 +31,7 @@ def ad_text(book: Book, condition: str) -> str:
     lines += [
         "",
         f"Состояние: {CONDITION_LABEL[condition]}.",
+        *copymarks.ad_lines(copy_marks or []),
         "Самовывоз в Санкт-Петербурге или отправлю Авито Доставкой.",
     ]
     return "\n".join(lines)

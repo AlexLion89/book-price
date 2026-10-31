@@ -47,6 +47,14 @@ class ValueTest(unittest.TestCase):
         mass = Book(title="Сердце в броне", facts={"description": "Иллюстрация на обложке и внутренние иллюстрации"})
         self.assertEqual(assess(mass, 10, False, today=TODAY).collectible, [])
 
+    def test_reader_ratings_from_five_point_sites(self):
+        book = Book(title="X", facts={"livelib_rating": 4.6, "livelib_votes": 5200, "litres_rating": 4.4, "litres_votes": 800,
+                                      "work_last_year": 2025})
+        d = assess(book, used_count=10, new_in_stock=False, today=TODAY)
+        self.assertIn("очень известная", d.popularity)
+        self.assertIn("LiveLib 4.6 из 5, 5200 оценок", d.popularity)
+        self.assertAlmostEqual(d.premium, 0.10)
+
     def test_cap(self):
         rare = Book(title="X", year=1915, facts={"copies": 1000, "cover": "суперобложка", "work_last_year": 1915,
                                                  "work_rating": 9.0, "work_voters": 5000})

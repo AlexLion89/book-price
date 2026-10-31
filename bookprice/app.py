@@ -9,12 +9,14 @@ import threading
 import time
 import traceback
 from dataclasses import asdict
+from datetime import date
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Callable, Dict, Optional
 
-from . import __version__, catalog, check, report, updater
+from . import __version__, catalog, check, copymarks, report, updater
 from .browser import Browser
+from .sources import ratings
 from .listing import ad_text, next_step
 from .model import Book
 from .net import Http
@@ -48,7 +50,8 @@ class Searcher(threading.Thread):
         job = self.state.get(book_id)
         if job and job["status"] in ("queued", "running"):
             return job
-        job = {"status": "queued", "sources": {s.name: "waiting" for s in SOURCES}, "captcha": None, "error": ""}
+        job = {"status": "queued", "sources": {s.name: "waiting" for s in SOURCES}, "captcha": None, "error": "",
+               "stage": ""}
         self.state[book_id] = job
         self.jobs.put(book_id)
         return job
@@ -87,9 +90,6 @@ class Searcher(threading.Thread):
 
     def _search(self, book_id: int, job: dict) -> None:
         book, _ = self.app.store.book(book_id)
-        if not book.facts:
-            book.facts = catalog.facts(self.app.http, book)
-            self.app.store.set_facts(book_id, book.facts)
 
         def progress(name: str, state: str) -> None:
             job["sources"][name] = state
@@ -103,6 +103,17 @@ class Searcher(threading.Thread):
             self.browser = Browser(self.app.data_dir, on_captcha=captcha, home=home)
         self.browser.on_captcha = captcha
         only = [s for s in os.environ.get("BOOKPRICE_ONLY", "").split(",") if s] or None
+        if not book.facts:
+            job["stage"] = "Собираю досье: FantLab и Читай-город…"
+            book.facts = catalog.facts(self.app.http, book)
+            self.app.store.set_facts(book_id, book.facts)
+        if "ratings_checked" not in book.facts and (not only or "ratings" in only):
+            # Reader ratings change slowly and cost two page loads per site: once per book is enough.
+            job["stage"] = "Собираю досье: оценки читателей на LiveLib и ЛитРес…"
+            book.facts.update(ratings.collect(self.browser, book))
+            book.facts["ratings_checked"] = date.today().isoformat()
+            self.app.store.set_facts(book_id, book.facts)
+        job["stage"] = ""
         results = run(book, self.app.http, self.browser, progress, only)
         if any("closed" in (r.error or "").lower() for r in results):
             log.warning("окно Edge закрыли — открываю заново и повторяю")
@@ -144,7 +155,9 @@ class App:
         results = self.store.results(book_id)
         found = classify(book, results, self.store.marks(book_id))
         manual = self.store.manual(book_id)
-        verdict, dossier = evaluate_with_dossier(book, found, manual, row["condition"], self.store.sold_like(book_id, book))
+        marks = json.loads(row.get("copy_marks") or "[]")
+        verdict, dossier = evaluate_with_dossier(book, found, manual, row["condition"], self.store.sold_like(book_id, book),
+                                                 marks)
         return {
             "book": {**row, **book.to_dict()},
             "conditions": CONDITION_LABEL,
@@ -156,7 +169,9 @@ class App:
             "dossier": dossier.to_dict(),
             "next_step": next_step(row["listed_price"], row["price_changed_at"], verdict.floor)
                          if row["status"] == "listed" else None,
-            "ad_text": ad_text(book, row["condition"]),
+            "ad_text": ad_text(book, row["condition"], marks),
+            "copy_marks": marks,
+            "copy_mark_options": [{"key": m.key, "label": m.label, "effect": m.effect} for m in copymarks.MARKS],
             "job": self.searcher.state.get(book_id),
             "price_log": self.store.price_log(book_id),
         }

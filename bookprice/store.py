@@ -14,7 +14,8 @@ create table if not exists books(
   id integer primary key, created_at text, isbn text, title text, author text, year integer,
   publisher text, cover_url text, binding text, pages integer, reprint_years text, source_url text,
   condition text default 'excellent', status text default 'draft',
-  listed_price integer, price_changed_at text, sold_price integer, sold_at text, searched_at text, facts text);
+  listed_price integer, price_changed_at text, sold_price integer, sold_at text, searched_at text, facts text,
+  copy_marks text);
 create table if not exists offers(
   book_id integer, source text, ext_id text, price real, url text, title text, text text,
   in_stock integer, place text, age text, note text, description text);
@@ -28,7 +29,7 @@ create table if not exists manual(book_id integer, source text, price real, prim
 create table if not exists price_log(book_id integer, at text, price integer, event text);
 """
 BOOK_FIELDS = ["isbn", "title", "author", "year", "publisher", "cover_url", "binding", "pages", "source_url"]
-EDITABLE = {"condition", "status", "listed_price", "price_changed_at", "sold_price", "sold_at",
+EDITABLE = {"condition", "copy_marks", "status", "listed_price", "price_changed_at", "sold_price", "sold_at",
             "title", "author", "year"}
 
 
@@ -47,8 +48,9 @@ class Store:
             if "description" not in columns:
                 self.db.execute("alter table offers add column description text")
             columns = {r[1] for r in self.db.execute("pragma table_info(books)")}
-            if "facts" not in columns:
-                self.db.execute("alter table books add column facts text")
+            for column in ("facts", "copy_marks"):
+                if column not in columns:
+                    self.db.execute(f"alter table books add column {column} text")
 
     def _q(self, sql: str, args=()) -> List[sqlite3.Row]:
         with self.lock, self.db:
@@ -80,6 +82,8 @@ class Store:
 
     def update(self, book_id: int, **fields) -> None:
         fields = {k: v for k, v in fields.items() if k in EDITABLE}
+        if "copy_marks" in fields:
+            fields["copy_marks"] = json.dumps([str(k) for k in fields["copy_marks"] or []])
         if fields:
             sets = ", ".join(f"{k} = ?" for k in fields)
             self._q(f"update books set {sets} where id = ?", [*fields.values(), book_id])

@@ -5,6 +5,7 @@ from dataclasses import asdict, dataclass
 from datetime import date
 from typing import Callable, Dict, List, Optional, Tuple
 
+from . import copymarks
 from .matching import YEAR, MatchResult, match
 from .model import Book, Offer, SourceResult
 from .net import Http
@@ -111,12 +112,13 @@ def classify(book: Book, results: List[SourceResult], marks: Dict[Tuple[str, str
 
 
 def evaluate(book: Book, found: List[Found], manual: List[Offer], condition: str,
-             own_sales: Optional[List[dict]] = None) -> Verdict:
-    return evaluate_with_dossier(book, found, manual, condition, own_sales)[0]
+             own_sales: Optional[List[dict]] = None, copy_marks: Optional[List[str]] = None) -> Verdict:
+    return evaluate_with_dossier(book, found, manual, condition, own_sales, copy_marks)[0]
 
 
 def evaluate_with_dossier(book: Book, found: List[Found], manual: List[Offer], condition: str,
-                          own_sales: Optional[List[dict]] = None) -> Tuple[Verdict, Dossier]:
+                          own_sales: Optional[List[dict]] = None,
+                          copy_marks: Optional[List[str]] = None) -> Tuple[Verdict, Dossier]:
     counted = [f for f in found if f.counted]
     shops = [f.offer for f in counted if f.kind == "shop"] + [o for o in manual if BY_NAME[o.source].kind == "shop"]
     used = [f.offer for f in counted if f.kind == "used"] + [o for o in manual if BY_NAME[o.source].kind == "used"]
@@ -136,9 +138,14 @@ def evaluate_with_dossier(book: Book, found: List[Found], manual: List[Offer], c
         reasons = "; ".join(x.label.lower() for x in dossier.factors if x.premium)
         verdict.reasons.append(f"надбавка +{dossier.premium * 100:.0f} % к начальной цене ({reasons}) — "
                                f"если не продаётся, график снижения вернёт цену к рынку")
-        if verdict.as_lot and verdict.start >= LOT_THRESHOLD:
-            verdict.as_lot = False
-            verdict.reasons = [r for r in verdict.reasons if not r.startswith("дешевле")]
+    copy = copymarks.factor(copy_marks or [])
+    if verdict.start is not None and copy != 1:
+        verdict.start = round_price(verdict.start * copy)
+        verdict.floor = min(round_price(verdict.floor * copy), verdict.start)
+        verdict.reasons.append(f"особенности экземпляра: {copymarks.describe(copy_marks)} — к начальной цене и пределу")
+    if verdict.as_lot and verdict.start is not None and verdict.start >= LOT_THRESHOLD:
+        verdict.as_lot = False
+        verdict.reasons = [r for r in verdict.reasons if not r.startswith("дешевле")]
     if own_sales:
         last = own_sales[0]
         verdict.reasons.append(f"вы уже продавали такую: за {last['sold_price']} ₽ "

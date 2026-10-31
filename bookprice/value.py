@@ -59,18 +59,38 @@ def years_word(n: int) -> str:
     return "лет"
 
 
+FIVE_POINT = [("livelib", "LiveLib"), ("litres", "ЛитРес"), ("cg", "Читай-город")]
+
+
+def votes_word(n: int) -> str:
+    if n % 10 == 1 and n % 100 != 11:
+        return "оценка"
+    if 2 <= n % 10 <= 4 and not 12 <= n % 100 <= 14:
+        return "оценки"
+    return "оценок"
+
+
 def popularity(f: dict) -> Tuple[str, float]:
-    """FantLab rates 1–10 with many voters for fiction; the shop's 1–5 rating covers the rest."""
+    """FantLab rates 1–10 (fiction); LiveLib, LitRes and the shop rate 1–5. The strongest signal sets the premium,
+    the most voted one sets how known the book is."""
+    parts, premiums, votes = [], [0.0], [0]
     r, v = f.get("work_rating"), f.get("work_voters") or 0
     if r:
-        label = ("очень известная" if v >= 3000 else "известная" if v >= 300 else
-                 "нишевая" if v >= 30 else "мало оценок")
-        premium = 0.10 if r >= 8 and v >= 2000 else 0.05 if r >= 7.5 and v >= 300 else 0.0
-        return f"{label}: FantLab {r:.2f} из 10, оценок {v}", premium
-    r, v = f.get("cg_rating"), f.get("cg_votes") or 0
-    if r:
-        return f"Читай-город {r:.1f} из 5, оценок {v}", 0.05 if r >= 4.6 and v >= 100 else 0.0
-    return "", 0.0
+        parts.append(f"FantLab {r:.2f} из 10, {v} {votes_word(v)}")
+        premiums.append(0.10 if r >= 8 and v >= 2000 else 0.05 if r >= 7.5 and v >= 300 else 0.0)
+        votes.append(v)
+    for key, label in FIVE_POINT:
+        r, v = f.get(f"{key}_rating"), f.get(f"{key}_votes") or 0
+        if r:
+            parts.append(f"{label} {r:.1f} из 5, {v} {votes_word(v)}")
+            premiums.append(0.10 if r >= 4.5 and v >= 3000 else 0.05 if r >= 4.3 and v >= 300 else 0.0)
+            votes.append(v)
+    if not parts:
+        return "", 0.0
+    most = max(votes)
+    known = ("очень известная" if most >= 3000 else "известная" if most >= 300 else
+             "нишевая" if most >= 30 else "мало оценок")
+    return f"{known}: " + " · ".join(parts), max(premiums)
 
 
 def collectible_signs(book: Book) -> List[str]:
