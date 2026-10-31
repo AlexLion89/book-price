@@ -113,7 +113,7 @@ class Shop:
     bookshop: bool = False
     # Searched through the form on this home page: the shop answers its results address with 404.
     home: str = ""
-    # The shop's search does not understand ISBNs (Moscowbooks answers one with 97 unrelated books).
+    # ISBN queries are of no use there: Moscowbooks answers one with 97 unrelated books, Respublica with 403.
     by_title: bool = False
 
     def query(self, book: Book) -> str:
@@ -214,9 +214,10 @@ LABIRINT = _bookshop("labirint", "Лабиринт",
                      r"labirint\.ru/books/\d+")
 BOOK24 = _bookshop("book24", "Book24", _q("https://book24.ru/search/", "q"), r"book24\.ru/product/")
 BOOKVOED = _bookshop("bookvoed", "Буквоед", _q("https://www.bookvoed.ru/search", "q"), r"bookvoed\.ru/product/")
-# Respublica draws the ruble sign with CSS: its prices are bare numbers in the page text.
+# Respublica draws the ruble sign with CSS: its prices are bare numbers in the page text. Its server answers
+# 403 to an ISBN in the search address even after a visit to the home page (check-home-8), titles pass.
 RESPUBLICA = _bookshop("respublica", "Республика", _q("https://www.respublica.ru/search", "query"),
-                       r"respublica\.ru/knigi/.+/\d+-", currency="")
+                       r"respublica\.ru/knigi/.+/\d+-", currency="", by_title=True)
 # Biblio-Globus answers /catalog/search?query=… with 404 (check-home-6): only its own form leads to results.
 BIBLIOGLOBUS = _bookshop("biblioglobus", "Библио-Глобус", _q("https://www.biblio-globus.ru/catalog/search", "query"),
                          r"biblio-globus\.ru/product/\d+", home="https://www.biblio-globus.ru/")

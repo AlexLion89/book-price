@@ -264,6 +264,7 @@ class ForbiddenTest(unittest.TestCase):
 class BookshopKindTest(unittest.TestCase):
     def test_shop_that_cannot_search_isbn_gets_the_title(self):
         self.assertIn("text=%D0%9C%D0%B0%D1%81%D1%82%D0%B5%D1%80", MOSCOWBOOKS.search_url(MASTER))
+        self.assertIn("query=%D0%9C%D0%B0%D1%81%D1%82%D0%B5%D1%80", RESPUBLICA.search_url(MASTER))
         self.assertEqual(BOOKVOED.search_url(MASTER), "https://www.bookvoed.ru/search?q=9785389016866")
 
     def test_bookshop_is_never_a_reseller(self):
