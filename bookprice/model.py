@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -18,6 +18,8 @@ class Book:
     reprint_years: List[int] = field(default_factory=list)
     source: str = ""
     source_url: str = ""
+    # Print run, series, ratings, reprint history — see value.py.
+    facts: Dict[str, Any] = field(default_factory=dict)
 
     def years(self) -> List[int]:
         return sorted({y for y in [self.year, *self.reprint_years] if y})

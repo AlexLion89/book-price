@@ -1,7 +1,7 @@
 import unittest
 
 from bookprice.model import Book, Offer, SourceResult
-from bookprice.search import classify, evaluate
+from bookprice.search import classify, evaluate, evaluate_with_dossier
 
 BOOK = Book(title="Мастер и Маргарита", author="Михаил Булгаков", year=2012, isbn="9785389016866",
             publisher="Азбука, Азбука-Аттикус")
@@ -75,6 +75,17 @@ class SearchTest(unittest.TestCase):
     def test_dealer_without_year_needs_a_human(self):
         r = [result("alib", Offer("alib", 2000, title="Булгаков М. Мастер и Маргарита.", text="Самиздат", ext_id="s"))]
         self.assertFalse(classify(BOOK, r, {})[0].counted)
+
+    def test_premium_raises_start_not_floor(self):
+        book = Book(title="Сердце в броне", author="Аркадий Степной", year=2009, isbn="9785992203721",
+                    facts={"work_last_year": 2010, "work_rating": 7.96, "work_voters": 636})
+        r = [result("chitai_gorod", Offer("chitai_gorod", 209, title="Сердце в броне", in_stock=False, ext_id="c")),
+             result("avito", Offer("avito", 170, title="Степной Сердце в броне", ext_id="1"),
+                    Offer("avito", 279, title="Степной Сердце в броне", ext_id="2"))]
+        v, dossier = evaluate_with_dossier(book, classify(book, r, {}), [], "excellent")
+        self.assertAlmostEqual(dossier.premium, 0.25)
+        self.assertEqual((v.start, v.floor), (260, 190))
+        self.assertFalse(v.as_lot)
 
     def test_manual_price(self):
         v = evaluate(BOOK, [], [Offer("ozon", 500)], "excellent")

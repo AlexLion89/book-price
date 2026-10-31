@@ -1,14 +1,15 @@
 from __future__ import annotations
 
 import logging
-from datetime import date
 from dataclasses import asdict, dataclass
+from datetime import date
 from typing import Callable, Dict, List, Optional, Tuple
 
 from .matching import YEAR, MatchResult, match
 from .model import Book, Offer, SourceResult
 from .net import Http
-from .pricing import Verdict, suggest
+from .pricing import LOT_THRESHOLD, Verdict, round_price, suggest
+from .value import Dossier, assess
 from .sources import alib, avito, chitai_gorod, meshok
 from .sources.shops import SHOPS
 
@@ -111,6 +112,11 @@ def classify(book: Book, results: List[SourceResult], marks: Dict[Tuple[str, str
 
 def evaluate(book: Book, found: List[Found], manual: List[Offer], condition: str,
              own_sales: Optional[List[dict]] = None) -> Verdict:
+    return evaluate_with_dossier(book, found, manual, condition, own_sales)[0]
+
+
+def evaluate_with_dossier(book: Book, found: List[Found], manual: List[Offer], condition: str,
+                          own_sales: Optional[List[dict]] = None) -> Tuple[Verdict, Dossier]:
     counted = [f for f in found if f.counted]
     shops = [f.offer for f in counted if f.kind == "shop"] + [o for o in manual if BY_NAME[o.source].kind == "shop"]
     used = [f.offer for f in counted if f.kind == "used"] + [o for o in manual if BY_NAME[o.source].kind == "used"]
@@ -122,8 +128,19 @@ def evaluate(book: Book, found: List[Found], manual: List[Offer], condition: str
         discounted = [Offer(source=o.source, price=o.price * DEALER_DISCOUNT) for o in dealers]
         verdict = suggest(shops, discounted, past, condition, used_label="у букинистов (минус 20 %)")
         verdict.reasons.insert(0, "на Авито похожих нет — ориентир по букинистам: на Авито обычно процентов на 20 дешевле")
+    exact = [f.offer for f in found if f.offer.source in EXACT_ISBN]
+    sold_out = bool(exact) and not any(o.in_stock for o in exact)
+    dossier = assess(book, len(used), any(o.in_stock for o in shops), sold_out)
+    if verdict.scenario == "only_used" and dossier.premium:
+        verdict.start = round_price(verdict.start * (1 + dossier.premium))
+        reasons = "; ".join(x.label.lower() for x in dossier.factors if x.premium)
+        verdict.reasons.append(f"надбавка +{dossier.premium * 100:.0f} % к начальной цене ({reasons}) — "
+                               f"если не продаётся, график снижения вернёт цену к рынку")
+        if verdict.as_lot and verdict.start >= LOT_THRESHOLD:
+            verdict.as_lot = False
+            verdict.reasons = [r for r in verdict.reasons if not r.startswith("дешевле")]
     if own_sales:
         last = own_sales[0]
         verdict.reasons.append(f"вы уже продавали такую: за {last['sold_price']} ₽ "
                                f"{(last['sold_at'] or '')[:10]}" + (f" (всего продаж: {len(own_sales)})" if len(own_sales) > 1 else ""))
-    return verdict
+    return verdict, dossier

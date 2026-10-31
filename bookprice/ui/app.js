@@ -220,6 +220,7 @@ async function renderBook(id) {
     ${job && job.status === "error" ? `<div class="alert">Поиск сломался: ${esc(job.error)}. Нажмите «Искать заново»; если повторится — «Отчёт об ошибке».</div>` : ""}
     ${running && !Object.keys(d.runs).length ? `<div class="card muted">Вердикт появится, когда лиса вернётся с уликами — обычно через минуту.</div>` : `
     ${verdictHtml(d)}
+    ${dossierHtml(d)}
     ${statusHtml(d)}
     <div class="card">
       <h2>Текст для объявления</h2>
@@ -279,6 +280,22 @@ function progressHtml(job, label) {
     <div><h2><span class="spinner"></span> Лиса идёт по следу — около минуты</h2>
     <div class="chips">${Object.entries(job.sources).map(([n, st]) =>
       `<span class="chip ${st}">${esc(label[n] || n)}: ${STATE_LABEL[st] || st}</span>`).join("")}</div></div></div>`;
+}
+
+function dossierHtml(d) {
+  const x = d.dossier;
+  if (!x || !(x.facts.length || x.factors.length)) return "";
+  const pct = p => `+${Math.round(p * 100)} %`;
+  return `<div class="card"><div class="kicker">Досье</div>
+    <h2>Насколько книга редкая и ценная</h2>
+    <table class="facts">${x.facts.map(([k, v]) => `<tr><td class="muted">${esc(k)}</td><td>${esc(v)}</td></tr>`).join("")}
+      ${x.collectible.length ? `<tr><td class="muted">Коллекционные признаки</td><td>${esc(x.collectible.join(", "))}</td></tr>` : ""}
+    </table>
+    ${x.factors.length ? `<ul class="small reasons">${x.factors.map(f =>
+      `<li><strong>${esc(f.label)}</strong> — ${esc(f.detail)}${f.premium ? ` <span class="badge warn">${pct(f.premium)}</span>` : ""}</li>`).join("")}</ul>` : ""}
+    ${x.premium ? `<p style="margin-bottom: 0"><strong>Надбавка к начальной цене: ${pct(x.premium)}.</strong>
+      <span class="muted small">Не больше +50 %; нижний предел не меняется — если не продаётся, цена вернётся к рынку.</span></p>` : ""}
+  </div>`;
 }
 
 function verdictHtml(d) {

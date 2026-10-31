@@ -88,4 +88,10 @@ def lookup(http: Http, isbn: str) -> Optional[Book]:
         binding=a.get("cover") or "",
         source=NAME,
         source_url=f"{SITE}/{a.get('url', '')}",
+        facts=shop_facts(a),
     )
+
+
+def shop_facts(a: dict) -> dict:
+    rating = a.get("rating") or {}
+    return {"cg_rating": float(rating.get("count") or 0) or None, "cg_votes": int(rating.get("votes") or 0)}

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import re
+from datetime import date
 from typing import List, Optional
 
 from . import isbn as isbn_mod
@@ -21,6 +22,7 @@ def merge(primary: Optional[Book], extra: Optional[Book]) -> Optional[Book]:
         if not getattr(primary, name):
             setattr(primary, name, getattr(extra, name))
     primary.year = primary.year or extra.year
+    primary.facts = {**extra.facts, **primary.facts}
     if extra.year and extra.year != primary.year and extra.year not in primary.reprint_years:
         primary.reprint_years = sorted(primary.reprint_years + [extra.year])
     return primary
@@ -54,6 +56,21 @@ def enrich(http: Http, book: Book) -> Book:
         log.exception("FantLab: карточка издания %s", m.group(1))
         return book
     return merge(full, book)
+
+
+def facts(http: Http, book: Book) -> dict:
+    """Facts for a book added before they were collected (or by hand): from its ISBN or FantLab edition."""
+    found = None
+    try:
+        if book.isbn:
+            found = identify(http, book.isbn)
+        elif re.search(r"fantlab\.ru/edition(\d+)", book.source_url or ""):
+            found = enrich(http, Book(title=book.title, source_url=book.source_url))
+    except Exception:
+        log.exception("сведения о книге «%s»", book.title)
+    result = dict(found.facts) if found else {}
+    result["checked"] = date.today().isoformat()
+    return result
 
 
 def find(http: Http, title: str, author: str = "") -> List[Book]:

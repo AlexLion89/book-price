@@ -19,7 +19,7 @@ from .listing import ad_text, next_step
 from .model import Book
 from .net import Http
 from .pricing import CONDITION_LABEL
-from .search import SOURCES, classify, evaluate, run
+from .search import SOURCES, classify, evaluate_with_dossier, run
 from .store import Store, now
 
 log = logging.getLogger(__name__)
@@ -87,6 +87,9 @@ class Searcher(threading.Thread):
 
     def _search(self, book_id: int, job: dict) -> None:
         book, _ = self.app.store.book(book_id)
+        if not book.facts:
+            book.facts = catalog.facts(self.app.http, book)
+            self.app.store.set_facts(book_id, book.facts)
 
         def progress(name: str, state: str) -> None:
             job["sources"][name] = state
@@ -141,7 +144,7 @@ class App:
         results = self.store.results(book_id)
         found = classify(book, results, self.store.marks(book_id))
         manual = self.store.manual(book_id)
-        verdict = evaluate(book, found, manual, row["condition"], self.store.sold_like(book_id, book))
+        verdict, dossier = evaluate_with_dossier(book, found, manual, row["condition"], self.store.sold_like(book_id, book))
         return {
             "book": {**row, **book.to_dict()},
             "conditions": CONDITION_LABEL,
@@ -150,6 +153,7 @@ class App:
             "found": [f.to_dict() for f in sorted(found, key=lambda f: (not f.counted, f.offer.price))],
             "manual": {o.source: o.price for o in manual},
             "verdict": {**asdict(verdict), "schedule": verdict.schedule()},
+            "dossier": dossier.to_dict(),
             "next_step": next_step(row["listed_price"], row["price_changed_at"], verdict.floor)
                          if row["status"] == "listed" else None,
             "ad_text": ad_text(book, row["condition"]),

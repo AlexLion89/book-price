@@ -14,7 +14,7 @@ create table if not exists books(
   id integer primary key, created_at text, isbn text, title text, author text, year integer,
   publisher text, cover_url text, binding text, pages integer, reprint_years text, source_url text,
   condition text default 'excellent', status text default 'draft',
-  listed_price integer, price_changed_at text, sold_price integer, sold_at text, searched_at text);
+  listed_price integer, price_changed_at text, sold_price integer, sold_at text, searched_at text, facts text);
 create table if not exists offers(
   book_id integer, source text, ext_id text, price real, url text, title text, text text,
   in_stock integer, place text, age text, note text, description text);
@@ -46,6 +46,9 @@ class Store:
             columns = {r[1] for r in self.db.execute("pragma table_info(offers)")}
             if "description" not in columns:
                 self.db.execute("alter table offers add column description text")
+            columns = {r[1] for r in self.db.execute("pragma table_info(books)")}
+            if "facts" not in columns:
+                self.db.execute("alter table books add column facts text")
 
     def _q(self, sql: str, args=()) -> List[sqlite3.Row]:
         with self.lock, self.db:
@@ -54,9 +57,10 @@ class Store:
     def add_book(self, book: Book, condition: str = "excellent") -> int:
         with self.lock, self.db:
             cur = self.db.execute(
-                f"insert into books(created_at, condition, reprint_years, {', '.join(BOOK_FIELDS)}) "
-                f"values (?, ?, ?, {', '.join('?' * len(BOOK_FIELDS))})",
-                [now(), condition, json.dumps(book.reprint_years)] + [getattr(book, f) for f in BOOK_FIELDS])
+                f"insert into books(created_at, condition, reprint_years, facts, {', '.join(BOOK_FIELDS)}) "
+                f"values (?, ?, ?, ?, {', '.join('?' * len(BOOK_FIELDS))})",
+                [now(), condition, json.dumps(book.reprint_years), json.dumps(book.facts, ensure_ascii=False)]
+                + [getattr(book, f) for f in BOOK_FIELDS])
             return cur.lastrowid
 
     def book(self, book_id: int) -> Tuple[Book, dict]:
@@ -65,8 +69,11 @@ class Store:
             raise KeyError(book_id)
         row = dict(rows[0])
         book = Book(**{f: row[f] or ("" if f not in ("year", "pages") else None) for f in BOOK_FIELDS},
-                    reprint_years=json.loads(row["reprint_years"] or "[]"))
+                    reprint_years=json.loads(row["reprint_years"] or "[]"), facts=json.loads(row.get("facts") or "{}"))
         return book, row
+
+    def set_facts(self, book_id: int, facts: dict) -> None:
+        self._q("update books set facts = ? where id = ?", (json.dumps(facts, ensure_ascii=False), book_id))
 
     def books(self) -> List[dict]:
         return [dict(r) for r in self._q("select * from books order by id desc")]
