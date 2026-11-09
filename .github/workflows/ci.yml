@@ -1,0 +1,149 @@
+# Tests on Windows and macOS; the universal macOS program is built, checked end to end and, for a published release,
+# attached to it. No site is visited here: shops and Avito shut out data-centre addresses anyway — the parsers are
+# tested on saved pages. Results (logs, screenshots) go to the ci-results branch, readable without an account.
+name: ci
+
+on:
+  push:
+    branches-ignore: [ci-results]
+    tags: ["v*"]
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONIOENCODING: utf-8
+  PLAYWRIGHT: "1.60.0"
+  GREENLET: "3.2.4"
+
+jobs:
+  windows:
+    if: github.event_name != 'release'
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+      - run: pip install "playwright==$env:PLAYWRIGHT" "greenlet==$env:GREENLET"
+      - name: tests
+        shell: bash
+        run: |
+          mkdir -p out
+          set -o pipefail
+          python -m unittest discover -s tests -t . -v 2>&1 | tee out/tests-windows.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: windows
+          path: out/
+
+  mac:
+    runs-on: macos-15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: build environment (universal Python, Playwright with a two-architecture node)
+        run: |
+          mkdir -p out
+          set -o pipefail
+          bash tools/mac/env.sh 2>&1 | tee out/env.log
+      - name: tests
+        run: |
+          set -o pipefail
+          ../.venv-mac/bin/python -m unittest discover -s tests -t . -v 2>&1 | tee out/tests-mac.log
+      - name: build
+        env:
+          BP_TARGET_ARCH: universal2
+        run: |
+          set -o pipefail
+          ../.venv-mac/bin/python tools/build.py "$RUNNER_TEMP/dist" 2>&1 | tail -n 60 | tee out/build.log
+          ls -la "$RUNNER_TEMP/dist" | tee -a out/build.log
+          cp "$RUNNER_TEMP"/dist/BookPrice-*-mac.dmg out/
+          # The module list of this build, for tests/test_runtime.py once a Mac build is published; not a gate.
+          ../.venv-mac/bin/python tools/runtime_modules.py "$RUNNER_TEMP/dist/Ценитель.app" >> out/build.log 2>&1 \
+            && cp tests/runtime_mac1_modules.txt out/ || echo "список модулей не снят" | tee -a out/build.log
+          find "$RUNNER_TEMP/dist/Ценитель.app/Contents" -maxdepth 2 | head -n 40 >> out/build.log
+          lipo -archs "$RUNNER_TEMP/dist/Ценитель.app/Contents/MacOS/BookPrice" | tee -a out/build.log
+      - name: Rosetta, to run the Intel half too
+        run: sudo softwareupdate --install-rosetta --agree-to-license || true
+      - name: end-to-end check (Apple M)
+        run: |
+          set -o pipefail
+          ../.venv-mac/bin/python tools/mac/smoke.py "$RUNNER_TEMP/dist/Ценитель.app" out/smoke 2>&1 | tee out/smoke-arm64.log
+      - name: end-to-end check (Intel)
+        if: always()
+        run: |
+          set -o pipefail
+          rm -rf "$HOME/Library/Application Support/BookPrice"
+          ../.venv-mac/bin/python tools/mac/smoke.py "$RUNNER_TEMP/dist/Ценитель.app" out/smoke --arch=x86_64 2>&1 | tee out/smoke-x86_64.log
+      - name: from the disk image, as a user would (quarantine on, like a download)
+        if: always()
+        run: |
+          set -o pipefail
+          {
+            dmg=$(ls out/BookPrice-*-mac.dmg)
+            xattr -w com.apple.quarantine "0081;$(printf %x $(date +%s));Safari;" "$dmg"
+            mnt=$(hdiutil attach -nobrowse -readonly "$dmg" | tail -n 1 | cut -f 3-)
+            ls -la "$mnt"
+            ditto "$mnt/Ценитель.app" "/Applications/Ценитель.app"
+            hdiutil detach "$mnt"
+            xattr -l "/Applications/Ценитель.app" | head
+            codesign --verify --deep --strict --verbose=2 "/Applications/Ценитель.app" 2>&1 || true
+            spctl --assess --type execute --verbose=4 "/Applications/Ценитель.app" 2>&1 || true
+          } 2>&1 | tee out/dmg.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mac
+          path: out/
+      - name: attach to the release
+        # On publishing, and on a tag push for a release already published (the release may come first).
+        if: github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name || github.ref_name }}
+        run: |
+          gh release view "$TAG" --repo "${{ github.repository }}" > /dev/null 2>&1 || { echo "выпуска $TAG ещё нет"; exit 0; }
+          gh release upload "$TAG" out/BookPrice-*-mac.dmg --clobber --repo "${{ github.repository }}"
+
+  results:
+    needs: [windows, mac]
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: art
+      - name: publish to the ci-results branch
+        env:
+          TOKEN: ${{ github.token }}
+          REF: ${{ github.ref_name }}
+        run: |
+          set -e
+          dir="$(echo "$REF" | tr '/' '-')"
+          git clone --quiet --depth 1 --branch ci-results "https://x-access-token:$TOKEN@github.com/${{ github.repository }}.git" pub \
+            || { mkdir pub && cd pub && git init --quiet && git checkout --quiet -b ci-results && cd ..; }
+          rm -rf "pub/$dir" && mkdir -p "pub/$dir"
+          find art -name '*.dmg' -delete
+          cp -r art/* "pub/$dir/" 2>/dev/null || true
+          {
+            echo "run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo "event: ${{ github.event_name }}  ref: $REF  sha: ${{ github.sha }}"
+            echo "windows: ${{ needs.windows.result }}"
+            echo "mac: ${{ needs.mac.result }}"
+            date -u +"finished: %Y-%m-%dT%H:%M:%SZ"
+          } > "pub/$dir/result.txt"
+          cd pub
+          git config user.name "ci"
+          git config user.email "ci@users.noreply.github.com"
+          git add -A
+          git commit --quiet -m "ci $REF ${{ github.sha }}" || true
+          git push --quiet "https://x-access-token:$TOKEN@github.com/${{ github.repository }}.git" HEAD:ci-results \
+            || { git pull --rebase --quiet origin ci-results && git push --quiet "https://x-access-token:$TOKEN@github.com/${{ github.repository }}.git" HEAD:ci-results; }

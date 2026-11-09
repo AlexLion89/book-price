@@ -30,7 +30,7 @@ py="$venv/bin/python"
 
 dl() { "$py" -m pip download --quiet --no-deps --only-binary=:all: --python-version 3.9 --implementation cp "$@"; }
 dl --platform macosx_11_0_universal2 -d "$work/u2" "greenlet==$GREENLET"
-dl --platform macosx_11_0_universal2 -d "$work/u2" "pyinstaller==$PYINSTALLER"
+dl --platform macosx_10_13_universal2 -d "$work/u2" "pyinstaller==$PYINSTALLER"
 dl --platform macosx_11_0_arm64 -d "$work/arm64" "playwright==$PLAYWRIGHT"
 dl --platform macosx_10_13_x86_64 -d "$work/x86_64" "playwright==$PLAYWRIGHT"
 
