@@ -1,6 +1,6 @@
 """Scouting of bookshops not yet in the search: used only by the site check. A shop is searched by its results
 address when the form on its home page shows where that is, otherwise through the form itself; the result page is
-kept as a snapshot, so a parser can be written from what the user's Edge actually saw."""
+kept as a snapshot, so a parser can be written from what the user's browser actually saw."""
 from __future__ import annotations
 
 import logging

@@ -1,4 +1,4 @@
-"""Online shops opened in Edge: marketplaces (Ozon, Wildberries, Yandex Market) and bookshops (Labirint, Book24,
+"""Online shops opened in the browser: marketplaces (Ozon, Wildberries, Yandex Market) and bookshops (Labirint, Book24,
 Bookvoed, Respublica, Biblio-Globus, Dom Knigi SPb, Moscowbooks). Search by ISBN when it is known."""
 from __future__ import annotations
 

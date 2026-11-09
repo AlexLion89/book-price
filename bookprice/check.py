@@ -10,8 +10,9 @@ from datetime import datetime
 from pathlib import Path
 from typing import Callable, List, Optional
 
-from . import catalog, paths
+from . import browsers, catalog, paths
 from .browser import Browser
+from .system import current as system
 from .model import Book
 from .net import Http
 from .search import BY_NAME, classify, run
@@ -33,17 +34,21 @@ def run_check(data_dir: Path, say: Callable[[str], None], extra_isbn: Optional[s
     handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s"))
     logging.getLogger().addHandler(handler)
     http = Http()
+    found = browsers.find()
+    if not found:
+        raise browsers.NoBrowser(browsers.NO_BROWSER)
+
     def captcha(source: str) -> None:
         label = BY_NAME[source].label if source in BY_NAME else source
-        say(f"{label}: решите проверку в окне Edge, я подожду")
+        say(f"{label}: решите проверку в окне «Поиск цен», я подожду")
 
     browser = Browser(work, on_captcha=captcha, keep_snapshots=True)
     report = []
     only = only or [s for s in os.environ.get("BOOKPRICE_ONLY", "").split(",") if s] or None
     try:
-        say("Проверка браузера: открываю Читай-город в Edge…")
+        say(f"Проверка браузера: открываю Читай-город в {found.label} ({system.LABEL})…")
         browser.open(chitai_gorod.search_url("9785389016866"), "selftest")
-        say(f"  Edge работает, страница: {browser.page.title()[:70]}")
+        say(f"  {found.label} работает, страница: {browser.page.title()[:70]}")
         browser.snapshot("selftest")
         for sample in ([extra_isbn] if extra_isbn else []) + SAMPLES:
             book = catalog.identify(http, sample) if isinstance(sample, str) else sample
@@ -73,12 +78,13 @@ def run_check(data_dir: Path, say: Callable[[str], None], extra_isbn: Optional[s
         (work / "results.json").write_text(json.dumps(report, ensure_ascii=False, indent=1), encoding="utf-8")
         logging.getLogger().removeHandler(handler)
         handler.close()
-    target = paths.desktop() / f"проверка-площадок-{work.name}.zip"
+    target = paths.outbox() / f"проверка-площадок-{work.name}.zip"
     with zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED) as z:
         for f in work.rglob("*"):
-            if f.is_file() and "edge-profile" not in f.parts:
+            if f.is_file() and browser.profile_dir.name not in f.relative_to(work).parts:
                 z.write(f, f.relative_to(work))
-    say(f"Готово. Файл на рабочем столе: {target.name}")
+    system.reveal(target)
+    say(f"Готово. Файл {system.OUTBOX_WHERE}: {target.name}")
     return target
 
 

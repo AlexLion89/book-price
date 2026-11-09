@@ -131,6 +131,12 @@ table.facts td { border-top: 0; padding: 4px 6px; }
 #update-banner { background: var(--forest); color: #fff; padding: 10px 28px; display: flex; gap: 14px;
   align-items: center; flex-wrap: wrap; }
 #update-banner[hidden] { display: none; }
+#browser-banner { background: var(--fox-dark); color: #fff; padding: 12px 28px; display: flex; gap: 12px;
+  align-items: center; flex-wrap: wrap; }
+#browser-banner[hidden] { display: none; }
+#browser-banner .grow { flex: 1; min-width: 300px; }
+#browser-banner a.button { background: #fff; color: var(--ink); padding: 8px 14px; border-radius: 8px; text-decoration: none;
+  font-weight: 600; }
 #update-banner .grow { flex: 1; min-width: 300px; }
 #update-banner button.primary { padding: 8px 16px; }
 #update-banner button.later { background: none; border: 1px solid rgba(255, 255, 255, .5); color: #fff;

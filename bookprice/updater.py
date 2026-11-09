@@ -1,5 +1,9 @@
-"""Updates of the pure-Python part: the latest published release of the public repository is unpacked next to
-the user data. Only published releases count, not bare tags: a tag is pushed before the version is checked.
+"""Updates of the pure-Python part: the newest published release for this system is unpacked next to the user data.
+Only published releases count, not bare tags: a tag is pushed before the version is checked.
+
+Windows and macOS share one code and one line of versions. A release notes line «Система: …» says whom a release
+is for: a fix that only matters on one system is not offered on the other, and the next common release brings it along
+(on the other system that code simply never runs). No such line — the release is for everyone.
 
 The launcher (run.py) puts the newest compatible unpacked version first on sys.path.
 """
@@ -14,13 +18,16 @@ from typing import Optional, Tuple
 
 from . import __version__
 from .net import Http
+from .system import current as system
 
 log = logging.getLogger(__name__)
 
 REPO = "AlexLion89/book-price"
-LATEST = f"https://api.github.com/repos/{REPO}/releases/latest"
+RELEASES = f"https://api.github.com/repos/{REPO}/releases?per_page=30"
 ZIP = "https://codeload.github.com/" + REPO + "/zip/refs/tags/{tag}"
 MARKUP = re.compile(r"[*_`#>|]")
+TARGET = re.compile(r"^[\s*_]*Система:[\s*_]*(.+)$", re.M | re.I)
+SYSTEM_WORDS = {"windows": "windows", "mac": "macos"}
 
 
 def parse(version: str) -> Optional[Tuple[int, ...]]:
@@ -39,13 +46,23 @@ def summary(notes: str, limit: int = 160) -> str:
     return text if len(text) <= limit else text[:limit].rsplit(" ", 1)[0] + "…"
 
 
-def available(http: Http) -> Optional[dict]:
-    d = http.json(LATEST)
-    tag = d.get("tag_name") or ""
-    if not parse(tag) or parse(tag) <= parse(__version__):
+def meant_for(notes: str, system_name: str) -> bool:
+    found = TARGET.search(notes or "")
+    return not found or SYSTEM_WORDS[system_name] in found.group(1).lower()
+
+
+def newest(releases: list, system_name: str, current: str) -> Optional[dict]:
+    fit = [r for r in releases if not r.get("draft") and not r.get("prerelease") and parse(r.get("tag_name") or "")
+           and meant_for(r.get("body") or "", system_name)]
+    best = max(fit, key=lambda r: parse(r["tag_name"]), default=None)
+    if not best or parse(best["tag_name"]) <= parse(current):
         return None
-    return {"tag": tag, "version": ".".join(map(str, parse(tag))), "summary": summary(d.get("body") or ""),
-            "url": d.get("html_url") or ""}
+    return {"tag": best["tag_name"], "version": ".".join(map(str, parse(best["tag_name"]))),
+            "summary": summary(best.get("body") or ""), "url": best.get("html_url") or ""}
+
+
+def available(http: Http) -> Optional[dict]:
+    return newest(http.json(RELEASES), system.NAME, __version__)
 
 
 def download(http: Http, data_dir: Path, tag: str) -> str:

@@ -7,6 +7,8 @@ import urllib.parse
 import urllib.request
 from typing import Dict, Optional
 
+from .system import current as system
+
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/130.0 Safari/537.36 Edg/130.0"
@@ -17,7 +19,11 @@ TIMEOUT = 25
 class Http:
     def __init__(self) -> None:
         self.jar = http.cookiejar.CookieJar()
-        self.opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(self.jar))
+        handlers = [urllib.request.HTTPCookieProcessor(self.jar)]
+        context = system.ssl_context()
+        if context is not None:
+            handlers.append(urllib.request.HTTPSHandler(context=context))
+        self.opener = urllib.request.build_opener(*handlers)
 
     def get(self, url: str, params: Optional[dict] = None, headers: Optional[Dict[str, str]] = None) -> bytes:
         if params:

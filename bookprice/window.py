@@ -1,78 +1,61 @@
-"""The program's own Edge window.
+"""The program's own browser window.
 
-It runs with a separate profile folder, so it is a separate Edge browser process: closing it can never touch the
-user's own Edge windows, which live in another process with another profile. The process is found by that profile
+It runs with a separate profile folder, so it is a separate browser process: closing it can never touch the user's own
+windows of the same browser, which live in another process with another profile. The process is found by that profile
 folder, not by the id of the process we started — Edge often hands a launch over to another of its processes
 (for instance when its own update is pending), and the started process exits at once.
 """
 from __future__ import annotations
 
-import ctypes
 import logging
-import os
 import subprocess
 import time
 import webbrowser
 from pathlib import Path
-from typing import List, Optional
+from typing import Optional
+
+from . import browsers
+from .system import current as system
 
 log = logging.getLogger(__name__)
 
-EDGE = [
-    Path(os.environ.get("ProgramFiles(x86)", r"C:\Program Files (x86)")) / "Microsoft/Edge/Application/msedge.exe",
-    Path(os.environ.get("ProgramFiles", r"C:\Program Files")) / "Microsoft/Edge/Application/msedge.exe",
-]
-WM_CLOSE = 0x0010
-SYNCHRONIZE, QUERY_LIMITED = 0x00100000, 0x1000
-WAIT_TIMEOUT = 0x102
-# A fresh Edge profile offers to sign in and sync with the Windows account; the program's windows need neither.
-QUIET_EDGE = ["--no-first-run", "--no-default-browser-check", "--disable-sync"]
+# A fresh profile offers to sign in and sync with the system account; the program's windows need neither.
+QUIET = ["--no-first-run", "--no-default-browser-check", "--disable-sync"]
 FIND_TRIES, FIND_PAUSE = 8, 1.0
-NO_WINDOW = getattr(subprocess, "CREATE_NO_WINDOW", 0)
-PROCESSES = ("[Console]::OutputEncoding = [Text.Encoding]::UTF8; "
-             "Get-CimInstance Win32_Process -Filter \"Name='msedge.exe'\" | "
-             "ForEach-Object { \"$($_.ProcessId)`t$($_.CommandLine)\" }")
 
 
 class OwnedWindow:
-    """Our Edge browser process, held by an OS handle: its id cannot be reused while we hold it."""
-
-    def __init__(self, pid: int) -> None:
+    def __init__(self, pid: int, profile: Path) -> None:
         self.pid = pid
-        self.handle = ctypes.windll.kernel32.OpenProcess(SYNCHRONIZE | QUERY_LIMITED, False, pid)
+        self.process = system.Process(pid, profile)
 
     def alive(self) -> bool:
-        return bool(self.handle) and ctypes.windll.kernel32.WaitForSingleObject(self.handle, 0) == WAIT_TIMEOUT
+        return self.process.alive()
 
     def close(self) -> None:
-        if not self.alive():
-            return
-        for hwnd in windows_of(self.pid):
-            ctypes.windll.user32.PostMessageW(hwnd, WM_CLOSE, 0, 0)
-        if ctypes.windll.kernel32.WaitForSingleObject(self.handle, 8000) == WAIT_TIMEOUT:
-            log.warning("окно программы не закрылось само — завершаю его процесс")
-            subprocess.run(["taskkill", "/PID", str(self.pid), "/T", "/F"], capture_output=True, creationflags=NO_WINDOW)
+        self.process.close()
 
 
-def find_browser(profile: Path) -> Optional[int]:
-    """The Edge browser process (not a renderer: those carry --type=) started with our profile folder."""
-    mark = str(profile).lower()
-    out = subprocess.run(["powershell", "-NoProfile", "-Command", PROCESSES], capture_output=True, timeout=30,
-                         creationflags=NO_WINDOW).stdout.decode("utf-8", "replace")
-    for line in out.splitlines():
-        pid, _, command = line.partition("\t")
-        if mark in command.lower() and "--type=" not in command and pid.strip().isdigit():
-            return int(pid)
+def find_browser(profile: Path, listing=None) -> Optional[int]:
+    """The browser process (not a renderer or helper: those carry --type=) started with this profile folder."""
+    for pid, command in listing if listing is not None else system.processes(browsers.exe_names()):
+        if "--type=" not in command and browsers.started_with(command, profile):
+            return pid
     return None
 
 
-def open_window(url: str, profile: Path, own: bool = True) -> Optional[OwnedWindow]:
-    """Edge in app mode looks like a program window: no tabs, no address bar."""
-    edge = next((p for p in EDGE if p.is_file()), None)
-    if not edge:
+def open_window(url: str, data_dir: Path, own: bool = True) -> Optional[OwnedWindow]:
+    """App mode looks like a program window: no tabs, no address bar. Without a suitable browser the page opens in
+    the default one, which tells the user what to install."""
+    browser = browsers.find()
+    if not browser:
+        log.warning("нет подходящего браузера — открываю страницу в браузере по умолчанию")
         webbrowser.open(url)
         return None
-    subprocess.Popen([str(edge), f"--user-data-dir={profile}", *QUIET_EDGE, f"--app={url}", "--start-maximized"])
+    profile = browsers.profile(data_dir, "ui", browser)
+    log.info("окно программы: %s (%s)", browser.label, browser.path)
+    subprocess.Popen([str(browser.path), f"--user-data-dir={profile}", *QUIET, *system.WINDOW_ARGS, f"--app={url}"],
+                     stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if not own:
         return None
     for _ in range(FIND_TRIES):
@@ -83,26 +66,18 @@ def open_window(url: str, profile: Path, own: bool = True) -> Optional[OwnedWind
             log.exception("поиск окна программы")
             pid = None
         if pid:
-            return OwnedWindow(pid)
+            return OwnedWindow(pid, profile)
     log.warning("не нашёл процесс окна программы — закрывать его придётся вручную")
     return None
 
 
-def windows_of(pid: int) -> List[int]:
-    # Plain ctypes types: ctypes.wintypes is missing from programs built before 0.2.2, and updates run on them.
-    user32 = ctypes.windll.user32
-    found = []
-
-    @ctypes.WINFUNCTYPE(ctypes.c_int, ctypes.c_void_p, ctypes.c_void_p)
-    def collect(hwnd, _):
-        owner = ctypes.c_ulong()
-        user32.GetWindowThreadProcessId(hwnd, ctypes.byref(owner))
-        if owner.value == pid and user32.IsWindowVisible(hwnd):
-            found.append(hwnd)
-        return True
-
-    user32.EnumWindows(collect, 0)
-    return found
+def leftover_windows(data_dir: Path):
+    """Windows with our profiles left by an older copy of the program — whichever browser drew them."""
+    listing = system.processes(browsers.exe_names())
+    for profile in browsers.ui_profiles(data_dir):
+        pid = find_browser(profile, listing)
+        if pid:
+            yield OwnedWindow(pid, profile)
 
 
 def close_window(window: Optional[OwnedWindow]) -> None:

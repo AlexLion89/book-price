@@ -1,5 +1,7 @@
-__version__ = "0.5.5"
+__version__ = "0.6.0"
 
-# Bump when an update needs packages the installed .exe does not have: such an update is not applied
-# by the launcher, the user gets a new installer instead.
+# Bump when an update needs packages the installed program does not have: such an update is not applied by the
+# launcher, the user gets a new download instead. Separate for each system — their builds differ. The Windows line
+# keeps its exact form: launchers of old Windows builds look for it.
 REQUIRES_RUNTIME = 1
+REQUIRES_RUNTIME_MAC = 1

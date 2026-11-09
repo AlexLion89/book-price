@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import platform
 import queue
 import re
 import threading
@@ -14,8 +15,9 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Callable, Dict, Optional
 
-from . import __version__, catalog, check, copymarks, report, updater
+from . import __version__, browsers, catalog, check, copymarks, report, updater
 from .browser import Browser
+from .system import current as system
 from .sources import ratings
 from .listing import ad_text, next_step
 from .model import Book
@@ -35,12 +37,13 @@ UPDATE_FIRST_CHECK = 1
 UPDATE_EVERY = 6 * 3600
 UPDATE_RETRY = 10 * 60
 UI_GONE = 5
-CHECK = -1
+CHECK, WINDOW_TEST = -1, -2
+WINDOW_TEST_HOLD = 6
 LOCAL_ORIGIN = re.compile(r"^http://(127\.0\.0\.1|localhost):\d+$")
 
 
 class Searcher(threading.Thread):
-    """Owns the Edge window: Playwright must stay on one thread."""
+    """Owns the search window: Playwright must stay on one thread."""
 
     def __init__(self, app: "App") -> None:
         super().__init__(daemon=True, name="searcher")
@@ -49,6 +52,7 @@ class Searcher(threading.Thread):
         self.state: Dict[int, dict] = {}
         self.browser: Optional[Browser] = None
         self.check: dict = {"status": "idle", "lines": [], "path": ""}
+        self.window_test: dict = {"status": "idle"}
 
     def submit(self, book_id: int) -> dict:
         job = self.state.get(book_id)
@@ -66,9 +70,16 @@ class Searcher(threading.Thread):
             self.jobs.put(CHECK)
         return self.check
 
+    def submit_window_test(self) -> dict:
+        if self.window_test["status"] not in ("queued", "running"):
+            self.window_test = {"status": "queued"}
+            self.jobs.put(WINDOW_TEST)
+        return self.window_test
+
     def busy(self) -> bool:
         active = ("queued", "running")
-        return self.check["status"] in active or any(j["status"] in active for j in self.state.values())
+        return (self.check["status"] in active or self.window_test["status"] in active
+                or any(j["status"] in active for j in self.state.values()))
 
     def run(self) -> None:
         while True:
@@ -77,6 +88,9 @@ class Searcher(threading.Thread):
                 break
             if book_id == CHECK:
                 self._check()
+                continue
+            if book_id == WINDOW_TEST:
+                self._window_test()
                 continue
             job = self.state[book_id]
             job["status"] = "running"
@@ -120,7 +134,7 @@ class Searcher(threading.Thread):
         job["stage"] = ""
         results = run(book, self.app.http, self.browser, progress, only)
         if any("closed" in (r.error or "").lower() for r in results):
-            log.warning("окно Edge закрыли — открываю заново и повторяю")
+            log.warning("окно поиска закрыли — открываю заново и повторяю")
             self.browser.close()
             retry = [r.source for r in results if "closed" in (r.error or "").lower()]
             results = [r for r in results if r.source not in retry] + run(book, self.app.http, self.browser, progress, retry)
@@ -136,6 +150,24 @@ class Searcher(threading.Thread):
             log.exception("проверка площадок")
             state["lines"].append(f"Сбой: {type(e).__name__}: {e}")
             state["status"] = "error"
+
+    def _window_test(self) -> None:
+        """The search window on our own page only — no site is visited: shows that the browser can be driven."""
+        state = self.window_test
+        state["status"] = "running"
+        home = f"http://127.0.0.1:{self.app.port}/search-window.html"
+        browser = Browser(self.app.data_dir, home=home)
+        try:
+            browser.start()
+            state["title"] = browser.page.title()
+            state["browser"] = browser.found.label
+            time.sleep(WINDOW_TEST_HOLD)
+            state["status"] = "done"
+        except Exception as e:
+            log.exception("проверка окна поиска")
+            state["status"], state["error"] = "error", f"{type(e).__name__}: {e}"
+        finally:
+            browser.close()
 
     def stop(self) -> None:
         self.jobs.put(None)
@@ -219,6 +251,13 @@ def make_handler(app: App) -> Callable:
     def ping(body):
         return {"ok": True, "version": __version__, "busy": app.searcher.busy()}
 
+    @route("GET", "/api/system")
+    def system_info(body):
+        found = browsers.find()
+        return {"os": system.NAME, "os_label": system.LABEL, "machine": platform.machine(), "outbox": system.OUTBOX_WHERE,
+                "browser": found.label if found else None, "no_browser": browsers.NO_BROWSER,
+                "downloads": browsers.DOWNLOADS}
+
     @route("GET", "/api/books")
     def books(body):
         return app.books_view()
@@ -292,9 +331,17 @@ def make_handler(app: App) -> Callable:
     def check_state(body):
         return app.searcher.check
 
+    @route("POST", "/api/window-test")
+    def start_window_test(body):
+        return app.searcher.submit_window_test()
+
+    @route("GET", "/api/window-test")
+    def window_test_state(body):
+        return app.searcher.window_test
+
     @route("POST", "/api/report")
     def make_report(body):
-        return {"path": str(report.build(app.data_dir))}
+        return {"path": str(report.build(app.data_dir)), "where": system.OUTBOX_WHERE}
 
     @route("POST", "/api/update")
     def update_app(body):
@@ -412,8 +459,8 @@ def serve(app: App, port: int) -> ThreadingHTTPServer:
             if app.searcher.busy():
                 continue
             now = time.monotonic()
-            # Our window is our own Edge process: it ends when the window is closed. The page's own goodbye is a
-            # fallback — Edge often exits before sending it; a reload asks for the page again and cancels it.
+            # Our window is our own browser process: it ends when the window is closed. The page's own goodbye is a
+            # fallback — the browser often exits before sending it; a reload asks for the page again and cancels it.
             window_gone = app.ui is not None and not app.ui.alive()
             closed_at = app.ui_closed_at
             closed = closed_at is not None and app.last_seen <= closed_at + 0.5 and now - closed_at > UI_GONE

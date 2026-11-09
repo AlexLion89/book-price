@@ -65,9 +65,13 @@ def edge():
         from playwright.sync_api import sync_playwright
     except ImportError:
         return None
+    from bookprice import browsers
+    found = browsers.find()
+    if not found:
+        return None
     try:
         pw = sync_playwright().start()
-        browser = pw.chromium.launch(channel="msedge", headless=True)
+        browser = pw.chromium.launch(**browsers.launch_options(found), headless=True)
         return pw, browser
     except Exception:
         return None

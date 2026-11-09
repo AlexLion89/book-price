@@ -1,0 +1,156 @@
+"""macOS: data in ~/Library/Application Support, the program in «Программы» (no shortcut needed).
+
+The user may run the very same browser app with a hundred tabs. Ours is a separate instance only because it is started
+from the app's binary with its own profile folder — never through `open` or AppleScript, which would hand the job to
+the user's running browser. Every signal goes to one process id that was just checked to carry our profile folder.
+"""
+from __future__ import annotations
+
+import logging
+import os
+import signal
+import ssl
+import subprocess
+import sys
+import time
+from pathlib import Path
+from typing import Iterable, List, Optional, Tuple
+
+log = logging.getLogger(__name__)
+
+NAME = "mac"
+LABEL = "macOS"
+OUTBOX_WHERE = "в папке, которую программа открыла в Finder"
+# Without the mock keychain a browser with a fresh profile asks for the login keychain password; our windows keep
+# no passwords.
+WINDOW_ARGS = ["--use-mock-keychain", "--password-store=basic", "--start-maximized"]
+CLOSE_WAIT = 8.0
+APPS = [Path("/Applications"), Path.home() / "Applications"]
+BUNDLES = [
+    ("edge", "Microsoft Edge.app/Contents/MacOS/Microsoft Edge"),
+    ("chrome", "Google Chrome.app/Contents/MacOS/Google Chrome"),
+    ("yandex", "Yandex.app/Contents/MacOS/Yandex"),
+    ("brave", "Brave Browser.app/Contents/MacOS/Brave Browser"),
+    ("vivaldi", "Vivaldi.app/Contents/MacOS/Vivaldi"),
+    ("chromium", "Chromium.app/Contents/MacOS/Chromium"),
+]
+ROOTS = "/System/Library/Keychains/SystemRootCertificates.keychain"
+
+
+def data_root() -> Optional[Path]:
+    return Path.home() / "Library" / "Application Support"
+
+
+def outbox() -> Path:
+    """Not the desktop: macOS asks the user before a program may write there. Shown in Finder instead."""
+    from .. import paths
+    path = paths.data_dir() / "Отчёты"
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
+def message(text: str) -> None:
+    script = ['-e', 'on run argv', '-e',
+              'display dialog (item 1 of argv) with title "Ценитель" buttons {"OK"} default button 1 with icon note',
+              '-e', 'end run']
+    try:
+        subprocess.run(["osascript", *script, text], capture_output=True, timeout=600)
+    except Exception:
+        log.exception("сообщение не показано: %s", text)
+
+
+def reveal(path: Path) -> None:
+    subprocess.Popen(["open", "-R", str(path)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+
+_context = {}
+
+
+def ssl_context():
+    """Python from python.org brings no certificates of its own: trust the roots macOS itself keeps."""
+    if "ctx" not in _context:
+        ctx = None
+        try:
+            pem = subprocess.run(["security", "find-certificate", "-a", "-p", ROOTS], capture_output=True,
+                                 timeout=30).stdout.decode("ascii", "ignore")
+            if "BEGIN CERTIFICATE" in pem:
+                ctx = ssl.create_default_context(cadata=pem)
+        except Exception:
+            log.exception("корневые сертификаты macOS не прочитаны")
+        _context["ctx"] = ctx
+    return _context["ctx"]
+
+
+def browser_paths() -> List[Tuple[str, Path]]:
+    return [(key, folder / inside) for key, inside in BUNDLES for folder in APPS]
+
+
+def processes(exe_names: Iterable[str] = ()) -> List[Tuple[int, str]]:
+    """(id, command line) of every process of this user that was started with a profile folder."""
+    out = subprocess.run(["ps", "-axww", "-o", "pid=,command="], capture_output=True, timeout=30).stdout
+    found = []
+    for line in out.decode("utf-8", "replace").splitlines():
+        pid, _, command = line.strip().partition(" ")
+        if pid.isdigit() and "--user-data-dir=" in command:
+            found.append((int(pid), command.strip()))
+    return found
+
+
+def _command_of(pid: int) -> str:
+    out = subprocess.run(["ps", "-ww", "-o", "stat=,command=", "-p", str(pid)], capture_output=True, timeout=10)
+    line = out.stdout.decode("utf-8", "replace").strip()
+    state, _, command = line.partition(" ")
+    # A zombie has finished; only its exit status is left to collect.
+    return "" if state.startswith("Z") else command
+
+
+class Process:
+    def __init__(self, pid: int, profile: Path) -> None:
+        self.pid = pid
+        self.mark = str(profile)
+
+    def _reaped(self) -> bool:
+        """Our own child stays a zombie until collected — and a zombie still answers kill(pid, 0)."""
+        try:
+            done, _ = os.waitpid(self.pid, os.WNOHANG)
+            return done == self.pid
+        except ChildProcessError:
+            return False
+
+    def alive(self) -> bool:
+        if self._reaped():
+            return False
+        try:
+            os.kill(self.pid, 0)
+        except ProcessLookupError:
+            return False
+        except PermissionError:
+            return False
+        return True
+
+    def ours(self) -> bool:
+        return self.alive() and self.mark in _command_of(self.pid)
+
+    def close(self) -> None:
+        if not self.ours():
+            return
+        # A browser quits on SIGTERM the way it does from its menu: our profile is saved, nothing else is touched.
+        os.kill(self.pid, signal.SIGTERM)
+        deadline = time.monotonic() + CLOSE_WAIT
+        while time.monotonic() < deadline:
+            if not self.alive():
+                return
+            time.sleep(0.2)
+        if self.ours():
+            log.warning("окно программы не закрылось само — завершаю его процесс")
+            os.kill(self.pid, signal.SIGKILL)
+
+
+def first_run() -> bool:
+    """False when the program must not start: it runs straight from the downloaded disk image, which goes away."""
+    exe = Path(sys.executable).resolve()
+    if getattr(sys, "frozen", False) and str(exe).startswith("/Volumes/"):
+        message("Сначала перетащите «Ценитель» в папку «Программы» (окно, которое открылось из скачанного файла), "
+                "потом откройте его оттуда — через Launchpad или Finder → Программы.")
+        return False
+    return True

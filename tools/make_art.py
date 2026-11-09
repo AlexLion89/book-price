@@ -1,6 +1,7 @@
-"""Prepare UI pictures from the originals: python tools/make_art.py <folder with fox-*.jpg|png>
+"""Prepare UI pictures from the originals: python tools/make_art.py <folder with fox-*.jpg|png> [--icns]
 
-Writes bookprice/ui/img/: hero.jpg, fox-64.png, fox-192.png, fox.ico and, from fox-search.png, search.png.
+Writes bookprice/ui/img/: hero.jpg, fox-64.png, fox-192.png, fox.ico and, from fox-search.png, search.png;
+with --icns only the macOS icon tools/mac/fox.icns (kept out of bookprice/: updates need no icon).
 Resizing runs in Edge's canvas — no imaging library is bundled with the program.
 """
 import base64
@@ -15,6 +16,10 @@ BG = "#1E2736"
 # the face and the book on a dark tile; a PNG with real transparency is used whole.
 ICON_CROP = (95, 40, 1070)
 ICO_SIZES = [256, 128, 64, 48, 32, 24, 16]
+# PNG entries of an .icns: type and pixel size (the @2x types are the doubled sizes).
+ICNS_TYPES = [(b"icp4", 16), (b"icp5", 32), (b"icp6", 64), (b"ic07", 128), (b"ic08", 256), (b"ic09", 512),
+              (b"ic10", 1024), (b"ic11", 32), (b"ic12", 64), (b"ic13", 256), (b"ic14", 512)]
+ICNS = root / "tools" / "mac" / "fox.icns"
 
 RENDER = r"""
 async ({src, crop, size, bg, round, type, quality}) => {
@@ -53,17 +58,32 @@ def ico(pngs: dict) -> bytes:
     return head + entries + blobs
 
 
+def icns(pngs: dict) -> bytes:
+    body = b"".join(kind + struct.pack(">I", 8 + len(pngs[size])) + pngs[size] for kind, size in ICNS_TYPES)
+    return b"icns" + struct.pack(">I", 8 + len(body)) + body
+
+
 def find(folder: Path, stem: str):
     return next((p for p in (folder / f"{stem}.png", folder / f"{stem}.jpg") if p.exists()), None)
 
 
-def main(folder: Path) -> None:
+def main(folder: Path, only_icns: bool = False) -> None:
     from playwright.sync_api import sync_playwright
     OUT.mkdir(parents=True, exist_ok=True)
     with sync_playwright() as p:
         browser = p.chromium.launch(channel="msedge", headless=True)
         page = browser.new_page()
         render = lambda path, **kw: decode(page.evaluate(RENDER, {"src": data_url(path), **kw}))
+
+        if only_icns:
+            icon = find(folder, "fox-icon")
+            style = {} if icon.suffix.lower() == ".png" else {
+                "crop": [ICON_CROP[0], ICON_CROP[1], ICON_CROP[2], ICON_CROP[2]], "bg": BG, "round": 0.18}
+            ICNS.parent.mkdir(parents=True, exist_ok=True)
+            ICNS.write_bytes(icns({s: render(icon, size=s, **style) for _, s in ICNS_TYPES}))
+            browser.close()
+            print(f"{ICNS}: {ICNS.stat().st_size // 1024} КБ")
+            return
 
         hero = find(folder, "fox-hero")
         (OUT / "hero.jpg").write_bytes(render(hero, size=1280, type="image/jpeg", quality=0.86))
@@ -87,4 +107,4 @@ def main(folder: Path) -> None:
 
 
 if __name__ == "__main__":
-    main(Path(sys.argv[1]))
+    main(Path(sys.argv[1]), "--icns" in sys.argv)

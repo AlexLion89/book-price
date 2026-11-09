@@ -8,6 +8,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Callable, Optional
 
+from . import browsers
 from .sources.extract import SEARCH_INPUT
 
 log = logging.getLogger(__name__)
@@ -31,7 +32,7 @@ class Blocked(Exception):
 
 
 class Browser:
-    """Visible Edge window with its own profile: cookies survive restarts, so captchas get rarer.
+    """Visible browser window with its own profile: cookies survive restarts, so captchas get rarer.
 
     Playwright's sync API is bound to the thread that started it — create and use from one worker thread.
     """
@@ -48,18 +49,26 @@ class Browser:
         self._ctx = None
         self._page = None
         self._last_visit = 0.0
+        self.found = browsers.find()
+
+    @property
+    def profile_dir(self) -> Path:
+        return browsers.profile(self.data_dir, "search", self.found) if self.found else self.data_dir / "edge-profile"
 
     def start(self) -> None:
         if self._ctx:
             return
+        if not self.found:
+            raise browsers.NoBrowser(browsers.NO_BROWSER)
         from playwright.sync_api import sync_playwright
         self._pw = sync_playwright().start()
         # The visible window is maximized and the page takes the window's size: a fixed page taller than a laptop
         # screen hides the bottom of Avito's captcha, its slider included.
         size = {"viewport": {"width": 1280, "height": 900}} if self.headless else {"no_viewport": True}
+        log.info("окно поиска: %s (%s)", self.found.label, self.found.path)
         self._ctx = self._pw.chromium.launch_persistent_context(
-            str(self.data_dir / "edge-profile"),
-            channel="msedge",
+            str(self.profile_dir),
+            **browsers.launch_options(self.found),
             headless=self.headless,
             locale="ru-RU",
             args=["--disable-blink-features=AutomationControlled", "--disable-sync", "--no-first-run",

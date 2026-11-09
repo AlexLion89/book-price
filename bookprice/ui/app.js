@@ -4,6 +4,8 @@ const view = document.getElementById("view");
 const STATE_LABEL = { waiting: "ждёт", running: "ищу…", done: "готово", error: "не вышло" };
 const STATUS_LABEL = { draft: "ещё не выставлена", listed: "выставлена", sold: "продана" };
 let pollTimer = null;
+// What differs between Windows and macOS, and which browser the program drives: GET /api/system.
+let SYS = { os: "windows", outbox: "на рабочем столе", browser: "Microsoft Edge", downloads: [] };
 let addState = { mode: "isbn", book: null, candidates: null, condition: "excellent", error: "" };
 const openSources = new Set();
 
@@ -285,7 +287,7 @@ async function renderBook(id) {
 function progressHtml(job, label) {
   const captcha = job.captcha
     ? `<div class="alert big">${esc(label[job.captcha] || job.captcha)} просит подтвердить, что вы не робот.
-        Перейдите в окно Edge «Поиск цен» и пройдите проверку там — поиск продолжится сам.</div>` : "";
+        Перейдите в окно «Поиск цен» и пройдите проверку там — поиск продолжится сам.</div>` : "";
   return `${captcha}<div class="card sleuth"><img src="/img/search.png" alt="">
     <div><h2><span class="spinner"></span> Лиса идёт по следу — около минуты</h2>
     ${job.stage ? `<p class="small muted" style="margin-top: -6px">${esc(job.stage)}</p>` : ""}
@@ -396,20 +398,26 @@ function renderHelp() {
   <div class="card">
     <ol>
       <li><strong>Добавьте книгу.</strong> Впишите ISBN — 13 цифр под штрихкодом на задней обложке. Если ISBN нет (старая книга) — название, автора и год, потом выберите своё издание из списка.</li>
-      <li><strong>Выберите состояние</strong> и нажмите «Найти цены». Откроется отдельное окно Edge «Поиск цен» — в нём программа сама ходит по магазинам и Авито (Читай-город, Лабиринт, Book24, Буквоед, Республика, Библио-Глобус, Дом книги (СПб), Московский дом книги, Озон, Wildberries, Яндекс Маркет, Авито, alib и Мешок), минуты полторы-две. Трогать его не нужно: когда поиск закончится, оно закроется само.</li>
+      <li><strong>Выберите состояние</strong> и нажмите «Найти цены». Откроется отдельное окно ${esc(SYS.browser || "браузера")} «Поиск цен» — в нём программа сама ходит по магазинам и Авито (Читай-город, Лабиринт, Book24, Буквоед, Республика, Библио-Глобус, Дом книги (СПб), Московский дом книги, Озон, Wildberries, Яндекс Маркет, Авито, alib и Мешок), минуты полторы-две. Трогать его не нужно: когда поиск закончится, оно закроется само.</li>
       <li><strong>Если площадка спросит «вы не робот?»</strong> — программа напишет об этом крупно. Перейдите в окно «Поиск цен», пройдите проверку, дальше поиск пойдёт сам.</li>
       <li><strong>Посмотрите, что нашлось.</strong> Снимите галочки у чужих изданий и комплектов — цена пересчитается.</li>
       <li><strong>Выставьте объявление</strong>, скопировав готовый текст, и отметьте в программе цену. Через неделю без продажи программа подскажет, до скольких снизить.</li>
     </ol>
-    <p>Вернуться к списку книг — кнопка «Мои книги» вверху, ссылка «← Все книги» или клавиша Esc. Закрыть программу — кнопка «Выйти» или просто закрыть это окно. Ваши собственные окна Edge программа не трогает.</p>
-    <p>Если что-то не работает — нажмите «Отчёт об ошибке» вверху. На рабочем столе появится zip-файл: пришлите его тому, кто помогает с программой. В нём журнал работы и ваш список книг с найденными ценами — по нему видно, почему программа так посчитала. Сама программа ничего никуда не отправляет.</p>
+    <p>Вернуться к списку книг — кнопка «Мои книги» вверху, ссылка «← Все книги» или клавиша Esc. Закрыть программу — кнопка «Выйти» или просто закрыть это окно. Ваши собственные окна и вкладки браузера программа не трогает: у неё свои отдельные окна со своим профилем.</p>
+    <p>Если что-то не работает — нажмите «Отчёт об ошибке» вверху. ${SYS.os === "mac" ? "Откроется Finder с zip-файлом" : "На рабочем столе появится zip-файл"}: пришлите его тому, кто помогает с программой. В нём журнал работы и ваш список книг с найденными ценами — по нему видно, почему программа так посчитала. Сама программа ничего никуда не отправляет.</p>
   </div>
   <div class="card">
     <h2>Проверка площадок</h2>
-    <p class="small muted">Для того, кто помогает с программой: прогоняет все площадки на двух книгах и сохраняет снимки страниц в zip на рабочем столе. Занимает пару минут.</p>
+    <p class="small muted">Для того, кто помогает с программой: прогоняет все площадки на двух книгах и сохраняет снимки страниц в zip ${esc(SYS.outbox)}. Занимает пару минут.</p>
     <div class="row"><input id="check-isbn" placeholder="ещё ISBN, необязательно" style="width: 260px"><button class="ghost" id="check">Проверить площадки</button></div>
     <pre id="check-log" class="small" style="white-space: pre-wrap"></pre>
+    <p class="small muted">Без захода на сайты: откроет окно поиска на несколько секунд и закроет — видно, что браузер слушается программу.</p>
+    <div class="row"><button class="ghost" id="window-test">Проверить окно поиска</button> <span id="window-test-log" class="small"></span></div>
   </div>`;
+  document.getElementById("window-test").onclick = async () => {
+    await api("POST", "/api/window-test");
+    pollWindowTest();
+  };
   document.getElementById("check").onclick = async () => {
     await api("POST", "/api/check", { isbn: document.getElementById("check-isbn").value.trim() });
     pollCheck();
@@ -427,6 +435,17 @@ async function pollCheck() {
   if (running) pollTimer = setTimeout(pollCheck, 1500);
 }
 
+async function pollWindowTest() {
+  const box = document.getElementById("window-test-log");
+  if (!box) return;
+  const st = await api("GET", "/api/window-test");
+  const running = st.status === "queued" || st.status === "running";
+  box.textContent = running ? "окно поиска открыто…" : st.status === "done" ? `работает: ${st.browser}`
+    : st.status === "error" ? `не вышло: ${st.error}` : "";
+  document.getElementById("window-test").disabled = running;
+  if (running) setTimeout(pollWindowTest, 1000);
+}
+
 /* ---------- header ---------- */
 
 document.querySelectorAll("nav [data-action]").forEach(btn => btn.onclick = async () => {
@@ -437,8 +456,8 @@ document.querySelectorAll("nav [data-action]").forEach(btn => btn.onclick = asyn
     if (action === "add") location.hash = "#/add";
     if (action === "report") {
       toast("Собираю отчёт…", 2000);
-      const { path } = await api("POST", "/api/report");
-      toast(`Отчёт сохранён на рабочем столе: ${path.split(/[\\/]/).pop()}`, 8000);
+      const { path, where } = await api("POST", "/api/report");
+      toast(`Отчёт сохранён ${where}: ${path.split(/[\\/]/).pop()}`, 8000);
     }
     if (action === "update") await updateNow(true);
     if (action === "quit") {
@@ -486,6 +505,21 @@ async function watchUpdates() {
   setTimeout(watchUpdates, st && st.checked ? 30 * 60000 : 3000);
 }
 
+// Without Chrome, Edge or Yandex Browser the page has opened in the default browser (Safari, Firefox): say what to
+// install — searching is impossible until then.
+async function checkSystem() {
+  const st = await api("GET", "/api/system").catch(() => null);
+  if (!st) return;
+  SYS = st;
+  const banner = document.getElementById("browser-banner");
+  if (st.browser) { banner.hidden = true; return; }
+  banner.innerHTML = `<div class="grow"><strong>Нужен другой браузер.</strong> ${esc(st.no_browser)}
+      Установите любой из них и откройте «Ценитель» заново.</div>
+    ${st.downloads.map(d => `<a class="button" href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.label)}</a>`).join("")}`;
+  banner.hidden = false;
+}
+
+checkSystem().then(route);
 watchUpdates();
 setInterval(() => fetch("/api/ping").catch(() => {}), 60000);
 // Closing this window turns the program off; a reload asks for the page again at once and cancels that.
@@ -495,4 +529,3 @@ document.addEventListener("keydown", e => {
   const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement && document.activeElement.tagName);
   if (e.key === "Escape" && !typing && location.hash !== "#/") location.hash = "#/";
 });
-route();

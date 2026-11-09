@@ -1,4 +1,4 @@
-"""In-page extractors. They run inside Edge, so they see the page after its own scripts have rendered it."""
+"""In-page extractors. They run inside the browser, so they see the page after its own scripts have rendered it."""
 from __future__ import annotations
 
 import json

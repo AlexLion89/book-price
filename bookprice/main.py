@@ -10,8 +10,8 @@ from pathlib import Path
 
 from . import __version__, paths
 from .app import App, serve
-from .install import first_run
-from .window import OwnedWindow, close_window, find_browser, open_window
+from .system import current as system
+from .window import close_window, leftover_windows, open_window
 
 PORT = 8769
 
@@ -33,14 +33,13 @@ def already_running(url: str) -> bool:
         return False
 
 
-def close_leftover_window(profile: Path, log: logging.Logger) -> None:
+def close_leftover_window(data_dir: Path, log: logging.Logger) -> None:
     """Called once the port is ours, so no other copy is alive: a window with our profile was left by an older
     version after an update."""
     try:
-        pid = find_browser(profile)
-        if pid:
+        for window in leftover_windows(data_dir):
             log.info("закрываю окно, оставшееся от прошлого запуска")
-            OwnedWindow(pid).close()
+            window.close()
     except Exception:
         log.exception("окно от прошлого запуска не закрылось")
 
@@ -50,13 +49,12 @@ def main() -> None:
     setup_logging(data_dir)
     log = logging.getLogger("bookprice")
     url = f"http://127.0.0.1:{PORT}/"
-    profile = data_dir / "ui-profile"
-    if not first_run():
+    if not system.first_run():
         return
     if already_running(url):
-        open_window(url, profile, own=False)
+        open_window(url, data_dir, own=False)
         return
-    log.info("запуск %s из %s", __version__, Path(__file__).parent)
+    log.info("запуск %s (%s) из %s", __version__, system.LABEL, Path(__file__).parent)
     app = App(data_dir)
     try:
         server = serve(app, PORT)
@@ -65,9 +63,9 @@ def main() -> None:
             raise
         log.info("другая копия запустилась одновременно с этой и сама откроет окно")
         return
-    close_leftover_window(profile, log)
+    close_leftover_window(data_dir, log)
     if "--no-window" not in sys.argv:
-        app.ui = open_window(url, profile)
+        app.ui = open_window(url, data_dir)
     try:
         server.serve_forever()
     finally:
