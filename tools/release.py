@@ -1,6 +1,8 @@
 """Publish a GitHub release for the current version: python tools/release.py [--prerelease].
 
-Needs the tag vX.Y.Z already pushed, ../dist/BookPrice-X.Y.Z.zip built and docs/releases/X.Y.Z.md written.
+Needs the tag vX.Y.Z already pushed, ../dist/BookPrice-X.Y.Z.zip built and docs/releases/X.Y.Z.md written, with
+a line «Система: …» saying whom the release is for (see bookprice/updater.py). The install guide docs/install.md
+is added below the notes. The macOS disk image is attached by GitHub Actions once the release is published.
 The token (fine-grained, Contents: write on this repository only) is read from ~/.github/book-price.token.
 """
 import json
@@ -14,7 +16,7 @@ from pathlib import Path
 root = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(root))
 from bookprice import __version__  # noqa: E402
-from bookprice.updater import REPO  # noqa: E402
+from bookprice.updater import REPO, TARGET  # noqa: E402
 
 API = f"https://api.github.com/repos/{REPO}"
 TOKEN_FILE = Path(os.environ.get("BOOKPRICE_GH_TOKEN_FILE", Path.home() / ".github" / "book-price.token"))
@@ -33,6 +35,8 @@ def call(method, url, body=None, data=None, ctype="application/json"):
 def main():
     tag = f"v{__version__}"
     notes = (root / "docs" / "releases" / f"{__version__}.md").read_text(encoding="utf-8")
+    assert TARGET.search(notes), "в заметке нет строки «Система: …» — кому выпуск"
+    notes = notes.rstrip("\n") + "\n\n" + (root / "docs" / "install.md").read_text(encoding="utf-8")
     assert "\r" not in notes, "в описании релиза не должно быть CR"
     fields = {"tag_name": tag, "name": f"Ценитель {__version__}", "body": notes,
               "prerelease": "--prerelease" in sys.argv}
@@ -46,6 +50,9 @@ def main():
 
     assets = [(root.parent / "dist" / f"BookPrice-{__version__}.zip", "application/zip"),
               (root / "docs" / "instruction.pdf", "application/pdf")]
+    dmg = root.parent / "dist" / f"BookPrice-{__version__}-mac.dmg"
+    if dmg.exists():
+        assets.append((dmg, "application/x-apple-diskimage"))
     existing = {a["name"]: a["id"] for a in release.get("assets", [])}
     upload = release["upload_url"].split("{")[0]
     for path, ctype in assets:

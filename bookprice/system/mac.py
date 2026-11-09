@@ -2,7 +2,8 @@
 
 The user may run the very same browser app with a hundred tabs. Ours is a separate instance only because it is started
 from the app's binary with its own profile folder — never through `open` or AppleScript, which would hand the job to
-the user's running browser. Every signal goes to one process id that was just checked to carry our profile folder.
+the user's running browser. Every signal goes to one process id that was just checked to carry our profile folder and
+to hold its lock.
 """
 from __future__ import annotations
 
@@ -96,6 +97,16 @@ def processes(exe_names: Iterable[str] = ()) -> List[Tuple[int, str]]:
     return found
 
 
+def profile_in_use(profile: Path, pid: int) -> bool:
+    """A running browser keeps <profile>/SingletonLock, a link to "<host>-<process id>". A process that only names
+    our folder is not proof — it may have fallen back to the user's own profile."""
+    try:
+        target = os.readlink(profile / "SingletonLock")
+    except OSError:
+        return False
+    return target.rsplit("-", 1)[-1] == str(pid)
+
+
 def _command_of(pid: int) -> str:
     out = subprocess.run(["ps", "-ww", "-o", "stat=,command=", "-p", str(pid)], capture_output=True, timeout=10)
     line = out.stdout.decode("utf-8", "replace").strip()
@@ -129,7 +140,7 @@ class Process:
         return True
 
     def ours(self) -> bool:
-        return self.alive() and self.mark in _command_of(self.pid)
+        return self.alive() and self.mark in _command_of(self.pid) and profile_in_use(Path(self.mark), self.pid)
 
     def close(self) -> None:
         if not self.ours():

@@ -13,6 +13,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 from pathlib import Path
 from typing import Iterable, List, Optional, Tuple
 
@@ -28,6 +29,7 @@ CSIDL_DESKTOPDIRECTORY, CSIDL_LOCAL_APPDATA = 0x10, 0x1C
 WM_CLOSE = 0x0010
 SYNCHRONIZE, QUERY_LIMITED = 0x00100000, 0x1000
 WAIT_TIMEOUT = 0x102
+CLOSE_WAIT, NO_WINDOW_GRACE = 8.0, 2.0
 TH32CS_SNAPPROCESS = 0x2
 PROCESS_COMMAND_LINE = 60
 # A command line is at most 32767 characters, plus the UNICODE_STRING header in front of it.
@@ -207,6 +209,22 @@ def processes(exe_names: Iterable[str]) -> List[Tuple[int, str]]:
         return _powershell(names)
 
 
+def profile_in_use(profile: Path, pid: int) -> bool:
+    """A browser holds <profile>/lockfile open, unshared, for as long as it runs on that folder. A process that only
+    names our folder is not proof: Edge launched through some starters falls back to the user's own profile and keeps
+    that command line — such a process must never be taken for ours."""
+    lock = profile / "lockfile"
+    if not lock.exists():
+        return False
+    try:
+        with open(lock, "rb"):
+            return False
+    except PermissionError:
+        return True
+    except OSError:
+        return False
+
+
 def _windows_of(pid: int) -> List[int]:
     user32 = ctypes.windll.user32
     found = []
@@ -236,11 +254,22 @@ class Process:
     def close(self) -> None:
         if not self.alive():
             return
-        for hwnd in _windows_of(self.pid):
+        windows = _windows_of(self.pid)
+        for hwnd in windows:
             ctypes.windll.user32.PostMessageW(hwnd, WM_CLOSE, 0, 0)
-        if _kernel32().WaitForSingleObject(self.handle, 8000) == WAIT_TIMEOUT:
+        # Some browsers (Yandex) close the window but keep running in the background: once no window is left, a short
+        # grace for saving the profile, then the process goes.
+        deadline, no_window_since = time.monotonic() + CLOSE_WAIT, None
+        while time.monotonic() < deadline:
+            if _kernel32().WaitForSingleObject(self.handle, 250) != WAIT_TIMEOUT:
+                return
+            if not _windows_of(self.pid):
+                no_window_since = no_window_since or time.monotonic()
+                if time.monotonic() - no_window_since > NO_WINDOW_GRACE:
+                    break
+        if no_window_since is None:
             log.warning("окно программы не закрылось само — завершаю его процесс")
-            subprocess.run(["taskkill", "/PID", str(self.pid), "/T", "/F"], capture_output=True, creationflags=NO_WINDOW)
+        subprocess.run(["taskkill", "/PID", str(self.pid), "/T", "/F"], capture_output=True, creationflags=NO_WINDOW)
 
 
 def _inside_temp(exe: Path) -> bool:

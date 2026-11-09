@@ -22,11 +22,13 @@ log = logging.getLogger(__name__)
 # A fresh profile offers to sign in and sync with the system account; the program's windows need neither.
 QUIET = ["--no-first-run", "--no-default-browser-check", "--disable-sync"]
 FIND_TRIES, FIND_PAUSE = 8, 1.0
+SWEEP_TRIES, SWEEP_PAUSE = 6, 0.5
 
 
 class OwnedWindow:
     def __init__(self, pid: int, profile: Path) -> None:
         self.pid = pid
+        self.profile = profile
         self.process = system.Process(pid, profile)
 
     def alive(self) -> bool:
@@ -37,9 +39,10 @@ class OwnedWindow:
 
 
 def find_browser(profile: Path, listing=None) -> Optional[int]:
-    """The browser process (not a renderer or helper: those carry --type=) started with this profile folder."""
+    """The browser process (not a renderer or helper: those carry --type=) started with this profile folder and
+    really running on it."""
     for pid, command in listing if listing is not None else system.processes(browsers.exe_names()):
-        if "--type=" not in command and browsers.started_with(command, profile):
+        if "--type=" not in command and browsers.started_with(command, profile) and system.profile_in_use(profile, pid):
             return pid
     return None
 
@@ -53,6 +56,8 @@ def open_window(url: str, data_dir: Path, own: bool = True) -> Optional[OwnedWin
         webbrowser.open(url)
         return None
     profile = browsers.profile(data_dir, "ui", browser)
+    # A folder the browser cannot create makes it fall back to the user's own profile.
+    profile.mkdir(parents=True, exist_ok=True)
     log.info("окно программы: %s (%s)", browser.label, browser.path)
     subprocess.Popen([str(browser.path), f"--user-data-dir={profile}", *QUIET, *system.WINDOW_ARGS, f"--app={url}"],
                      stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -80,6 +85,22 @@ def leftover_windows(data_dir: Path):
             yield OwnedWindow(pid, profile)
 
 
+def sweep(profile: Path) -> None:
+    """Some browsers (Yandex) start themselves again in the background (--no-startup-window), on our profile, right
+    after their last window closes — such a process would stay until logout. Only those: a window the program has
+    just opened again, if the user restarted it at once, is left alone. Never raises."""
+    try:
+        for _ in range(SWEEP_TRIES):
+            time.sleep(SWEEP_PAUSE)
+            for pid, command in system.processes(browsers.exe_names()):
+                if ("--no-startup-window" in command and "--type=" not in command
+                        and browsers.started_with(command, profile) and system.profile_in_use(profile, pid)):
+                    log.info("браузер остался работать в фоне с профилем программы — закрываю его")
+                    OwnedWindow(pid, profile).close()
+    except Exception:
+        log.exception("фоновый процесс браузера с профилем программы")
+
+
 def close_window(window: Optional[OwnedWindow]) -> None:
     """Never raises: a window left open must not stop the program from quitting or restarting."""
     if window is None:
@@ -88,3 +109,4 @@ def close_window(window: Optional[OwnedWindow]) -> None:
         window.close()
     except Exception:
         log.exception("окно программы не закрылось")
+    sweep(window.profile)

@@ -84,6 +84,7 @@ class Browser:
                 log.warning("не открылась страница окна поиска")
 
     def close(self) -> None:
+        started = self._ctx is not None
         try:
             if self._ctx:
                 self._ctx.close()
@@ -91,6 +92,9 @@ class Browser:
                 self._pw.stop()
         finally:
             self._ctx = self._pw = self._page = None
+        if started:
+            from .window import sweep
+            sweep(self.profile_dir)
 
     @property
     def page(self):

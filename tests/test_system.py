@@ -14,9 +14,27 @@ WIN = sys.platform == "win32"
 MAC = sys.platform == "darwin"
 
 
-def sleeper(profile: Path) -> subprocess.Popen:
-    """A stand-in for a browser: a process whose command line carries a profile folder."""
-    return subprocess.Popen([sys.executable, "-c", "import time; time.sleep(60)", f"--user-data-dir={profile}"],
+# A stand-in for a browser: its command line carries a profile folder and, like a real one, it holds that folder's
+# lock — or, with hold=False, only names the folder, as Edge does when it has fallen back to the user's own profile.
+SLEEPER = """
+import os, sys, time
+profile, hold = sys.argv[1].split("=", 1)[1], sys.argv[2] == "hold"
+os.makedirs(profile, exist_ok=True)
+if hold and sys.platform == "win32":
+    import ctypes
+    handle = ctypes.windll.kernel32.CreateFileW(os.path.join(profile, "lockfile"), 0x40000000, 0, None, 2, 0x04000080, None)
+elif hold:
+    os.symlink(f"host-{os.getpid()}", os.path.join(profile, "SingletonLock"))
+time.sleep(60)
+"""
+
+
+SLEEPER_FILE = Path(tempfile.mkdtemp(prefix="bp-sleeper-")) / "sleeper.py"
+SLEEPER_FILE.write_text(SLEEPER, encoding="utf-8")
+
+
+def sleeper(profile: Path, hold: bool = True) -> subprocess.Popen:
+    return subprocess.Popen([sys.executable, str(SLEEPER_FILE), f"--user-data-dir={profile}", "hold" if hold else "name"],
                             stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
@@ -71,8 +89,9 @@ class ProcessesTest(unittest.TestCase):
     def setUp(self):
         self.base = Path(tempfile.mkdtemp(prefix="bp-proc-"))
         self.ours, self.users = self.base / "ui-profile", self.base / "ui-profile-user"
-        self.procs = [sleeper(self.ours), sleeper(self.users)]
-        time.sleep(1)
+        self.fallen = self.base / "ui-profile-chrome"
+        self.procs = [sleeper(self.ours), sleeper(self.users), sleeper(self.fallen, hold=False)]
+        time.sleep(1.5)
 
     def tearDown(self):
         for p in self.procs:
@@ -87,7 +106,15 @@ class ProcessesTest(unittest.TestCase):
         with mock.patch.object(browsers, "exe_names", self.names):
             self.assertEqual(window.find_browser(self.ours), self.procs[0].pid)
             self.assertEqual(window.find_browser(self.users), self.procs[1].pid)
-            self.assertIsNone(window.find_browser(self.base / "ui-profile-chrome"))
+            self.assertIsNone(window.find_browser(self.base / "ui-profile-yandex"))
+
+    def test_a_process_that_only_names_our_folder_is_not_ours(self):
+        """Edge started through some launchers falls back to the user's own profile with our folder still in its
+        command line: closing it would close the user's browser."""
+        with mock.patch.object(browsers, "exe_names", self.names):
+            self.assertIsNone(window.find_browser(self.fallen))
+        self.assertFalse(system.profile_in_use(self.fallen, self.procs[2].pid))
+        self.assertTrue(system.profile_in_use(self.ours, self.procs[0].pid))
 
     @unittest.skipUnless(WIN, "Windows")
     def test_winapi_sees_the_same_command_lines_as_powershell(self):
@@ -106,10 +133,12 @@ class ProcessesTest(unittest.TestCase):
 
     @unittest.skipUnless(MAC, "macOS")
     def test_a_process_without_our_profile_is_never_signalled(self):
-        stranger = system.Process(self.procs[1].pid, self.ours)
-        stranger.close()
+        for pid in (self.procs[1].pid, self.procs[2].pid):
+            system.Process(pid, self.ours).close()
+        system.Process(self.procs[2].pid, self.fallen).close()
         time.sleep(0.5)
         self.assertIsNone(self.procs[1].poll())
+        self.assertIsNone(self.procs[2].poll())
 
 
 if __name__ == "__main__":
