@@ -38,7 +38,7 @@ def check(name, ok, detail=""):
 
 
 # Under Rosetta (the Intel half on an Apple M runner) the browser and Playwright's node start translated: slow.
-SLOW = 3 if ARCH else 1
+SLOW = 6 if ARCH else 1
 
 
 def get(path, timeout=5 * SLOW):
@@ -46,7 +46,7 @@ def get(path, timeout=5 * SLOW):
         return json.load(r)
 
 
-def post(path, body=b"{}", timeout=10):
+def post(path, body=b"{}", timeout=10 * SLOW):
     req = urllib.request.Request(URL + path, data=body, method="POST", headers={"Content-Type": "application/json"})
     with urllib.request.urlopen(req, timeout=timeout) as r:
         return json.load(r)
@@ -60,10 +60,14 @@ def ping():
 
 
 def wait(cond, limit, step=0.5):
+    """A slow answer is no answer yet: keep asking until the limit."""
     end = time.time() + limit
     while time.time() < end:
-        if cond():
-            return True
+        try:
+            if cond():
+                return True
+        except OSError:
+            pass
         time.sleep(step)
     return False
 
@@ -147,7 +151,8 @@ def main():
     time.sleep(3 * SLOW)
     shot(f"2-search-window{'-' + ARCH if ARCH else ''}")
     wait(lambda: get("api/window-test").get("status") in ("done", "error"), 60 * SLOW)
-    state = get("api/window-test")
+    state = {}
+    wait(lambda: state.update(get("api/window-test")) or True, 30 * SLOW)
     check("окно поиска открылось и закрылось", state.get("status") == "done", state)
     check("вкладки пользователя на месте после окна поиска", user_tabs() == tabs_before, user_tabs())
 
