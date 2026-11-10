@@ -1,0 +1,27 @@
+[
+ {
+  "check": "Chrome «пользователя» с тремя вкладками",
+  "ok": true,
+  "detail": "['', '', '']"
+ },
+ {
+  "check": "программа универсальная (Intel + Apple M)",
+  "ok": false,
+  "detail": ""
+ },
+ {
+  "check": "программа поднялась",
+  "ok": false,
+  "detail": "нет ответа"
+ },
+ {
+  "check": "окно программы открыто",
+  "ok": false,
+  "detail": "[]"
+ },
+ {
+  "check": "проверка дошла до конца",
+  "ok": false,
+  "detail": "URLError: <urlopen error [Errno 61] Connection refused>"
+ }
+]
