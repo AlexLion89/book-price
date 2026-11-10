@@ -19,8 +19,9 @@ from .system import current as system
 
 log = logging.getLogger(__name__)
 
-# A fresh profile offers to sign in and sync with the system account; the program's windows need neither.
-QUIET = ["--no-first-run", "--no-default-browser-check", "--disable-sync"]
+# A fresh profile offers to sign in and sync with the system account, and to translate a Russian page on a system in
+# another language; the program's windows need none of it.
+QUIET = ["--no-first-run", "--no-default-browser-check", "--disable-sync", "--disable-features=Translate"]
 FIND_TRIES, FIND_PAUSE = 8, 1.0
 SWEEP_TRIES, SWEEP_PAUSE = 6, 0.5
 

@@ -26,6 +26,9 @@ OUTBOX_WHERE = "в папке, которую программа открыла 
 # no passwords.
 WINDOW_ARGS = ["--use-mock-keychain", "--password-store=basic", "--start-maximized"]
 CLOSE_WAIT = 8.0
+# Without SO_REUSEADDR the port stays taken for half a minute after the program quits (TIME_WAIT), and the copy that
+# restarts it after an update cannot start. Here it never lets two copies listen at once.
+REUSE_ADDRESS = True
 APPS = [Path("/Applications"), Path.home() / "Applications"]
 BUNDLES = [
     ("edge", "Microsoft Edge.app/Contents/MacOS/Microsoft Edge"),

@@ -25,7 +25,7 @@ DATA = Path.home() / "Library" / "Application Support" / "BookPrice"
 URL = "http://127.0.0.1:8769/"
 USER_PROFILE = Path("/tmp/bp-user-chrome")
 DEBUG_PORT = 9333
-TABS = [f"data:text/html,<title>Вкладка пользователя {n}</title><h1>{n}</h1>" for n in (1, 2, 3)]
+TABS = [f"data:text/html;charset=utf-8,<title>Вкладка пользователя {n}</title><h1>{n}</h1>" for n in (1, 2, 3)]
 
 OUT.mkdir(parents=True, exist_ok=True)
 results = []
@@ -84,9 +84,10 @@ def program_running():
 
 
 def user_tabs():
+    """The user's tabs by id and address: a title may still be empty while a tab loads."""
     try:
         with urllib.request.urlopen(f"http://127.0.0.1:{DEBUG_PORT}/json/list", timeout=5) as r:
-            return sorted(t["title"] for t in json.load(r) if t.get("type") == "page")
+            return sorted(f'{t["id"]} {t["url"][:40]}' for t in json.load(r) if t.get("type") == "page")
     except Exception as e:
         return [f"нет ответа: {e}"]
 

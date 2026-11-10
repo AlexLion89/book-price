@@ -23,6 +23,9 @@ NAME = "windows"
 LABEL = "Windows"
 OUTBOX_WHERE = "на рабочем столе"
 WINDOW_ARGS = ["--start-maximized"]
+# With SO_REUSEADDR Windows lets a second socket listen on a taken port: two copies of the program would both answer,
+# and the second window would talk to either.
+REUSE_ADDRESS = False
 NO_WINDOW = getattr(subprocess, "CREATE_NO_WINDOW", 0)
 
 CSIDL_DESKTOPDIRECTORY, CSIDL_LOCAL_APPDATA = 0x10, 0x1C

@@ -434,9 +434,7 @@ def make_handler(app: App) -> Callable:
 
 
 class Server(ThreadingHTTPServer):
-    # With SO_REUSEADDR Windows lets a second socket listen on a taken port: two copies of the program would both
-    # answer, and the second window would talk to either.
-    allow_reuse_address = False
+    allow_reuse_address = system.REUSE_ADDRESS
 
 
 def serve(app: App, port: int) -> ThreadingHTTPServer:
