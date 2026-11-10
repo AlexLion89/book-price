@@ -11,7 +11,7 @@
 фильтром, сомнительные человек отмечает сам.
 
 **Скачать**: [последний выпуск](https://github.com/AlexLion89/book-price/releases/latest) — архив для Windows и
-инструкция с картинками (PDF, Windows); образ для Mac — с ближайших выпусков, пробные — на странице
+инструкция с картинками (PDF, Windows). Пробная версия для Mac (`…-mac.dmg`) и другие пробные выпуски — на странице
 [всех выпусков](https://github.com/AlexLion89/book-price/releases).
 
 <!-- install: копия docs/install.md, её же release.py кладёт в описание каждого выпуска -->
