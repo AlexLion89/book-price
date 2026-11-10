@@ -1,0 +1,76 @@
+2026-11-10 07:36:14,066 INFO MainThread bookprice: запуск 0.6.1 (macOS) из /Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice
+2026-11-10 07:36:15,317 INFO window bookprice.window: окно программы: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
+2026-11-10 07:36:58,980 INFO searcher bookprice.browser: окно поиска: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
+2026-11-10 07:38:36,548 ERROR window bookprice.window: поиск окна программы
+Traceback (most recent call last):
+  File "/Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice/window.py", line 71, in open_window
+    pid = find_browser(profile)
+  File "/Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice/window.py", line 46, in find_browser
+    for pid, command in listing if listing is not None else system.processes(browsers.exe_names()):
+  File "/Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice/system/mac.py", line 94, in processes
+    out = subprocess.run(["ps", "-axww", "-o", "pid=,command="], capture_output=True, timeout=30).stdout
+  File "subprocess.py", line 507, in run
+  File "subprocess.py", line 1134, in communicate
+  File "subprocess.py", line 1980, in _communicate
+  File "subprocess.py", line 1178, in _check_timeout
+subprocess.TimeoutExpired: Command '['ps', '-axww', '-o', 'pid=,command=']' timed out after 30 seconds
+2026-11-10 07:39:42,170 ERROR window bookprice.window: поиск окна программы
+Traceback (most recent call last):
+  File "/Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice/window.py", line 71, in open_window
+    pid = find_browser(profile)
+  File "/Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice/window.py", line 46, in find_browser
+    for pid, command in listing if listing is not None else system.processes(browsers.exe_names()):
+  File "/Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice/system/mac.py", line 94, in processes
+    out = subprocess.run(["ps", "-axww", "-o", "pid=,command="], capture_output=True, timeout=30).stdout
+  File "subprocess.py", line 507, in run
+  File "subprocess.py", line 1134, in communicate
+  File "subprocess.py", line 1980, in _communicate
+  File "subprocess.py", line 1178, in _check_timeout
+subprocess.TimeoutExpired: Command '['ps', '-axww', '-o', 'pid=,command=']' timed out after 30 seconds
+2026-11-10 07:40:40,812 ERROR window bookprice.window: поиск окна программы
+Traceback (most recent call last):
+  File "/Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice/window.py", line 71, in open_window
+    pid = find_browser(profile)
+  File "/Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice/window.py", line 46, in find_browser
+    for pid, command in listing if listing is not None else system.processes(browsers.exe_names()):
+  File "/Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice/system/mac.py", line 94, in processes
+    out = subprocess.run(["ps", "-axww", "-o", "pid=,command="], capture_output=True, timeout=30).stdout
+  File "subprocess.py", line 507, in run
+  File "subprocess.py", line 1134, in communicate
+  File "subprocess.py", line 1980, in _communicate
+  File "subprocess.py", line 1178, in _check_timeout
+subprocess.TimeoutExpired: Command '['ps', '-axww', '-o', 'pid=,command=']' timed out after 30 seconds
+2026-11-10 07:41:36,018 ERROR window bookprice.window: поиск окна программы
+Traceback (most recent call last):
+  File "/Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice/window.py", line 71, in open_window
+    pid = find_browser(profile)
+  File "/Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice/window.py", line 46, in find_browser
+    for pid, command in listing if listing is not None else system.processes(browsers.exe_names()):
+  File "/Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice/system/mac.py", line 94, in processes
+    out = subprocess.run(["ps", "-axww", "-o", "pid=,command="], capture_output=True, timeout=30).stdout
+  File "subprocess.py", line 507, in run
+  File "subprocess.py", line 1134, in communicate
+  File "subprocess.py", line 1980, in _communicate
+  File "subprocess.py", line 1178, in _check_timeout
+subprocess.TimeoutExpired: Command '['ps', '-axww', '-o', 'pid=,command=']' timed out after 30 seconds
+2026-11-10 07:42:27,622 ERROR searcher bookprice.app: проверка окна поиска
+Traceback (most recent call last):
+  File "/Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice/app.py", line 161, in _window_test
+    browser.start()
+  File "/Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice/browser.py", line 69, in start
+    self._ctx = self._pw.chromium.launch_persistent_context(
+  File "playwright/sync_api/_generated.py", line 16570, in launch_persistent_context
+  File "playwright/_impl/_sync_base.py", line 115, in _sync
+  File "playwright/_impl/_browser_type.py", line 166, in launch_persistent_context
+  File "playwright/_impl/_connection.py", line 83, in send_return_as_dict
+  File "playwright/_impl/_connection.py", line 559, in wrap_api_call
+playwright._impl._errors.TimeoutError: BrowserType.launch_persistent_context: Timeout 180000ms exceeded.
+Call log:
+  - <launching> /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --no-sandbox --disable-blink-features=AutomationControlled --disable-sync --no-first-run --start-maximized --user-data-dir=/Users/runner/Library/Application Support/BookPrice/search-profile-chrome --remote-debugging-pipe about:blank
+  - <launched> pid=7311
+
+2026-11-10 07:44:11,243 INFO MainThread bookprice: выключено
+2026-11-10 07:46:41,871 INFO MainThread bookprice: запуск 0.6.1 (macOS) из /Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice
+2026-11-10 07:47:13,270 INFO window bookprice.window: окно программы: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
+2026-11-10 07:48:31,880 INFO MainThread bookprice.window: окно программы: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
+2026-11-10 07:48:32,469 INFO MainThread bookprice: выключено
