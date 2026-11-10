@@ -1,0 +1,28 @@
+OK   Chrome «пользователя» с тремя вкладками — ['6DB072CFC57B7A8F79E23A7978F8F790 data:text/html;charset=utf-8,<title>%D0%', '8703A7DFCAFDFD9DC637EBB77A9D7D88 data:text/html;charset=utf-8,<title>%D0%', 'C6A0FDDD1C3D3C38619D6C6F2B030B59 data:text/html;charset=utf-8,<title>%D0%']
+OK   программа универсальная (Intel + Apple M) — x86_64 arm64
+A. запуск родной
+OK   программа поднялась — {'ok': True, 'version': '0.6.1', 'busy': False}
+OK   окно программы открыто — ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/Application Support/BookPrice/ui-profile-chrome --no-first-ru']
+снимок 1-window.png
+OK   программа видит браузер — {'os': 'mac', 'os_label': 'macOS', 'machine': 'arm64', 'outbox': 'в папке, которую программа открыла в Finder', 'browser': 'Google Chrome', 'no_browser': 'Нет подходящего браузера: нужен Google Chrome, Microsoft Edge или Яндекс Браузер. Safari и Firefox программа не умеет — без одного из этих браузеров она не сможет искать цены.', 'downloads': [{'label': 'Google Chrome', 'url': 'https://www.google.com/chrome/'}, {'label': 'Microsoft Edge', 'url': 'https://www.microsoft.com/edge/download'}, {'label': 'Яндекс Браузер', 'url': 'https://browser.yandex.ru/'}]}
+B. окно поиска
+снимок 2-search-window.png
+OK   окно поиска открылось и закрылось — {'status': 'done', 'title': 'Поиск цен — Ценитель', 'browser': 'Google Chrome'}
+OK   вкладки пользователя на месте после окна поиска — ['6DB072CFC57B7A8F79E23A7978F8F790 data:text/html;charset=utf-8,<title>%D0%', '8703A7DFCAFDFD9DC637EBB77A9D7D88 data:text/html;charset=utf-8,<title>%D0%', 'C6A0FDDD1C3D3C38619D6C6F2B030B59 data:text/html;charset=utf-8,<title>%D0%']
+C. перезапуск, как после обновления
+OK   старая копия вышла
+OK   новая копия поднялась
+OK   после перезапуска одно окно — ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/Application Support/B']
+D. пользователь закрыл окно программы
+OK   программа выключилась сама
+OK   её окон не осталось
+OK   Chrome пользователя жив
+OK   вкладки пользователя на месте — ['6DB072CFC57B7A8F79E23A7978F8F790 data:text/html;charset=utf-8,<title>%D0%', '8703A7DFCAFDFD9DC637EBB77A9D7D88 data:text/html;charset=utf-8,<title>%D0%', 'C6A0FDDD1C3D3C38619D6C6F2B030B59 data:text/html;charset=utf-8,<title>%D0%']
+E. повторный запуск и «Выйти»
+OK   поднялась снова
+снимок 3-again.png
+OK   «Выйти» выключает программу
+OK   и закрывает её окно
+OK   Chrome пользователя жив в конце
+OK   вкладки пользователя в конце те же — ['6DB072CFC57B7A8F79E23A7978F8F790 data:text/html;charset=utf-8,<title>%D0%', '8703A7DFCAFDFD9DC637EBB77A9D7D88 data:text/html;charset=utf-8,<title>%D0%', 'C6A0FDDD1C3D3C38619D6C6F2B030B59 data:text/html;charset=utf-8,<title>%D0%']
+итог: 19 из 19
