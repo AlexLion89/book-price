@@ -6,8 +6,8 @@
  },
  {
   "check": "программа универсальная (Intel + Apple M)",
-  "ok": false,
-  "detail": ""
+  "ok": true,
+  "detail": "x86_64 arm64"
  },
  {
   "check": "программа поднялась",

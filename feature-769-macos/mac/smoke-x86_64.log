@@ -1,8 +1,8 @@
 OK   Chrome «пользователя» с тремя вкладками — ['', '', '']
-FAIL программа универсальная (Intel + Apple M)
+OK   программа универсальная (Intel + Apple M) — x86_64 arm64
 A. запуск x86_64
 FAIL программа поднялась — нет ответа
 FAIL окно программы открыто
 снимок 1-window-x86_64.png
 FAIL проверка дошла до конца — URLError: <urlopen error [Errno 61] Connection refused>
-итог: 1 из 5
+итог: 2 из 5
