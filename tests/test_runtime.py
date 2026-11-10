@@ -40,11 +40,14 @@ def missing(system: str):
 
 
 class RuntimeTest(unittest.TestCase):
-    """An update runs on the program the user once unpacked, which has only the modules its own build used."""
+    """An update runs on the program the user once unpacked, which has only the modules its own build used.
+    Each list is checked on its own system: which modules are built into Python itself differs (math on Windows)."""
 
+    @unittest.skipUnless(sys.platform == "win32", "список Windows-сборок сверяется на Windows")
     def test_windows_updates_import_only_what_every_published_windows_program_has(self):
         self.assertEqual(missing("windows"), [], "нет в старых сборках — обойтись без них или поднять REQUIRES_RUNTIME")
 
+    @unittest.skipUnless(sys.platform == "darwin", "список Mac-сборок сверяется на Mac")
     def test_mac_updates_import_only_what_every_published_mac_program_has(self):
         if not LISTS["mac"].exists():
             self.skipTest("список модулей первой сборки для macOS ещё не снят")
