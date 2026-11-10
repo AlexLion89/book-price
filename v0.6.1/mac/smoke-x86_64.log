@@ -1,4 +1,4 @@
-OK   Chrome «пользователя» с тремя вкладками — ['04928351EBE0CD08D202E54CF9607518 data:text/html;charset=utf-8,<title>%D0%', '219408DD373E2704467B91E6E3B7AC17 data:text/html;charset=utf-8,<title>%D0%', '9C05E5715EF0EB4ED78F4C090C315651 data:text/html;charset=utf-8,<title>%D0%']
+OK   Chrome «пользователя» с тремя вкладками — ['5887E043614802E1E02917D14845B410 data:text/html;charset=utf-8,<title>%D0%', '5B8702D0860A3C9A1D4CB05621CC656C data:text/html;charset=utf-8,<title>%D0%', '72E4BDABF87482B5F2C3C7DF508A98F7 data:text/html;charset=utf-8,<title>%D0%']
 OK   программа универсальная (Intel + Apple M) — x86_64 arm64
 A. запуск x86_64
 OK   программа поднялась — {'ok': True, 'version': '0.6.1', 'busy': False}
@@ -8,22 +8,22 @@ OK   программа видит браузер — {'os': 'mac', 'os_label': 
 OK   запущена под x86_64 — x86_64
 B. окно поиска
 снимок 2-search-window-x86_64.png
-FAIL окно поиска открылось и закрылось — {'status': 'error', 'error': 'TimeoutError: BrowserType.launch_persistent_context: Timeout 180000ms exceeded.\nCall log:\n  - <launching> /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --no-sandbox --disable-blink-features=AutomationControlled --disable-sync --no-first-run --start-maximized --user-data-dir=/Users/runner/Library/Application Support/BookPrice/search-profile-chrome --remote-debugging-pipe about:blank\n  - <launched> pid=5854\n'}
-OK   вкладки пользователя на месте после окна поиска — ['04928351EBE0CD08D202E54CF9607518 data:text/html;charset=utf-8,<title>%D0%', '219408DD373E2704467B91E6E3B7AC17 data:text/html;charset=utf-8,<title>%D0%', '9C05E5715EF0EB4ED78F4C090C315651 data:text/html;charset=utf-8,<title>%D0%']
+FAIL окно поиска открылось и закрылось — {'status': 'error', 'error': 'TimeoutError: BrowserType.launch_persistent_context: Timeout 180000ms exceeded.\nCall log:\n  - <launching> /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --no-sandbox --disable-blink-features=AutomationControlled --disable-sync --no-first-run --start-maximized --user-data-dir=/Users/runner/Library/Application Support/BookPrice/search-profile-chrome --remote-debugging-pipe about:blank\n  - <launched> pid=5421\n'}
+OK   вкладки пользователя на месте после окна поиска — ['5887E043614802E1E02917D14845B410 data:text/html;charset=utf-8,<title>%D0%', '5B8702D0860A3C9A1D4CB05621CC656C data:text/html;charset=utf-8,<title>%D0%', '72E4BDABF87482B5F2C3C7DF508A98F7 data:text/html;charset=utf-8,<title>%D0%']
 C. перезапуск, как после обновления
-OK   старая копия вышла
-OK   новая копия поднялась
-OK   после перезапуска одно окно — ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/Application Support/B']
+FAIL старая копия вышла
+FAIL новая копия поднялась
+FAIL после перезапуска одно окно — ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/Application Support/B', '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/Application Support/B']
 D. пользователь закрыл окно программы
-OK   программа выключилась сама
+FAIL программа выключилась сама — [(6005, '/Users/runner/work/_temp/dist/Ценитель.app/Contents/MacOS/BookPrice')]
 OK   её окон не осталось
 OK   Chrome пользователя жив
-OK   вкладки пользователя на месте — ['04928351EBE0CD08D202E54CF9607518 data:text/html;charset=utf-8,<title>%D0%', '219408DD373E2704467B91E6E3B7AC17 data:text/html;charset=utf-8,<title>%D0%', '9C05E5715EF0EB4ED78F4C090C315651 data:text/html;charset=utf-8,<title>%D0%']
+OK   вкладки пользователя на месте — ['5887E043614802E1E02917D14845B410 data:text/html;charset=utf-8,<title>%D0%', '5B8702D0860A3C9A1D4CB05621CC656C data:text/html;charset=utf-8,<title>%D0%', '72E4BDABF87482B5F2C3C7DF508A98F7 data:text/html;charset=utf-8,<title>%D0%']
 E. повторный запуск и «Выйти»
 OK   поднялась снова
 снимок 3-again-x86_64.png
 OK   «Выйти» выключает программу
-OK   и закрывает её окно
+FAIL и закрывает её окно — [(8472, '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/Application Support/BookPrice/ui-profile-chrome --no-first-run --no-default-browser-check --disable-sync --disable-features=Translate --use-mock-keychain --password-store=basic --start-maximized --app=http://127.0.0.1:8769/')]
 OK   Chrome пользователя жив в конце
-OK   вкладки пользователя в конце те же — ['04928351EBE0CD08D202E54CF9607518 data:text/html;charset=utf-8,<title>%D0%', '219408DD373E2704467B91E6E3B7AC17 data:text/html;charset=utf-8,<title>%D0%', '9C05E5715EF0EB4ED78F4C090C315651 data:text/html;charset=utf-8,<title>%D0%']
-итог: 19 из 20
+OK   вкладки пользователя в конце те же — ['5887E043614802E1E02917D14845B410 data:text/html;charset=utf-8,<title>%D0%', '5B8702D0860A3C9A1D4CB05621CC656C data:text/html;charset=utf-8,<title>%D0%', '72E4BDABF87482B5F2C3C7DF508A98F7 data:text/html;charset=utf-8,<title>%D0%']
+итог: 14 из 20
