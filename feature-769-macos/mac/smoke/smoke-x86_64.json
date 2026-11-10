@@ -2,7 +2,7 @@
  {
   "check": "Chrome «пользователя» с тремя вкладками",
   "ok": true,
-  "detail": "['1C5470302D0AF9D39DB863C67396C807 data:text/html;charset=utf-8,<title>%D0%', 'A3D4C649156E3261FCF06D8419762CE4 data:text/html;charset=utf-8,<title>%D0%', 'DB57FAC1EDA40D158E58F37574244A02 data:text/html;charset=utf-8,<title>%D0%']"
+  "detail": "['558441FDF8507E904DF9DA1A3D36EAA2 data:text/html;charset=utf-8,<title>%D0%', '6D40490914B220CF120421A51727BBD5 data:text/html;charset=utf-8,<title>%D0%', '83F5EB323F0B830E0D03ACE42A1ECFC2 data:text/html;charset=utf-8,<title>%D0%']"
  },
  {
   "check": "программа универсальная (Intel + Apple M)",
@@ -12,7 +12,7 @@
  {
   "check": "программа поднялась",
   "ok": true,
-  "detail": "{'ok': True, 'version': '0.6.0', 'busy': False}"
+  "detail": "{'ok': True, 'version': '0.6.1', 'busy': False}"
  },
  {
   "check": "окно программы открыто",
@@ -32,7 +32,7 @@
  {
   "check": "окно поиска открылось и закрылось",
   "ok": false,
-  "detail": "{'status': 'error', 'error': 'TimeoutError: BrowserType.launch_persistent_context: Timeout 180000ms exceeded.\\nCall log:\\n  - <launching> /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --no-sandbox --disable-blink-features=AutomationControlled --disable-sync --no-first-run --start-maximized --user-data-dir=/Users/runner/Library/Application Support/BookPrice/search-profile-chrome --remote-debugging-pipe about:blank\\n  - <launched> pid=8885\\n'}"
+  "detail": "{'status': 'error', 'error': 'TimeoutError: BrowserType.launch_persistent_context: Timeout 180000ms exceeded.\\nCall log:\\n  - <launching> /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --no-sandbox --disable-blink-features=AutomationControlled --disable-sync --no-first-run --start-maximized --user-data-dir=/Users/runner/Library/Application Support/BookPrice/search-profile-chrome --remote-debugging-pipe about:blank\\n  - <launched> pid=6621\\n'}"
  },
  {
   "check": "вкладки пользователя на месте после окна поиска",
@@ -46,23 +46,23 @@
  },
  {
   "check": "новая копия поднялась",
-  "ok": false,
+  "ok": true,
   "detail": ""
  },
  {
   "check": "после перезапуска одно окно",
-  "ok": true,
-  "detail": "['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/Application Support/B']"
+  "ok": false,
+  "detail": "['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/Application Support/B', '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/Application Support/B']"
  },
  {
   "check": "программа выключилась сама",
   "ok": false,
-  "detail": "[(9483, '/Users/runner/work/_temp/dist/Ценитель.app/Contents/MacOS/BookPrice')]"
+  "detail": "[(7273, '/Users/runner/work/_temp/dist/Ценитель.app/Contents/MacOS/BookPrice')]"
  },
  {
   "check": "её окон не осталось",
   "ok": true,
-  "detail": "[(9826, '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/Application Support/BookPrice/ui-profile-chrome --no-first-run --no-default-browser-check --disable-sync --disable-features=Translate --use-mock-keychain --password-store=basic --start-maximized --app=http://127.0.0.1:8769/')]"
+  "detail": "[]"
  },
  {
   "check": "Chrome пользователя жив",
@@ -72,7 +72,7 @@
  {
   "check": "вкладки пользователя на месте",
   "ok": true,
-  "detail": "['1C5470302D0AF9D39DB863C67396C807 data:text/html;charset=utf-8,<title>%D0%', 'A3D4C649156E3261FCF06D8419762CE4 data:text/html;charset=utf-8,<title>%D0%', 'DB57FAC1EDA40D158E58F37574244A02 data:text/html;charset=utf-8,<title>%D0%']"
+  "detail": "['558441FDF8507E904DF9DA1A3D36EAA2 data:text/html;charset=utf-8,<title>%D0%', '6D40490914B220CF120421A51727BBD5 data:text/html;charset=utf-8,<title>%D0%', '83F5EB323F0B830E0D03ACE42A1ECFC2 data:text/html;charset=utf-8,<title>%D0%']"
  },
  {
   "check": "поднялась снова",
@@ -81,13 +81,13 @@
  },
  {
   "check": "«Выйти» выключает программу",
-  "ok": false,
+  "ok": true,
   "detail": ""
  },
  {
   "check": "и закрывает её окно",
-  "ok": false,
-  "detail": "[(9826, '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/Application Support/BookPrice/ui-profile-chrome --no-first-run --no-default-browser-check --disable-sync --disable-features=Translate --use-mock-keychain --password-store=basic --start-maximized --app=http://127.0.0.1:8769/'), (10173, '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/Application Support/BookPrice/ui-profile-chrome --no-first-run --no-default-browser-check --disable-sync --disable-features=Translate --use-mock-keychain --password-store=basic --start-maximized --app=http://127.0.0.1:8769/')]"
+  "ok": true,
+  "detail": "[]"
  },
  {
   "check": "Chrome пользователя жив в конце",
@@ -97,6 +97,6 @@
  {
   "check": "вкладки пользователя в конце те же",
   "ok": true,
-  "detail": "['1C5470302D0AF9D39DB863C67396C807 data:text/html;charset=utf-8,<title>%D0%', 'A3D4C649156E3261FCF06D8419762CE4 data:text/html;charset=utf-8,<title>%D0%', 'DB57FAC1EDA40D158E58F37574244A02 data:text/html;charset=utf-8,<title>%D0%']"
+  "detail": "['558441FDF8507E904DF9DA1A3D36EAA2 data:text/html;charset=utf-8,<title>%D0%', '6D40490914B220CF120421A51727BBD5 data:text/html;charset=utf-8,<title>%D0%', '83F5EB323F0B830E0D03ACE42A1ECFC2 data:text/html;charset=utf-8,<title>%D0%']"
  }
 ]

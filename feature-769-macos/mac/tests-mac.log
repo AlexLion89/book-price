@@ -86,7 +86,7 @@ test_schedule_reaches_floor (tests.test_pricing.SuggestTest) ... ok
 test_sold_out_price_is_shown (tests.test_pricing.SuggestTest) ... ok
 test_two_listings_start_in_the_middle (tests.test_pricing.SuggestTest) ... ok
 test_unknown (tests.test_pricing.SuggestTest) ... ok
-test_mac_updates_import_only_what_every_published_mac_program_has (tests.test_runtime.RuntimeTest) ... skipped 'список модулей первой сборки для macOS ещё не снят'
+test_mac_updates_import_only_what_every_published_mac_program_has (tests.test_runtime.RuntimeTest) ... ok
 test_windows_updates_import_only_what_every_published_windows_program_has (tests.test_runtime.RuntimeTest) ... skipped 'список Windows-сборок сверяется на Windows'
 test_another_volume_is_not_a_reprint (tests.test_search.ReprintTest) ... ok
 test_no_note_when_the_edition_itself_is_in_a_shop (tests.test_search.ReprintTest) ... ok
@@ -143,6 +143,6 @@ test_no_premium_when_new_copy_in_shop (tests.test_value.ValueTest) ... ok
 test_reader_ratings_from_five_point_sites (tests.test_value.ValueTest) ... ok
 
 ----------------------------------------------------------------------
-Ran 141 tests in 51.846s
+Ran 141 tests in 52.139s
 
-OK (skipped=3)
+OK (skipped=2)

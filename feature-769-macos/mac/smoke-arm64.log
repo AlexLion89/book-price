@@ -1,14 +1,14 @@
-OK   Chrome «пользователя» с тремя вкладками — ['3EB0370F8C1C9A568265FF22E3A0883C data:text/html;charset=utf-8,<title>%D0%', '6F651FC97E4C717223ABAE2D97DA5130 data:text/html;charset=utf-8,<title>%D0%', 'EABBB5C410F9ED0ECBB45F35903A5E96 data:text/html;charset=utf-8,<title>%D0%']
+OK   Chrome «пользователя» с тремя вкладками — ['12ECB13A2E1B248FF47F48C90971AB0C data:text/html;charset=utf-8,<title>%D0%', '9095E9C3886BCF6381A3C35BD9BB2892 data:text/html;charset=utf-8,<title>%D0%', 'C6628543AB9DB0B6A4872A37B01C804A data:text/html;charset=utf-8,<title>%D0%']
 OK   программа универсальная (Intel + Apple M) — x86_64 arm64
 A. запуск родной
-OK   программа поднялась — {'ok': True, 'version': '0.6.0', 'busy': False}
+OK   программа поднялась — {'ok': True, 'version': '0.6.1', 'busy': False}
 OK   окно программы открыто — ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/Application Support/BookPrice/ui-profile-chrome --no-first-ru']
 снимок 1-window.png
 OK   программа видит браузер — {'os': 'mac', 'os_label': 'macOS', 'machine': 'arm64', 'outbox': 'в папке, которую программа открыла в Finder', 'browser': 'Google Chrome', 'no_browser': 'Нет подходящего браузера: нужен Google Chrome, Microsoft Edge или Яндекс Браузер. Safari и Firefox программа не умеет — без одного из этих браузеров она не сможет искать цены.', 'downloads': [{'label': 'Google Chrome', 'url': 'https://www.google.com/chrome/'}, {'label': 'Microsoft Edge', 'url': 'https://www.microsoft.com/edge/download'}, {'label': 'Яндекс Браузер', 'url': 'https://browser.yandex.ru/'}]}
 B. окно поиска
 снимок 2-search-window.png
 OK   окно поиска открылось и закрылось — {'status': 'done', 'title': 'Поиск цен — Ценитель', 'browser': 'Google Chrome'}
-OK   вкладки пользователя на месте после окна поиска — ['3EB0370F8C1C9A568265FF22E3A0883C data:text/html;charset=utf-8,<title>%D0%', '6F651FC97E4C717223ABAE2D97DA5130 data:text/html;charset=utf-8,<title>%D0%', 'EABBB5C410F9ED0ECBB45F35903A5E96 data:text/html;charset=utf-8,<title>%D0%']
+OK   вкладки пользователя на месте после окна поиска — ['12ECB13A2E1B248FF47F48C90971AB0C data:text/html;charset=utf-8,<title>%D0%', '9095E9C3886BCF6381A3C35BD9BB2892 data:text/html;charset=utf-8,<title>%D0%', 'C6628543AB9DB0B6A4872A37B01C804A data:text/html;charset=utf-8,<title>%D0%']
 C. перезапуск, как после обновления
 OK   старая копия вышла
 OK   новая копия поднялась
@@ -17,12 +17,12 @@ D. пользователь закрыл окно программы
 OK   программа выключилась сама
 OK   её окон не осталось
 OK   Chrome пользователя жив
-OK   вкладки пользователя на месте — ['3EB0370F8C1C9A568265FF22E3A0883C data:text/html;charset=utf-8,<title>%D0%', '6F651FC97E4C717223ABAE2D97DA5130 data:text/html;charset=utf-8,<title>%D0%', 'EABBB5C410F9ED0ECBB45F35903A5E96 data:text/html;charset=utf-8,<title>%D0%']
+OK   вкладки пользователя на месте — ['12ECB13A2E1B248FF47F48C90971AB0C data:text/html;charset=utf-8,<title>%D0%', '9095E9C3886BCF6381A3C35BD9BB2892 data:text/html;charset=utf-8,<title>%D0%', 'C6628543AB9DB0B6A4872A37B01C804A data:text/html;charset=utf-8,<title>%D0%']
 E. повторный запуск и «Выйти»
 OK   поднялась снова
 снимок 3-again.png
 OK   «Выйти» выключает программу
 OK   и закрывает её окно
 OK   Chrome пользователя жив в конце
-OK   вкладки пользователя в конце те же — ['3EB0370F8C1C9A568265FF22E3A0883C data:text/html;charset=utf-8,<title>%D0%', '6F651FC97E4C717223ABAE2D97DA5130 data:text/html;charset=utf-8,<title>%D0%', 'EABBB5C410F9ED0ECBB45F35903A5E96 data:text/html;charset=utf-8,<title>%D0%']
+OK   вкладки пользователя в конце те же — ['12ECB13A2E1B248FF47F48C90971AB0C data:text/html;charset=utf-8,<title>%D0%', '9095E9C3886BCF6381A3C35BD9BB2892 data:text/html;charset=utf-8,<title>%D0%', 'C6628543AB9DB0B6A4872A37B01C804A data:text/html;charset=utf-8,<title>%D0%']
 итог: 19 из 19

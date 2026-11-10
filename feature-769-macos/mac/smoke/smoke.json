@@ -2,7 +2,7 @@
  {
   "check": "Chrome «пользователя» с тремя вкладками",
   "ok": true,
-  "detail": "['3EB0370F8C1C9A568265FF22E3A0883C data:text/html;charset=utf-8,<title>%D0%', '6F651FC97E4C717223ABAE2D97DA5130 data:text/html;charset=utf-8,<title>%D0%', 'EABBB5C410F9ED0ECBB45F35903A5E96 data:text/html;charset=utf-8,<title>%D0%']"
+  "detail": "['12ECB13A2E1B248FF47F48C90971AB0C data:text/html;charset=utf-8,<title>%D0%', '9095E9C3886BCF6381A3C35BD9BB2892 data:text/html;charset=utf-8,<title>%D0%', 'C6628543AB9DB0B6A4872A37B01C804A data:text/html;charset=utf-8,<title>%D0%']"
  },
  {
   "check": "программа универсальная (Intel + Apple M)",
@@ -12,7 +12,7 @@
  {
   "check": "программа поднялась",
   "ok": true,
-  "detail": "{'ok': True, 'version': '0.6.0', 'busy': False}"
+  "detail": "{'ok': True, 'version': '0.6.1', 'busy': False}"
  },
  {
   "check": "окно программы открыто",
@@ -32,7 +32,7 @@
  {
   "check": "вкладки пользователя на месте после окна поиска",
   "ok": true,
-  "detail": "['3EB0370F8C1C9A568265FF22E3A0883C data:text/html;charset=utf-8,<title>%D0%', '6F651FC97E4C717223ABAE2D97DA5130 data:text/html;charset=utf-8,<title>%D0%', 'EABBB5C410F9ED0ECBB45F35903A5E96 data:text/html;charset=utf-8,<title>%D0%']"
+  "detail": "['12ECB13A2E1B248FF47F48C90971AB0C data:text/html;charset=utf-8,<title>%D0%', '9095E9C3886BCF6381A3C35BD9BB2892 data:text/html;charset=utf-8,<title>%D0%', 'C6628543AB9DB0B6A4872A37B01C804A data:text/html;charset=utf-8,<title>%D0%']"
  },
  {
   "check": "старая копия вышла",
@@ -67,7 +67,7 @@
  {
   "check": "вкладки пользователя на месте",
   "ok": true,
-  "detail": "['3EB0370F8C1C9A568265FF22E3A0883C data:text/html;charset=utf-8,<title>%D0%', '6F651FC97E4C717223ABAE2D97DA5130 data:text/html;charset=utf-8,<title>%D0%', 'EABBB5C410F9ED0ECBB45F35903A5E96 data:text/html;charset=utf-8,<title>%D0%']"
+  "detail": "['12ECB13A2E1B248FF47F48C90971AB0C data:text/html;charset=utf-8,<title>%D0%', '9095E9C3886BCF6381A3C35BD9BB2892 data:text/html;charset=utf-8,<title>%D0%', 'C6628543AB9DB0B6A4872A37B01C804A data:text/html;charset=utf-8,<title>%D0%']"
  },
  {
   "check": "поднялась снова",
@@ -92,6 +92,6 @@
  {
   "check": "вкладки пользователя в конце те же",
   "ok": true,
-  "detail": "['3EB0370F8C1C9A568265FF22E3A0883C data:text/html;charset=utf-8,<title>%D0%', '6F651FC97E4C717223ABAE2D97DA5130 data:text/html;charset=utf-8,<title>%D0%', 'EABBB5C410F9ED0ECBB45F35903A5E96 data:text/html;charset=utf-8,<title>%D0%']"
+  "detail": "['12ECB13A2E1B248FF47F48C90971AB0C data:text/html;charset=utf-8,<title>%D0%', '9095E9C3886BCF6381A3C35BD9BB2892 data:text/html;charset=utf-8,<title>%D0%', 'C6628543AB9DB0B6A4872A37B01C804A data:text/html;charset=utf-8,<title>%D0%']"
  }
 ]
