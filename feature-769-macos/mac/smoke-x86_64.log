@@ -1,8 +1,12 @@
-OK   Chrome «пользователя» с тремя вкладками — ['', '', '']
+OK   Chrome «пользователя» с тремя вкладками — ['11816DA424B0A724F3D91976CF79E6BC data:text/html;charset=utf-8,<title>%D0%', '81DC493B02D3BCE0609989A3ED504951 data:text/html;charset=utf-8,<title>%D0%', 'DF5810775F6060FB5A59021F57209B78 data:text/html;charset=utf-8,<title>%D0%']
 OK   программа универсальная (Intel + Apple M) — x86_64 arm64
 A. запуск x86_64
-FAIL программа поднялась — нет ответа
-FAIL окно программы открыто
+OK   программа поднялась — {'ok': True, 'version': '0.6.0', 'busy': False}
+OK   окно программы открыто — ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/Application Support/BookPrice/ui-profile-chrome --no-first-ru']
 снимок 1-window-x86_64.png
-FAIL проверка дошла до конца — URLError: <urlopen error [Errno 61] Connection refused>
-итог: 2 из 5
+OK   программа видит браузер — {'os': 'mac', 'os_label': 'macOS', 'machine': 'x86_64', 'outbox': 'в папке, которую программа открыла в Finder', 'browser': 'Google Chrome', 'no_browser': 'Нет подходящего браузера: нужен Google Chrome, Microsoft Edge или Яндекс Браузер. Safari и Firefox программа не умеет — без одного из этих браузеров она не сможет искать цены.', 'downloads': [{'label': 'Google Chrome', 'url': 'https://www.google.com/chrome/'}, {'label': 'Microsoft Edge', 'url': 'https://www.microsoft.com/edge/download'}, {'label': 'Яндекс Браузер', 'url': 'https://browser.yandex.ru/'}]}
+OK   запущена под x86_64 — x86_64
+B. окно поиска
+снимок 2-search-window-x86_64.png
+FAIL проверка дошла до конца — timeout: timed out
+итог: 6 из 7

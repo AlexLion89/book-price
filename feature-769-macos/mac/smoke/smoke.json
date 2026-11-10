@@ -2,7 +2,7 @@
  {
   "check": "Chrome «пользователя» с тремя вкладками",
   "ok": true,
-  "detail": "['', '', '']"
+  "detail": "['5CC81FD585E1EBB43C2EC61771C666B2 data:text/html;charset=utf-8,<title>%D0%', 'E087AEF6C92F563042A7487764E45D4E data:text/html;charset=utf-8,<title>%D0%', 'EF29E4F4A18DE1062AE94887C9A61E8F data:text/html;charset=utf-8,<title>%D0%']"
  },
  {
   "check": "программа универсальная (Intel + Apple M)",
@@ -31,8 +31,8 @@
  },
  {
   "check": "вкладки пользователя на месте после окна поиска",
-  "ok": false,
-  "detail": "['Ð’ÐºÐ»Ð°Ð´ÐºÐ° Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»Ñ\\x8f 1', 'Ð’ÐºÐ»Ð°Ð´ÐºÐ° Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»Ñ\\x8f 2', 'Ð’ÐºÐ»Ð°Ð´ÐºÐ° Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»Ñ\\x8f 3']"
+  "ok": true,
+  "detail": "['5CC81FD585E1EBB43C2EC61771C666B2 data:text/html;charset=utf-8,<title>%D0%', 'E087AEF6C92F563042A7487764E45D4E data:text/html;charset=utf-8,<title>%D0%', 'EF29E4F4A18DE1062AE94887C9A61E8F data:text/html;charset=utf-8,<title>%D0%']"
  },
  {
   "check": "старая копия вышла",
@@ -41,13 +41,13 @@
  },
  {
   "check": "новая копия поднялась",
-  "ok": false,
+  "ok": true,
   "detail": ""
  },
  {
   "check": "после перезапуска одно окно",
-  "ok": false,
-  "detail": "[]"
+  "ok": true,
+  "detail": "['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/Application Support/B']"
  },
  {
   "check": "программа выключилась сама",
@@ -66,8 +66,8 @@
  },
  {
   "check": "вкладки пользователя на месте",
-  "ok": false,
-  "detail": "['Ð’ÐºÐ»Ð°Ð´ÐºÐ° Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»Ñ\\x8f 1', 'Ð’ÐºÐ»Ð°Ð´ÐºÐ° Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»Ñ\\x8f 2', 'Ð’ÐºÐ»Ð°Ð´ÐºÐ° Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»Ñ\\x8f 3']"
+  "ok": true,
+  "detail": "['5CC81FD585E1EBB43C2EC61771C666B2 data:text/html;charset=utf-8,<title>%D0%', 'E087AEF6C92F563042A7487764E45D4E data:text/html;charset=utf-8,<title>%D0%', 'EF29E4F4A18DE1062AE94887C9A61E8F data:text/html;charset=utf-8,<title>%D0%']"
  },
  {
   "check": "поднялась снова",
@@ -91,7 +91,7 @@
  },
  {
   "check": "вкладки пользователя в конце те же",
-  "ok": false,
-  "detail": "['Ð’ÐºÐ»Ð°Ð´ÐºÐ° Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»Ñ\\x8f 1', 'Ð’ÐºÐ»Ð°Ð´ÐºÐ° Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»Ñ\\x8f 2', 'Ð’ÐºÐ»Ð°Ð´ÐºÐ° Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»Ñ\\x8f 3']"
+  "ok": true,
+  "detail": "['5CC81FD585E1EBB43C2EC61771C666B2 data:text/html;charset=utf-8,<title>%D0%', 'E087AEF6C92F563042A7487764E45D4E data:text/html;charset=utf-8,<title>%D0%', 'EF29E4F4A18DE1062AE94887C9A61E8F data:text/html;charset=utf-8,<title>%D0%']"
  }
 ]
