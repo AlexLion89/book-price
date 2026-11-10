@@ -1,3 +1,14 @@
-2026-11-10 07:08:23,832 INFO MainThread bookprice: запуск 0.6.0 (macOS) из /Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice
-2026-11-10 07:08:24,875 INFO window bookprice.window: окно программы: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
-2026-11-10 07:09:12,329 INFO searcher bookprice.browser: окно поиска: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
+2026-11-10 07:23:19,870 INFO MainThread bookprice: запуск 0.6.0 (macOS) из /Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice
+2026-11-10 07:23:20,530 INFO window bookprice.window: окно программы: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
+2026-11-10 07:23:56,447 INFO searcher bookprice.browser: окно поиска: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
+2026-11-10 07:24:28,176 WARNING window bookprice.window: не нашёл процесс окна программы — закрывать его придётся вручную
+2026-11-10 07:27:16,354 INFO MainThread bookprice: закрываю окно, оставшееся от прошлого запуска
+2026-11-10 07:27:16,635 INFO MainThread bookprice: выключено
+2026-11-10 07:27:17,560 INFO MainThread bookprice: запуск 0.6.0 (macOS) из /Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice
+2026-11-10 07:27:17,987 INFO window bookprice.window: окно программы: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
+2026-11-10 07:27:28,230 INFO watchdog bookprice.app: окно программы закрыто — выключаюсь
+2026-11-10 07:27:33,294 INFO MainThread bookprice: выключено
+2026-11-10 07:27:34,550 INFO MainThread bookprice: запуск 0.6.0 (macOS) из /Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice
+2026-11-10 07:27:34,912 INFO window bookprice.window: окно программы: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
+2026-11-10 07:27:41,048 INFO watchdog bookprice.app: окно программы закрыто — выключаюсь
+2026-11-10 07:27:45,913 INFO MainThread bookprice: выключено

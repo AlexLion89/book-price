@@ -2,7 +2,7 @@
  {
   "check": "Chrome «пользователя» с тремя вкладками",
   "ok": true,
-  "detail": "['3FF10B8AC141A4C57E313390E1FD5CC2 data:text/html;charset=utf-8,<title>%D0%', 'B3589853BE695E443CB03CF9A712091C data:text/html;charset=utf-8,<title>%D0%', 'BB0B8DE8E82FDAA7102055528B425C3C data:text/html;charset=utf-8,<title>%D0%']"
+  "detail": "['9A930DCCD9A8FE9B3B22B13FC3F7A462 data:text/html;charset=utf-8,<title>%D0%', '9FFD0A7AA6C0C83E6F8A16E0474F9ED4 data:text/html;charset=utf-8,<title>%D0%', 'C278D18ABC44241AF8F06494EFCF895F data:text/html;charset=utf-8,<title>%D0%']"
  },
  {
   "check": "программа универсальная (Intel + Apple M)",
@@ -30,8 +30,73 @@
   "detail": "x86_64"
  },
  {
-  "check": "проверка дошла до конца",
-  "ok": false,
-  "detail": "timeout: timed out"
+  "check": "окно поиска открылось и закрылось",
+  "ok": true,
+  "detail": "{'status': 'done', 'title': 'Поиск цен — Ценитель', 'browser': 'Google Chrome'}"
+ },
+ {
+  "check": "вкладки пользователя на месте после окна поиска",
+  "ok": true,
+  "detail": "['9A930DCCD9A8FE9B3B22B13FC3F7A462 data:text/html;charset=utf-8,<title>%D0%', '9FFD0A7AA6C0C83E6F8A16E0474F9ED4 data:text/html;charset=utf-8,<title>%D0%', 'C278D18ABC44241AF8F06494EFCF895F data:text/html;charset=utf-8,<title>%D0%']"
+ },
+ {
+  "check": "старая копия вышла",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "check": "новая копия поднялась",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "check": "после перезапуска одно окно",
+  "ok": true,
+  "detail": "['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/Application Support/B']"
+ },
+ {
+  "check": "программа выключилась сама",
+  "ok": true,
+  "detail": "[]"
+ },
+ {
+  "check": "её окон не осталось",
+  "ok": true,
+  "detail": "[]"
+ },
+ {
+  "check": "Chrome пользователя жив",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "check": "вкладки пользователя на месте",
+  "ok": true,
+  "detail": "['9A930DCCD9A8FE9B3B22B13FC3F7A462 data:text/html;charset=utf-8,<title>%D0%', '9FFD0A7AA6C0C83E6F8A16E0474F9ED4 data:text/html;charset=utf-8,<title>%D0%', 'C278D18ABC44241AF8F06494EFCF895F data:text/html;charset=utf-8,<title>%D0%']"
+ },
+ {
+  "check": "поднялась снова",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "check": "«Выйти» выключает программу",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "check": "и закрывает её окно",
+  "ok": true,
+  "detail": "[]"
+ },
+ {
+  "check": "Chrome пользователя жив в конце",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "check": "вкладки пользователя в конце те же",
+  "ok": true,
+  "detail": "['9A930DCCD9A8FE9B3B22B13FC3F7A462 data:text/html;charset=utf-8,<title>%D0%', '9FFD0A7AA6C0C83E6F8A16E0474F9ED4 data:text/html;charset=utf-8,<title>%D0%', 'C278D18ABC44241AF8F06494EFCF895F data:text/html;charset=utf-8,<title>%D0%']"
  }
 ]

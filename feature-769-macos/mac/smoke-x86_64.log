@@ -1,4 +1,4 @@
-OK   Chrome «пользователя» с тремя вкладками — ['3FF10B8AC141A4C57E313390E1FD5CC2 data:text/html;charset=utf-8,<title>%D0%', 'B3589853BE695E443CB03CF9A712091C data:text/html;charset=utf-8,<title>%D0%', 'BB0B8DE8E82FDAA7102055528B425C3C data:text/html;charset=utf-8,<title>%D0%']
+OK   Chrome «пользователя» с тремя вкладками — ['9A930DCCD9A8FE9B3B22B13FC3F7A462 data:text/html;charset=utf-8,<title>%D0%', '9FFD0A7AA6C0C83E6F8A16E0474F9ED4 data:text/html;charset=utf-8,<title>%D0%', 'C278D18ABC44241AF8F06494EFCF895F data:text/html;charset=utf-8,<title>%D0%']
 OK   программа универсальная (Intel + Apple M) — x86_64 arm64
 A. запуск x86_64
 OK   программа поднялась — {'ok': True, 'version': '0.6.0', 'busy': False}
@@ -8,5 +8,22 @@ OK   программа видит браузер — {'os': 'mac', 'os_label': 
 OK   запущена под x86_64 — x86_64
 B. окно поиска
 снимок 2-search-window-x86_64.png
-FAIL проверка дошла до конца — timeout: timed out
-итог: 6 из 7
+OK   окно поиска открылось и закрылось — {'status': 'done', 'title': 'Поиск цен — Ценитель', 'browser': 'Google Chrome'}
+OK   вкладки пользователя на месте после окна поиска — ['9A930DCCD9A8FE9B3B22B13FC3F7A462 data:text/html;charset=utf-8,<title>%D0%', '9FFD0A7AA6C0C83E6F8A16E0474F9ED4 data:text/html;charset=utf-8,<title>%D0%', 'C278D18ABC44241AF8F06494EFCF895F data:text/html;charset=utf-8,<title>%D0%']
+C. перезапуск, как после обновления
+OK   старая копия вышла
+OK   новая копия поднялась
+OK   после перезапуска одно окно — ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/Application Support/B']
+D. пользователь закрыл окно программы
+OK   программа выключилась сама
+OK   её окон не осталось
+OK   Chrome пользователя жив
+OK   вкладки пользователя на месте — ['9A930DCCD9A8FE9B3B22B13FC3F7A462 data:text/html;charset=utf-8,<title>%D0%', '9FFD0A7AA6C0C83E6F8A16E0474F9ED4 data:text/html;charset=utf-8,<title>%D0%', 'C278D18ABC44241AF8F06494EFCF895F data:text/html;charset=utf-8,<title>%D0%']
+E. повторный запуск и «Выйти»
+OK   поднялась снова
+снимок 3-again-x86_64.png
+OK   «Выйти» выключает программу
+OK   и закрывает её окно
+OK   Chrome пользователя жив в конце
+OK   вкладки пользователя в конце те же — ['9A930DCCD9A8FE9B3B22B13FC3F7A462 data:text/html;charset=utf-8,<title>%D0%', '9FFD0A7AA6C0C83E6F8A16E0474F9ED4 data:text/html;charset=utf-8,<title>%D0%', 'C278D18ABC44241AF8F06494EFCF895F data:text/html;charset=utf-8,<title>%D0%']
+итог: 20 из 20
