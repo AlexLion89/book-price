@@ -2,7 +2,7 @@
  {
   "check": "Chrome «пользователя» с тремя вкладками",
   "ok": true,
-  "detail": "['19D4811C9D898FE453596C990A49AE26 data:text/html;charset=utf-8,<title>%D0%', '5705E203BA90B41367A5C394E207485D data:text/html;charset=utf-8,<title>%D0%', 'A6A884265E630F59B21BFD1B166503FA data:text/html;charset=utf-8,<title>%D0%']"
+  "detail": "['C36526BA6701DFE8397EF2E236F8A248 data:text/html;charset=utf-8,<title>%D0%', 'C73D3F8A4901A9B112714D8639C0BFDD data:text/html;charset=utf-8,<title>%D0%', 'FD5D07D15784A239B84B58C57C5230C2 data:text/html;charset=utf-8,<title>%D0%']"
  },
  {
   "check": "программа универсальная (Intel + Apple M)",
@@ -32,21 +32,21 @@
  {
   "check": "окно поиска открылось и закрылось",
   "ok": false,
-  "detail": "{'status': 'error', 'error': 'TimeoutError: BrowserType.launch_persistent_context: Timeout 180000ms exceeded.\\nCall log:\\n  - <launching> /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --no-sandbox --disable-blink-features=AutomationControlled --disable-sync --no-first-run --start-maximized --user-data-dir=/Users/runner/Library/Application Support/BookPrice/search-profile-chrome --remote-debugging-pipe about:blank\\n  - <launched> pid=7311\\n'}"
+  "detail": "{'status': 'error', 'error': 'TimeoutError: BrowserType.launch_persistent_context: Timeout 180000ms exceeded.\\nCall log:\\n  - <launching> /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --no-sandbox --disable-blink-features=AutomationControlled --disable-sync --no-first-run --start-maximized --user-data-dir=/Users/runner/Library/Application Support/BookPrice/search-profile-chrome --remote-debugging-pipe about:blank\\n  - <launched> pid=6625\\n  - [pid=6625][err] [6625:33985:1110/075727.479361:ERROR:chrome/browser/chrome_browser_main.cc:1360] The use of Rosetta to run the x64 version of Chromium on Arm is neither tested nor maintained, and unexpected behavior will likely result. Please check that all tools that spawn Chromium are Arm-native.\\n'}"
  },
  {
   "check": "вкладки пользователя на месте после окна поиска",
   "ok": true,
-  "detail": "['19D4811C9D898FE453596C990A49AE26 data:text/html;charset=utf-8,<title>%D0%', '5705E203BA90B41367A5C394E207485D data:text/html;charset=utf-8,<title>%D0%', 'A6A884265E630F59B21BFD1B166503FA data:text/html;charset=utf-8,<title>%D0%']"
+  "detail": "['C36526BA6701DFE8397EF2E236F8A248 data:text/html;charset=utf-8,<title>%D0%', 'C73D3F8A4901A9B112714D8639C0BFDD data:text/html;charset=utf-8,<title>%D0%', 'FD5D07D15784A239B84B58C57C5230C2 data:text/html;charset=utf-8,<title>%D0%']"
  },
  {
   "check": "старая копия вышла",
-  "ok": false,
+  "ok": true,
   "detail": ""
  },
  {
   "check": "новая копия поднялась",
-  "ok": false,
+  "ok": true,
   "detail": ""
  },
  {
@@ -56,13 +56,13 @@
  },
  {
   "check": "программа выключилась сама",
-  "ok": false,
-  "detail": "[(8082, '/Users/runner/work/_temp/dist/Ценитель.app/Contents/MacOS/BookPrice')]"
+  "ok": true,
+  "detail": "[]"
  },
  {
   "check": "её окон не осталось",
-  "ok": false,
-  "detail": "[(8356, '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/Application Support/BookPrice/ui-profile-chrome --no-first-run --no-default-browser-check --disable-sync --disable-features=Translate --use-mock-keychain --password-store=basic --start-maximized --app=http://127.0.0.1:8769/')]"
+  "ok": true,
+  "detail": "[]"
  },
  {
   "check": "Chrome пользователя жив",
@@ -72,7 +72,7 @@
  {
   "check": "вкладки пользователя на месте",
   "ok": true,
-  "detail": "['19D4811C9D898FE453596C990A49AE26 data:text/html;charset=utf-8,<title>%D0%', '5705E203BA90B41367A5C394E207485D data:text/html;charset=utf-8,<title>%D0%', 'A6A884265E630F59B21BFD1B166503FA data:text/html;charset=utf-8,<title>%D0%']"
+  "detail": "['C36526BA6701DFE8397EF2E236F8A248 data:text/html;charset=utf-8,<title>%D0%', 'C73D3F8A4901A9B112714D8639C0BFDD data:text/html;charset=utf-8,<title>%D0%', 'FD5D07D15784A239B84B58C57C5230C2 data:text/html;charset=utf-8,<title>%D0%']"
  },
  {
   "check": "поднялась снова",
@@ -86,8 +86,8 @@
  },
  {
   "check": "и закрывает её окно",
-  "ok": false,
-  "detail": "[(8356, '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/Application Support/BookPrice/ui-profile-chrome --no-first-run --no-default-browser-check --disable-sync --disable-features=Translate --use-mock-keychain --password-store=basic --start-maximized --app=http://127.0.0.1:8769/'), (8816, '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/Application Support/BookPrice/ui-profile-chrome --no-first-run --no-default-browser-check --disable-sync --disable-features=Translate --use-mock-keychain --password-store=basic --start-maximized --app=http://127.0.0.1:8769/')]"
+  "ok": true,
+  "detail": "[]"
  },
  {
   "check": "Chrome пользователя жив в конце",
@@ -97,6 +97,6 @@
  {
   "check": "вкладки пользователя в конце те же",
   "ok": true,
-  "detail": "['19D4811C9D898FE453596C990A49AE26 data:text/html;charset=utf-8,<title>%D0%', '5705E203BA90B41367A5C394E207485D data:text/html;charset=utf-8,<title>%D0%', 'A6A884265E630F59B21BFD1B166503FA data:text/html;charset=utf-8,<title>%D0%']"
+  "detail": "['C36526BA6701DFE8397EF2E236F8A248 data:text/html;charset=utf-8,<title>%D0%', 'C73D3F8A4901A9B112714D8639C0BFDD data:text/html;charset=utf-8,<title>%D0%', 'FD5D07D15784A239B84B58C57C5230C2 data:text/html;charset=utf-8,<title>%D0%']"
  }
 ]
