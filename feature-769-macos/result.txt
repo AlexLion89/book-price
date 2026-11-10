@@ -1,5 +1,5 @@
-run: https://github.com/AlexLion89/book-price/actions/runs/42774592855
-event: push  ref: feature/769-macos  sha: 1b48c46f0fccf354fdea1eea2e883778625c6b7c
+run: https://github.com/AlexLion89/book-price/actions/runs/42774621593
+event: push  ref: feature/769-macos  sha: 53644d2f615f82375e455aebc97643c3ff315713
 windows: success
-mac: success
-finished: 2026-11-10T07:28:18Z
+mac: failure
+finished: 2026-11-10T07:38:29Z

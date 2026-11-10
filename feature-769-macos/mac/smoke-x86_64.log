@@ -1,4 +1,4 @@
-OK   Chrome «пользователя» с тремя вкладками — ['9A930DCCD9A8FE9B3B22B13FC3F7A462 data:text/html;charset=utf-8,<title>%D0%', '9FFD0A7AA6C0C83E6F8A16E0474F9ED4 data:text/html;charset=utf-8,<title>%D0%', 'C278D18ABC44241AF8F06494EFCF895F data:text/html;charset=utf-8,<title>%D0%']
+OK   Chrome «пользователя» с тремя вкладками — ['1C5470302D0AF9D39DB863C67396C807 data:text/html;charset=utf-8,<title>%D0%', 'A3D4C649156E3261FCF06D8419762CE4 data:text/html;charset=utf-8,<title>%D0%', 'DB57FAC1EDA40D158E58F37574244A02 data:text/html;charset=utf-8,<title>%D0%']
 OK   программа универсальная (Intel + Apple M) — x86_64 arm64
 A. запуск x86_64
 OK   программа поднялась — {'ok': True, 'version': '0.6.0', 'busy': False}
@@ -8,22 +8,22 @@ OK   программа видит браузер — {'os': 'mac', 'os_label': 
 OK   запущена под x86_64 — x86_64
 B. окно поиска
 снимок 2-search-window-x86_64.png
-OK   окно поиска открылось и закрылось — {'status': 'done', 'title': 'Поиск цен — Ценитель', 'browser': 'Google Chrome'}
-OK   вкладки пользователя на месте после окна поиска — ['9A930DCCD9A8FE9B3B22B13FC3F7A462 data:text/html;charset=utf-8,<title>%D0%', '9FFD0A7AA6C0C83E6F8A16E0474F9ED4 data:text/html;charset=utf-8,<title>%D0%', 'C278D18ABC44241AF8F06494EFCF895F data:text/html;charset=utf-8,<title>%D0%']
+FAIL окно поиска открылось и закрылось — {'status': 'error', 'error': 'TimeoutError: BrowserType.launch_persistent_context: Timeout 180000ms exceeded.\nCall log:\n  - <launching> /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --no-sandbox --disable-blink-features=AutomationControlled --disable-sync --no-first-run --start-maximized --user-data-dir=/Users/runner/Library/Application Support/BookPrice/search-profile-chrome --remote-debugging-pipe about:blank\n  - <launched> pid=8885\n'}
+FAIL вкладки пользователя на месте после окна поиска — ['нет ответа: timed out']
 C. перезапуск, как после обновления
-OK   старая копия вышла
-OK   новая копия поднялась
+FAIL старая копия вышла
+FAIL новая копия поднялась
 OK   после перезапуска одно окно — ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/Application Support/B']
 D. пользователь закрыл окно программы
-OK   программа выключилась сама
-OK   её окон не осталось
+FAIL программа выключилась сама — [(9483, '/Users/runner/work/_temp/dist/Ценитель.app/Contents/MacOS/BookPrice')]
+OK   её окон не осталось — [(9826, '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/Application Support/BookPrice/ui-profile-chrome --no-first-run --no-default-browser-check --disable-sync --disable-features=Translate --use-mock-keychain --password-store=basic --start-maximized --app=http://127.0.0.1:8769/')]
 OK   Chrome пользователя жив
-OK   вкладки пользователя на месте — ['9A930DCCD9A8FE9B3B22B13FC3F7A462 data:text/html;charset=utf-8,<title>%D0%', '9FFD0A7AA6C0C83E6F8A16E0474F9ED4 data:text/html;charset=utf-8,<title>%D0%', 'C278D18ABC44241AF8F06494EFCF895F data:text/html;charset=utf-8,<title>%D0%']
+OK   вкладки пользователя на месте — ['1C5470302D0AF9D39DB863C67396C807 data:text/html;charset=utf-8,<title>%D0%', 'A3D4C649156E3261FCF06D8419762CE4 data:text/html;charset=utf-8,<title>%D0%', 'DB57FAC1EDA40D158E58F37574244A02 data:text/html;charset=utf-8,<title>%D0%']
 E. повторный запуск и «Выйти»
 OK   поднялась снова
 снимок 3-again-x86_64.png
-OK   «Выйти» выключает программу
-OK   и закрывает её окно
+FAIL «Выйти» выключает программу
+FAIL и закрывает её окно — [(9826, '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/Application Support/BookPrice/ui-profile-chrome --no-first-run --no-default-browser-check --disable-sync --disable-features=Translate --use-mock-keychain --password-store=basic --start-maximized --app=http://127.0.0.1:8769/'), (10173, '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/Application Support/BookPrice/ui-profile-chrome --no-first-run --no-default-browser-check --disable-sync --disable-features=Translate --use-mock-keychain --password-store=basic --start-maximized --app=http://127.0.0.1:8769/')]
 OK   Chrome пользователя жив в конце
-OK   вкладки пользователя в конце те же — ['9A930DCCD9A8FE9B3B22B13FC3F7A462 data:text/html;charset=utf-8,<title>%D0%', '9FFD0A7AA6C0C83E6F8A16E0474F9ED4 data:text/html;charset=utf-8,<title>%D0%', 'C278D18ABC44241AF8F06494EFCF895F data:text/html;charset=utf-8,<title>%D0%']
-итог: 20 из 20
+OK   вкладки пользователя в конце те же — ['1C5470302D0AF9D39DB863C67396C807 data:text/html;charset=utf-8,<title>%D0%', 'A3D4C649156E3261FCF06D8419762CE4 data:text/html;charset=utf-8,<title>%D0%', 'DB57FAC1EDA40D158E58F37574244A02 data:text/html;charset=utf-8,<title>%D0%']
+итог: 13 из 20
