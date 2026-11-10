@@ -37,7 +37,11 @@ def check(name, ok, detail=""):
     return ok
 
 
-def get(path, timeout=5):
+# Under Rosetta (the Intel half on an Apple M runner) the browser and Playwright's node start translated: slow.
+SLOW = 3 if ARCH else 1
+
+
+def get(path, timeout=5 * SLOW):
     with urllib.request.urlopen(URL + path, timeout=timeout) as r:
         return json.load(r)
 
@@ -129,7 +133,7 @@ def main():
     print("A. запуск", ARCH or "родной", flush=True)
     app = launch()
     check("программа поднялась", wait(ping, 90), get("api/ping") if ping() else "нет ответа")
-    check("окно программы открыто", wait(lambda: len(ours()) == 1, 30), [c[:160] for _, c in ours()])
+    check("окно программы открыто", wait(lambda: len(ours()) == 1, 30 * SLOW), [c[:160] for _, c in ours()])
     time.sleep(4)
     shot(f"1-window{'-' + ARCH if ARCH else ''}")
     system = get("api/system")
@@ -139,10 +143,10 @@ def main():
 
     print("B. окно поиска", flush=True)
     post("api/window-test")
-    wait(lambda: get("api/window-test").get("status") == "running", 30)
-    time.sleep(3)
+    wait(lambda: get("api/window-test").get("status") == "running", 30 * SLOW)
+    time.sleep(3 * SLOW)
     shot(f"2-search-window{'-' + ARCH if ARCH else ''}")
-    wait(lambda: get("api/window-test").get("status") in ("done", "error"), 60)
+    wait(lambda: get("api/window-test").get("status") in ("done", "error"), 60 * SLOW)
     state = get("api/window-test")
     check("окно поиска открылось и закрылось", state.get("status") == "done", state)
     check("вкладки пользователя на месте после окна поиска", user_tabs() == tabs_before, user_tabs())

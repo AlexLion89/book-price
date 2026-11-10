@@ -5,6 +5,7 @@ import logging
 import logging.handlers
 import subprocess
 import sys
+import threading
 import urllib.request
 from pathlib import Path
 
@@ -65,14 +66,23 @@ def main() -> None:
         return
     close_leftover_window(data_dir, log)
     if "--no-window" not in sys.argv:
-        app.ui = open_window(url, data_dir)
+        # A slow machine takes a while to start the browser; the page must be served meanwhile, so the window is
+        # looked for alongside.
+        def attach() -> None:
+            app.ui = open_window(url, data_dir)
+
+        threading.Thread(target=attach, daemon=True, name="window").start()
     try:
         server.serve_forever()
     finally:
         server.server_close()
         app.searcher.stop()
         app.searcher.join(timeout=20)
-        close_window(app.ui)
+        if app.ui is not None:
+            close_window(app.ui)
+        else:
+            # Quit before the window was found: any window on our profile is this copy's — only one copy runs.
+            close_leftover_window(data_dir, log)
         log.info("выключено")
         if app.restart:
             own = [] if getattr(sys, "frozen", False) else ["-m", "bookprice.main"]
