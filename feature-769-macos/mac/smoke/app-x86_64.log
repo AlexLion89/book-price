@@ -1,3 +1,3 @@
-2026-11-10 06:53:59,194 INFO MainThread bookprice: запуск 0.6.0 (macOS) из /Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice
-2026-11-10 06:53:59,867 INFO MainThread bookprice.window: окно программы: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
-2026-11-10 06:54:10,041 WARNING MainThread bookprice.window: не нашёл процесс окна программы — закрывать его придётся вручную
+2026-11-10 07:08:23,832 INFO MainThread bookprice: запуск 0.6.0 (macOS) из /Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice
+2026-11-10 07:08:24,875 INFO window bookprice.window: окно программы: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
+2026-11-10 07:09:12,329 INFO searcher bookprice.browser: окно поиска: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)

@@ -1,69 +1,69 @@
-2415 INFO: Analyzing /Users/runner/work/book-price/book-price/run.py
-2691 INFO: Processing standard module hook 'hook-_ctypes.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/hooks'
-2733 INFO: Processing standard module hook 'hook-platform.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/hooks'
-2755 INFO: Processing standard module hook 'hook-xml.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/hooks'
-2962 INFO: Processing standard module hook 'hook-playwright.sync_api.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/playwright/_impl/__pyinstaller'
-3304 INFO: Processing standard module hook 'hook-multiprocessing.util.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/hooks'
-4208 INFO: Processing standard module hook 'hook-webbrowser.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/hooks'
-4286 INFO: Processing standard module hook 'hook-sqlite3.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/hooks'
-4446 INFO: Analyzing hidden import 'ctypes.wintypes'
-4451 INFO: Analyzing hidden import 'ctypes.util'
-4471 INFO: Analyzing hidden import 'html.parser'
-4487 INFO: Analyzing hidden import 'xml.etree.ElementTree'
-4540 INFO: Processing standard module hook 'hook-xml.etree.cElementTree.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/hooks'
-4542 INFO: Processing module hooks (post-graph stage)...
-4597 INFO: Performing binary vs. data reclassification (184 entries)
-4942 INFO: Looking for ctypes DLLs
-4944 WARNING: Library ntdll required via ctypes not found
-4948 INFO: Analyzing run-time hooks ...
-4949 INFO: Including run-time hook 'pyi_rth_inspect.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/hooks/rthooks'
-4952 INFO: Including run-time hook 'pyi_rth_pkgutil.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/hooks/rthooks'
-4953 INFO: Including run-time hook 'pyi_rth_multiprocessing.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/hooks/rthooks'
-4964 INFO: Creating base_library.zip...
-4983 INFO: Looking for dynamic libraries
-5362 INFO: Warnings written to /Users/runner/work/_temp/dist/work/bookprice/warn-bookprice.txt
-5381 INFO: Graph cross-reference written to /Users/runner/work/_temp/dist/work/bookprice/xref-bookprice.html
-5545 INFO: checking PYZ
-5545 INFO: Building PYZ because PYZ-00.toc is non existent
-5545 INFO: Building PYZ (ZlibArchive) /Users/runner/work/_temp/dist/work/bookprice/PYZ-00.pyz
-6517 INFO: Building PYZ (ZlibArchive) /Users/runner/work/_temp/dist/work/bookprice/PYZ-00.pyz completed successfully.
-6522 INFO: EXE target arch: universal2
-6522 INFO: Code signing identity: None
-6526 INFO: checking PKG
-6526 INFO: Building PKG because PKG-00.toc is non existent
-6526 INFO: Building PKG (CArchive) BookPrice.pkg
-6534 INFO: Building PKG (CArchive) BookPrice.pkg completed successfully.
-6535 INFO: Bootloader /Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/bootloader/Darwin-64bit/runw
-6535 INFO: checking EXE
-6535 INFO: Building EXE because EXE-00.toc is non existent
-6535 INFO: Building EXE from EXE-00.toc
-6535 INFO: Copying bootloader EXE to /Users/runner/work/_temp/dist/work/bookprice/BookPrice
-6537 INFO: Converting EXE to target arch (universal2)
-6538 INFO: Removing signature(s) from EXE
-6563 INFO: Modifying Mach-O image UUID(s) in EXE
-6567 INFO: Appending PKG archive to EXE
-6568 INFO: Fixing EXE headers for code signing
-6577 INFO: Rewriting the executable's macOS SDK version (26.2.0) to match the SDK version of the Python library (12.1.0) in order to avoid inconsistent behavior and potential UI issues in the frozen application.
-6579 INFO: Re-signing the EXE
-6603 INFO: Building EXE from EXE-00.toc completed successfully.
-6606 INFO: checking COLLECT
-6606 INFO: Building COLLECT because COLLECT-00.toc is non existent
-6606 INFO: Building COLLECT COLLECT-00.toc
-18352 INFO: Building COLLECT COLLECT-00.toc completed successfully.
-18360 INFO: checking BUNDLE
-18360 INFO: Building BUNDLE because BUNDLE-00.toc is non existent
-18360 INFO: Building BUNDLE BUNDLE-00.toc
-26476 INFO: Signing the BUNDLE...
-29329 INFO: Building BUNDLE BUNDLE-00.toc completed successfully.
-29337 INFO: Build complete! The results are available in: /Users/runner/work/_temp/dist
+3060 INFO: Analyzing /Users/runner/work/book-price/book-price/run.py
+3503 INFO: Processing standard module hook 'hook-_ctypes.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/hooks'
+3536 INFO: Processing standard module hook 'hook-platform.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/hooks'
+3560 INFO: Processing standard module hook 'hook-xml.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/hooks'
+3787 INFO: Processing standard module hook 'hook-playwright.sync_api.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/playwright/_impl/__pyinstaller'
+4196 INFO: Processing standard module hook 'hook-multiprocessing.util.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/hooks'
+5313 INFO: Processing standard module hook 'hook-webbrowser.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/hooks'
+5406 INFO: Processing standard module hook 'hook-sqlite3.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/hooks'
+5664 INFO: Analyzing hidden import 'ctypes.wintypes'
+5671 INFO: Analyzing hidden import 'ctypes.util'
+5728 INFO: Analyzing hidden import 'html.parser'
+5749 INFO: Analyzing hidden import 'xml.etree.ElementTree'
+5814 INFO: Processing standard module hook 'hook-xml.etree.cElementTree.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/hooks'
+5815 INFO: Processing module hooks (post-graph stage)...
+5879 INFO: Performing binary vs. data reclassification (184 entries)
+6293 INFO: Looking for ctypes DLLs
+6296 WARNING: Library ntdll required via ctypes not found
+6302 INFO: Analyzing run-time hooks ...
+6307 INFO: Including run-time hook 'pyi_rth_inspect.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/hooks/rthooks'
+6310 INFO: Including run-time hook 'pyi_rth_pkgutil.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/hooks/rthooks'
+6312 INFO: Including run-time hook 'pyi_rth_multiprocessing.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/hooks/rthooks'
+6323 INFO: Creating base_library.zip...
+6348 INFO: Looking for dynamic libraries
+6831 INFO: Warnings written to /Users/runner/work/_temp/dist/work/bookprice/warn-bookprice.txt
+6852 INFO: Graph cross-reference written to /Users/runner/work/_temp/dist/work/bookprice/xref-bookprice.html
+7036 INFO: checking PYZ
+7037 INFO: Building PYZ because PYZ-00.toc is non existent
+7037 INFO: Building PYZ (ZlibArchive) /Users/runner/work/_temp/dist/work/bookprice/PYZ-00.pyz
+8369 INFO: Building PYZ (ZlibArchive) /Users/runner/work/_temp/dist/work/bookprice/PYZ-00.pyz completed successfully.
+8373 INFO: EXE target arch: universal2
+8373 INFO: Code signing identity: None
+8376 INFO: checking PKG
+8376 INFO: Building PKG because PKG-00.toc is non existent
+8376 INFO: Building PKG (CArchive) BookPrice.pkg
+8383 INFO: Building PKG (CArchive) BookPrice.pkg completed successfully.
+8384 INFO: Bootloader /Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/bootloader/Darwin-64bit/runw
+8384 INFO: checking EXE
+8384 INFO: Building EXE because EXE-00.toc is non existent
+8384 INFO: Building EXE from EXE-00.toc
+8384 INFO: Copying bootloader EXE to /Users/runner/work/_temp/dist/work/bookprice/BookPrice
+8386 INFO: Converting EXE to target arch (universal2)
+8387 INFO: Removing signature(s) from EXE
+8412 INFO: Modifying Mach-O image UUID(s) in EXE
+8416 INFO: Appending PKG archive to EXE
+8418 INFO: Fixing EXE headers for code signing
+8426 INFO: Rewriting the executable's macOS SDK version (26.2.0) to match the SDK version of the Python library (12.1.0) in order to avoid inconsistent behavior and potential UI issues in the frozen application.
+8428 INFO: Re-signing the EXE
+8450 INFO: Building EXE from EXE-00.toc completed successfully.
+8453 INFO: checking COLLECT
+8453 INFO: Building COLLECT because COLLECT-00.toc is non existent
+8453 INFO: Building COLLECT COLLECT-00.toc
+22281 INFO: Building COLLECT COLLECT-00.toc completed successfully.
+22288 INFO: checking BUNDLE
+22288 INFO: Building BUNDLE because BUNDLE-00.toc is non existent
+22288 INFO: Building BUNDLE BUNDLE-00.toc
+27619 INFO: Signing the BUNDLE...
+28928 INFO: Building BUNDLE BUNDLE-00.toc completed successfully.
+28933 INFO: Build complete! The results are available in: /Users/runner/work/_temp/dist
 created: /Users/runner/work/_temp/dist/BookPrice-0.6.0-mac.dmg
 программа /Users/runner/work/_temp/dist/Ценитель.app; образ /Users/runner/work/_temp/dist/BookPrice-0.6.0-mac.dmg — 105 МБ
 total 214984
-drwxr-xr-x  5 runner  staff        160 Nov 10 06:52 .
-drwxr-xr-x  8 runner  staff        256 Nov 10 06:52 ..
-drwxr-xr-x  3 runner  staff         96 Nov 10 06:52 Ценитель.app
-drwxr-xr-x  4 runner  staff        128 Nov 10 06:52 BookPrice
--rw-r--r--@ 1 runner  staff  110071320 Nov 10 06:52 BookPrice-0.6.0-mac.dmg
+drwxr-xr-x  5 runner  staff        160 Nov 10 07:07 .
+drwxr-xr-x  8 runner  staff        256 Nov 10 07:06 ..
+drwxr-xr-x  3 runner  staff         96 Nov 10 07:07 Ценитель.app
+drwxr-xr-x  4 runner  staff        128 Nov 10 07:06 BookPrice
+-rw-r--r--@ 1 runner  staff  110070861 Nov 10 07:07 BookPrice-0.6.0-mac.dmg
 Ценитель.app: 471
 /Users/runner/work/book-price/book-price/tests/runtime_mac1_modules.txt: 471
 /Users/runner/work/_temp/dist/Ценитель.app/Contents

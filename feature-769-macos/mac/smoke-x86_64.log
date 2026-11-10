@@ -1,4 +1,4 @@
-OK   Chrome «пользователя» с тремя вкладками — ['11816DA424B0A724F3D91976CF79E6BC data:text/html;charset=utf-8,<title>%D0%', '81DC493B02D3BCE0609989A3ED504951 data:text/html;charset=utf-8,<title>%D0%', 'DF5810775F6060FB5A59021F57209B78 data:text/html;charset=utf-8,<title>%D0%']
+OK   Chrome «пользователя» с тремя вкладками — ['3FF10B8AC141A4C57E313390E1FD5CC2 data:text/html;charset=utf-8,<title>%D0%', 'B3589853BE695E443CB03CF9A712091C data:text/html;charset=utf-8,<title>%D0%', 'BB0B8DE8E82FDAA7102055528B425C3C data:text/html;charset=utf-8,<title>%D0%']
 OK   программа универсальная (Intel + Apple M) — x86_64 arm64
 A. запуск x86_64
 OK   программа поднялась — {'ok': True, 'version': '0.6.0', 'busy': False}

@@ -1,4 +1,4 @@
-OK   Chrome «пользователя» с тремя вкладками — ['5CC81FD585E1EBB43C2EC61771C666B2 data:text/html;charset=utf-8,<title>%D0%', 'E087AEF6C92F563042A7487764E45D4E data:text/html;charset=utf-8,<title>%D0%', 'EF29E4F4A18DE1062AE94887C9A61E8F data:text/html;charset=utf-8,<title>%D0%']
+OK   Chrome «пользователя» с тремя вкладками — ['29DC8A9A196304343DDEBB3A617935F1 data:text/html;charset=utf-8,<title>%D0%', '712B23B4E36D6127A150632447ADB452 data:text/html;charset=utf-8,<title>%D0%', '7E4DB7274099179B3E7788260AC5D1ED data:text/html;charset=utf-8,<title>%D0%']
 OK   программа универсальная (Intel + Apple M) — x86_64 arm64
 A. запуск родной
 OK   программа поднялась — {'ok': True, 'version': '0.6.0', 'busy': False}
@@ -8,7 +8,7 @@ OK   программа видит браузер — {'os': 'mac', 'os_label': 
 B. окно поиска
 снимок 2-search-window.png
 OK   окно поиска открылось и закрылось — {'status': 'done', 'title': 'Поиск цен — Ценитель', 'browser': 'Google Chrome'}
-OK   вкладки пользователя на месте после окна поиска — ['5CC81FD585E1EBB43C2EC61771C666B2 data:text/html;charset=utf-8,<title>%D0%', 'E087AEF6C92F563042A7487764E45D4E data:text/html;charset=utf-8,<title>%D0%', 'EF29E4F4A18DE1062AE94887C9A61E8F data:text/html;charset=utf-8,<title>%D0%']
+OK   вкладки пользователя на месте после окна поиска — ['29DC8A9A196304343DDEBB3A617935F1 data:text/html;charset=utf-8,<title>%D0%', '712B23B4E36D6127A150632447ADB452 data:text/html;charset=utf-8,<title>%D0%', '7E4DB7274099179B3E7788260AC5D1ED data:text/html;charset=utf-8,<title>%D0%']
 C. перезапуск, как после обновления
 OK   старая копия вышла
 OK   новая копия поднялась
@@ -17,12 +17,12 @@ D. пользователь закрыл окно программы
 OK   программа выключилась сама
 OK   её окон не осталось
 OK   Chrome пользователя жив
-OK   вкладки пользователя на месте — ['5CC81FD585E1EBB43C2EC61771C666B2 data:text/html;charset=utf-8,<title>%D0%', 'E087AEF6C92F563042A7487764E45D4E data:text/html;charset=utf-8,<title>%D0%', 'EF29E4F4A18DE1062AE94887C9A61E8F data:text/html;charset=utf-8,<title>%D0%']
+OK   вкладки пользователя на месте — ['29DC8A9A196304343DDEBB3A617935F1 data:text/html;charset=utf-8,<title>%D0%', '712B23B4E36D6127A150632447ADB452 data:text/html;charset=utf-8,<title>%D0%', '7E4DB7274099179B3E7788260AC5D1ED data:text/html;charset=utf-8,<title>%D0%']
 E. повторный запуск и «Выйти»
 OK   поднялась снова
 снимок 3-again.png
 OK   «Выйти» выключает программу
 OK   и закрывает её окно
 OK   Chrome пользователя жив в конце
-OK   вкладки пользователя в конце те же — ['5CC81FD585E1EBB43C2EC61771C666B2 data:text/html;charset=utf-8,<title>%D0%', 'E087AEF6C92F563042A7487764E45D4E data:text/html;charset=utf-8,<title>%D0%', 'EF29E4F4A18DE1062AE94887C9A61E8F data:text/html;charset=utf-8,<title>%D0%']
+OK   вкладки пользователя в конце те же — ['29DC8A9A196304343DDEBB3A617935F1 data:text/html;charset=utf-8,<title>%D0%', '712B23B4E36D6127A150632447ADB452 data:text/html;charset=utf-8,<title>%D0%', '7E4DB7274099179B3E7788260AC5D1ED data:text/html;charset=utf-8,<title>%D0%']
 итог: 19 из 19
