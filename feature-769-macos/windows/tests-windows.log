@@ -144,6 +144,6 @@ test_no_premium_when_new_copy_in_shop (tests.test_value.ValueTest) ... ok
 test_reader_ratings_from_five_point_sites (tests.test_value.ValueTest) ... ok
 
 ----------------------------------------------------------------------
-Ran 142 tests in 44.104s
+Ran 142 tests in 44.136s
 
 OK (skipped=3)
