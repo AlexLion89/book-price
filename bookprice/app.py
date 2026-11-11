@@ -38,7 +38,7 @@ UPDATE_EVERY = 6 * 3600
 UPDATE_RETRY = 10 * 60
 UI_GONE = 5
 CHECK, WINDOW_TEST = -1, -2
-WINDOW_TEST_HOLD = 6
+WINDOW_TEST_HOLD = int(os.environ.get("BOOKPRICE_WINDOW_TEST_HOLD") or 6)
 LOCAL_ORIGIN = re.compile(r"^http://(127\.0\.0\.1|localhost):\d+$")
 
 

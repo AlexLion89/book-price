@@ -115,8 +115,58 @@ def shot(name):
     print("снимок", path.name, flush=True)
 
 
+# Window counts per process, from the window server (owner pid and layer need no screen-recording permission).
+JXA_WINDOWS = """
+ObjC.import('CoreGraphics');
+var list = ObjC.deepUnwrap(ObjC.castRefToObject($.CGWindowListCopyWindowInfo(0, 0)));
+JSON.stringify(list.filter(function (w) { return w.kCGWindowLayer === 0; }).map(function (w) {
+  return [w.kCGWindowOwnerPID, w.kCGWindowIsOnscreen ? 1 : 0, w.kCGWindowBounds.Width, w.kCGWindowBounds.Height]; }));
+"""
+# What a click on the app's Dock icon sends: the "reopen" Apple event ('aevt'/'rapp'), to one process exactly.
+JXA_REOPEN = """
+ObjC.import('Foundation');
+var target = $.NSAppleEventDescriptor.descriptorWithProcessIdentifier(%d);
+var event = $.NSAppleEventDescriptor.appleEventWithEventClassEventIDTargetDescriptorReturnIDTransactionID(
+  0x61657674, 0x72617070, target, -1, 0);
+var error = Ref();
+var reply = event.sendEventWithOptionsTimeoutError(1, 10, error);
+error[0] ? 'ошибка: ' + ObjC.unwrap(error[0].localizedDescription) : 'отправлено';
+"""
+
+
+def jxa(script):
+    out = subprocess.run(["osascript", "-l", "JavaScript", "-e", script], capture_output=True, timeout=60)
+    return (out.stdout or out.stderr).decode("utf-8", "replace").strip()
+
+
+def window_counts():
+    """{role: [windows on screen, all windows]} for the program's browser processes."""
+    try:
+        rows = json.loads(jxa(JXA_WINDOWS))
+    except Exception as e:
+        return {"ошибка": str(e)}
+    roles = {pid: ("окно программы" if "ui-profile" in c else "окно поиска") for pid, c in ours()}
+    counts = {}
+    for pid, onscreen, w, h in rows:
+        if pid in roles:
+            on, total = counts.get(roles[pid], (0, 0))
+            counts[roles[pid]] = (on + onscreen, total + 1)
+    return counts
+
+
+def diag(note, out):
+    counts = window_counts()
+    out.append({"когда": note, "окна": counts})
+    print(f"     окна ({note}): {counts}", flush=True)
+
+
+def reopen(role):
+    pid = next((p for p, c in ours() if (("ui-profile" in c) == (role == "окно программы"))), None)
+    return jxa(JXA_REOPEN % pid) if pid else "нет процесса"
+
+
 def launch(extra_env=None):
-    env = {**os.environ, "BOOKPRICE_BROWSER": CHROME, **(extra_env or {})}
+    env = {**os.environ, "BOOKPRICE_BROWSER": CHROME, "BOOKPRICE_WINDOW_TEST_HOLD": "20", **(extra_env or {})}
     cmd = (["arch", f"-{ARCH}"] if ARCH else []) + [str(EXE)]
     return subprocess.Popen(cmd, env=env, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
@@ -144,12 +194,27 @@ def main():
     check("программа видит браузер", system.get("browser") == "Google Chrome", system)
     if ARCH:
         check("запущена под " + ARCH, system.get("machine") == ARCH, system.get("machine"))
+    windows = []
+    if not ARCH:
+        # Not a pass/fail check: which of our browser copies opens extra windows, on its own or on a Dock click.
+        diag("после запуска", windows)
+        print("     щелчок по значку окна программы в Dock:", reopen("окно программы"), flush=True)
+        time.sleep(3)
+        diag("после щелчка по окну программы", windows)
+        shot("1b-after-dock-click-ui")
 
     print("B. окно поиска", flush=True)
     post("api/window-test")
     wait(lambda: get("api/window-test").get("status") == "running", 30 * SLOW)
     time.sleep(3 * SLOW)
     shot(f"2-search-window{'-' + ARCH if ARCH else ''}")
+    if not ARCH:
+        diag("окно поиска открылось", windows)
+        print("     щелчок по значку окна поиска в Dock:", reopen("окно поиска"), flush=True)
+        time.sleep(3)
+        diag("после щелчка по окну поиска", windows)
+        shot("2b-after-dock-click-search")
+        (OUT / "windows.json").write_text(json.dumps(windows, ensure_ascii=False, indent=1), encoding="utf-8")
     wait(lambda: get("api/window-test").get("status") in ("done", "error"), 60 * SLOW)
     state = {}
     wait(lambda: state.update(get("api/window-test")) or True, 30 * SLOW)
