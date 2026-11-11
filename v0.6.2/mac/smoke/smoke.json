@@ -2,7 +2,7 @@
  {
   "check": "Chrome «пользователя» с тремя вкладками",
   "ok": true,
-  "detail": "['412B2760DFD3AB991A4C2949C113B19D data:text/html;charset=utf-8,<title>%D0%', '7574FEEF91A8DAA65E96DFE54A79C130 data:text/html;charset=utf-8,<title>%D0%', 'B5E3A278AB4A850B7E97ABB3FBBE97E3 data:text/html;charset=utf-8,<title>%D0%']"
+  "detail": "['6C3C2868DA35DAE06BD264FB25937AE3 data:text/html;charset=utf-8,<title>%D0%', 'C36EBCF1B5CBE8F4946E20DAD84037E4 data:text/html;charset=utf-8,<title>%D0%', 'C881ADB9D662DD5556BFB035F6C26AC8 data:text/html;charset=utf-8,<title>%D0%']"
  },
  {
   "check": "программа универсальная (Intel + Apple M)",
@@ -37,7 +37,7 @@
  {
   "check": "вкладки пользователя на месте после окна поиска",
   "ok": true,
-  "detail": "['412B2760DFD3AB991A4C2949C113B19D data:text/html;charset=utf-8,<title>%D0%', '7574FEEF91A8DAA65E96DFE54A79C130 data:text/html;charset=utf-8,<title>%D0%', 'B5E3A278AB4A850B7E97ABB3FBBE97E3 data:text/html;charset=utf-8,<title>%D0%']"
+  "detail": "['6C3C2868DA35DAE06BD264FB25937AE3 data:text/html;charset=utf-8,<title>%D0%', 'C36EBCF1B5CBE8F4946E20DAD84037E4 data:text/html;charset=utf-8,<title>%D0%', 'C881ADB9D662DD5556BFB035F6C26AC8 data:text/html;charset=utf-8,<title>%D0%']"
  },
  {
   "check": "старая копия вышла",
@@ -72,7 +72,7 @@
  {
   "check": "вкладки пользователя на месте",
   "ok": true,
-  "detail": "['412B2760DFD3AB991A4C2949C113B19D data:text/html;charset=utf-8,<title>%D0%', '7574FEEF91A8DAA65E96DFE54A79C130 data:text/html;charset=utf-8,<title>%D0%', 'B5E3A278AB4A850B7E97ABB3FBBE97E3 data:text/html;charset=utf-8,<title>%D0%']"
+  "detail": "['6C3C2868DA35DAE06BD264FB25937AE3 data:text/html;charset=utf-8,<title>%D0%', 'C36EBCF1B5CBE8F4946E20DAD84037E4 data:text/html;charset=utf-8,<title>%D0%', 'C881ADB9D662DD5556BFB035F6C26AC8 data:text/html;charset=utf-8,<title>%D0%']"
  },
  {
   "check": "поднялась снова",
@@ -97,6 +97,6 @@
  {
   "check": "вкладки пользователя в конце те же",
   "ok": true,
-  "detail": "['412B2760DFD3AB991A4C2949C113B19D data:text/html;charset=utf-8,<title>%D0%', '7574FEEF91A8DAA65E96DFE54A79C130 data:text/html;charset=utf-8,<title>%D0%', 'B5E3A278AB4A850B7E97ABB3FBBE97E3 data:text/html;charset=utf-8,<title>%D0%']"
+  "detail": "['6C3C2868DA35DAE06BD264FB25937AE3 data:text/html;charset=utf-8,<title>%D0%', 'C36EBCF1B5CBE8F4946E20DAD84037E4 data:text/html;charset=utf-8,<title>%D0%', 'C881ADB9D662DD5556BFB035F6C26AC8 data:text/html;charset=utf-8,<title>%D0%']"
  }
 ]
