@@ -1,0 +1,102 @@
+[
+ {
+  "check": "Chrome «пользователя» с тремя вкладками",
+  "ok": true,
+  "detail": "['05D97CE78E79E42220F60130F83391F7 data:text/html;charset=utf-8,<title>%D0%', '2833D1FF150A82FB9B46C33734F52819 data:text/html;charset=utf-8,<title>%D0%', '920E09F7647D9C268502F99188A020F2 data:text/html;charset=utf-8,<title>%D0%']"
+ },
+ {
+  "check": "программа универсальная (Intel + Apple M)",
+  "ok": true,
+  "detail": "x86_64 arm64"
+ },
+ {
+  "check": "программа поднялась",
+  "ok": true,
+  "detail": "{'ok': True, 'version': '0.6.3', 'busy': False}"
+ },
+ {
+  "check": "окно программы открыто",
+  "ok": true,
+  "detail": "['/bin/sh -c exec \"$0\" \"$@\" 3<&0 4>&1 0</dev/null 1>/dev/null /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/A']"
+ },
+ {
+  "check": "программа видит браузер",
+  "ok": true,
+  "detail": "{'os': 'mac', 'os_label': 'macOS', 'machine': 'x86_64', 'outbox': 'в папке, которую программа открыла в Finder', 'browser': 'Google Chrome', 'browser_key': 'chrome', 'browsers': [{'key': 'edge', 'label': 'Microsoft Edge'}, {'key': 'chrome', 'label': 'Google Chrome'}], 'no_browser': 'Нет подходящего браузера: нужен Google Chrome, Microsoft Edge или Яндекс Браузер. Safari и Firefox программа не умеет — без одного из этих браузеров она не сможет искать цены.', 'downloads': [{'label': 'Google Chrome', 'url': 'https://www.google.com/chrome/'}, {'label': 'Microsoft Edge', 'url': 'https://www.microsoft.com/edge/download'}, {'label': 'Яндекс Браузер', 'url': 'https://browser.yandex.ru/'}]}"
+ },
+ {
+  "check": "запущена под x86_64",
+  "ok": true,
+  "detail": "x86_64"
+ },
+ {
+  "check": "окно поиска открылось и закрылось",
+  "ok": false,
+  "detail": "{'status': 'error', 'error': 'TimeoutError: BrowserType.launch_persistent_context: Timeout 180000ms exceeded.\\nCall log:\\n  - <launching> /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --no-sandbox --disable-blink-features=AutomationControlled --disable-sync --no-first-run --force-webrtc-ip-handling-policy=default_public_interface_only --start-maximized --user-data-dir=/Users/runner/Library/Application Support/BookPrice/search-profile-chrome --remote-debugging-pipe about:blank\\n  - <launched> pid=6508\\n  - [pid=6508][err] [6508:32824:1111/113535.816119:ERROR:chrome/browser/chrome_browser_main.cc:1360] The use of Rosetta to run the x64 version of Chromium on Arm is neither tested nor maintained, and unexpected behavior will likely result. Please check that all tools that spawn Chromium are Arm-native.\\n'}"
+ },
+ {
+  "check": "вкладки пользователя на месте после окна поиска",
+  "ok": true,
+  "detail": "['05D97CE78E79E42220F60130F83391F7 data:text/html;charset=utf-8,<title>%D0%', '2833D1FF150A82FB9B46C33734F52819 data:text/html;charset=utf-8,<title>%D0%', '920E09F7647D9C268502F99188A020F2 data:text/html;charset=utf-8,<title>%D0%']"
+ },
+ {
+  "check": "старая копия вышла",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "check": "новая копия поднялась",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "check": "после перезапуска одно окно",
+  "ok": true,
+  "detail": "['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/Application Support/B']"
+ },
+ {
+  "check": "программа выключилась сама",
+  "ok": true,
+  "detail": "[]"
+ },
+ {
+  "check": "её окон не осталось",
+  "ok": true,
+  "detail": "[]"
+ },
+ {
+  "check": "Chrome пользователя жив",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "check": "вкладки пользователя на месте",
+  "ok": true,
+  "detail": "['05D97CE78E79E42220F60130F83391F7 data:text/html;charset=utf-8,<title>%D0%', '2833D1FF150A82FB9B46C33734F52819 data:text/html;charset=utf-8,<title>%D0%', '920E09F7647D9C268502F99188A020F2 data:text/html;charset=utf-8,<title>%D0%']"
+ },
+ {
+  "check": "поднялась снова",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "check": "«Выйти» выключает программу",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "check": "и закрывает её окно",
+  "ok": true,
+  "detail": "[]"
+ },
+ {
+  "check": "Chrome пользователя жив в конце",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "check": "вкладки пользователя в конце те же",
+  "ok": true,
+  "detail": "['05D97CE78E79E42220F60130F83391F7 data:text/html;charset=utf-8,<title>%D0%', '2833D1FF150A82FB9B46C33734F52819 data:text/html;charset=utf-8,<title>%D0%', '920E09F7647D9C268502F99188A020F2 data:text/html;charset=utf-8,<title>%D0%']"
+ }
+]

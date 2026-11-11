@@ -1,0 +1,97 @@
+2210 INFO: Analyzing /Users/runner/work/book-price/book-price/run.py
+2437 INFO: Processing standard module hook 'hook-_ctypes.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/hooks'
+2465 INFO: Processing standard module hook 'hook-platform.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/hooks'
+2481 INFO: Processing standard module hook 'hook-xml.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/hooks'
+2662 INFO: Processing standard module hook 'hook-playwright.sync_api.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/playwright/_impl/__pyinstaller'
+2957 INFO: Processing standard module hook 'hook-multiprocessing.util.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/hooks'
+3562 INFO: Processing standard module hook 'hook-webbrowser.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/hooks'
+3606 INFO: Processing standard module hook 'hook-sqlite3.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/hooks'
+3720 INFO: Analyzing hidden import 'ctypes.wintypes'
+3724 INFO: Analyzing hidden import 'ctypes.util'
+3737 INFO: Analyzing hidden import 'html.parser'
+3749 INFO: Analyzing hidden import 'xml.etree.ElementTree'
+3791 INFO: Processing standard module hook 'hook-xml.etree.cElementTree.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/hooks'
+3792 INFO: Processing module hooks (post-graph stage)...
+3844 INFO: Performing binary vs. data reclassification (187 entries)
+4181 INFO: Looking for ctypes DLLs
+4183 WARNING: Library ntdll required via ctypes not found
+4185 INFO: Analyzing run-time hooks ...
+4187 INFO: Including run-time hook 'pyi_rth_inspect.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/hooks/rthooks'
+4190 INFO: Including run-time hook 'pyi_rth_pkgutil.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/hooks/rthooks'
+4191 INFO: Including run-time hook 'pyi_rth_multiprocessing.py' from '/Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/hooks/rthooks'
+4199 INFO: Creating base_library.zip...
+4215 INFO: Looking for dynamic libraries
+4474 INFO: Warnings written to /Users/runner/work/_temp/dist/work/bookprice/warn-bookprice.txt
+4488 INFO: Graph cross-reference written to /Users/runner/work/_temp/dist/work/bookprice/xref-bookprice.html
+4604 INFO: checking PYZ
+4604 INFO: Building PYZ because PYZ-00.toc is non existent
+4604 INFO: Building PYZ (ZlibArchive) /Users/runner/work/_temp/dist/work/bookprice/PYZ-00.pyz
+5372 INFO: Building PYZ (ZlibArchive) /Users/runner/work/_temp/dist/work/bookprice/PYZ-00.pyz completed successfully.
+5376 INFO: EXE target arch: universal2
+5376 INFO: Code signing identity: None
+5388 INFO: checking PKG
+5388 INFO: Building PKG because PKG-00.toc is non existent
+5388 INFO: Building PKG (CArchive) BookPrice.pkg
+5393 INFO: Building PKG (CArchive) BookPrice.pkg completed successfully.
+5394 INFO: Bootloader /Users/runner/work/book-price/.venv-mac/lib/python3.9/site-packages/PyInstaller/bootloader/Darwin-64bit/runw
+5394 INFO: checking EXE
+5394 INFO: Building EXE because EXE-00.toc is non existent
+5394 INFO: Building EXE from EXE-00.toc
+5394 INFO: Copying bootloader EXE to /Users/runner/work/_temp/dist/work/bookprice/BookPrice
+5395 INFO: Converting EXE to target arch (universal2)
+5396 INFO: Removing signature(s) from EXE
+5419 INFO: Modifying Mach-O image UUID(s) in EXE
+5423 INFO: Appending PKG archive to EXE
+5424 INFO: Fixing EXE headers for code signing
+5431 INFO: Rewriting the executable's macOS SDK version (26.2.0) to match the SDK version of the Python library (12.1.0) in order to avoid inconsistent behavior and potential UI issues in the frozen application.
+5433 INFO: Re-signing the EXE
+5452 INFO: Building EXE from EXE-00.toc completed successfully.
+5454 INFO: checking COLLECT
+5454 INFO: Building COLLECT because COLLECT-00.toc is non existent
+5454 INFO: Building COLLECT COLLECT-00.toc
+12880 INFO: Building COLLECT COLLECT-00.toc completed successfully.
+12885 INFO: checking BUNDLE
+12885 INFO: Building BUNDLE because BUNDLE-00.toc is non existent
+12885 INFO: Building BUNDLE BUNDLE-00.toc
+17391 INFO: Signing the BUNDLE...
+18261 INFO: Building BUNDLE BUNDLE-00.toc completed successfully.
+18266 INFO: Build complete! The results are available in: /Users/runner/work/_temp/dist
+created: /Users/runner/work/_temp/dist/BookPrice-0.6.3-mac.dmg
+программа /Users/runner/work/_temp/dist/Ценитель.app; образ /Users/runner/work/_temp/dist/BookPrice-0.6.3-mac.dmg — 105 МБ
+total 214760
+drwxr-xr-x  5 runner  staff        160 Nov 11 11:30 .
+drwxr-xr-x  8 runner  staff        256 Nov 11 11:30 ..
+drwxr-xr-x  3 runner  staff         96 Nov 11 11:30 Ценитель.app
+drwxr-xr-x  4 runner  staff        128 Nov 11 11:30 BookPrice
+-rw-r--r--@ 1 runner  staff  109955834 Nov 11 11:30 BookPrice-0.6.3-mac.dmg
+Ценитель.app: 471
+/Users/runner/work/book-price/book-price/tests/runtime_mac1_modules.txt: 471
+/Users/runner/work/_temp/dist/Ценитель.app/Contents
+/Users/runner/work/_temp/dist/Ценитель.app/Contents/_CodeSignature
+/Users/runner/work/_temp/dist/Ценитель.app/Contents/_CodeSignature/CodeResources
+/Users/runner/work/_temp/dist/Ценитель.app/Contents/MacOS
+/Users/runner/work/_temp/dist/Ценитель.app/Contents/MacOS/BookPrice
+/Users/runner/work/_temp/dist/Ценитель.app/Contents/Resources
+/Users/runner/work/_temp/dist/Ценитель.app/Contents/Resources/Python
+/Users/runner/work/_temp/dist/Ценитель.app/Contents/Resources/bookprice
+/Users/runner/work/_temp/dist/Ценитель.app/Contents/Resources/libssl.1.1.dylib
+/Users/runner/work/_temp/dist/Ценитель.app/Contents/Resources/playwright
+/Users/runner/work/_temp/dist/Ценитель.app/Contents/Resources/python3.9
+/Users/runner/work/_temp/dist/Ценитель.app/Contents/Resources/base_library.zip
+/Users/runner/work/_temp/dist/Ценитель.app/Contents/Resources/Python.framework
+/Users/runner/work/_temp/dist/Ценитель.app/Contents/Resources/greenlet
+/Users/runner/work/_temp/dist/Ценитель.app/Contents/Resources/libcrypto.1.1.dylib
+/Users/runner/work/_temp/dist/Ценитель.app/Contents/Resources/fox.icns
+/Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks
+/Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/Python
+/Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice
+/Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/libssl.1.1.dylib
+/Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/playwright
+/Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/python3.9
+/Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/base_library.zip
+/Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/Python.framework
+/Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/greenlet
+/Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/libcrypto.1.1.dylib
+/Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/python3__dot__9
+/Users/runner/work/_temp/dist/Ценитель.app/Contents/Info.plist
+x86_64 arm64
