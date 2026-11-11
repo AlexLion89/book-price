@@ -1,8 +1,8 @@
-2026-11-11 11:32:06,124 INFO MainThread bookprice: запуск 0.6.3 (macOS) из /Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice
-2026-11-11 11:32:07,428 INFO window bookprice.window: окно программы: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
-2026-11-11 11:32:44,897 INFO searcher bookprice.browser: окно поиска: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
-2026-11-11 11:33:10,530 WARNING window bookprice.window: не нашёл процесс окна программы — закрывать его придётся вручную
-2026-11-11 11:35:45,889 ERROR searcher bookprice.app: проверка окна поиска
+2026-11-11 11:42:30,173 INFO MainThread bookprice: запуск 0.6.3 (macOS) из /Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice
+2026-11-11 11:42:31,266 INFO window bookprice.window: окно программы: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
+2026-11-11 11:43:09,740 INFO searcher bookprice.browser: окно поиска: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
+2026-11-11 11:43:37,606 WARNING window bookprice.window: не нашёл процесс окна программы — закрывать его придётся вручную
+2026-11-11 11:46:10,420 ERROR searcher bookprice.app: проверка окна поиска
 Traceback (most recent call last):
   File "/Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice/app.py", line 161, in _window_test
     browser.start()
@@ -16,18 +16,16 @@ Traceback (most recent call last):
 playwright._impl._errors.TimeoutError: BrowserType.launch_persistent_context: Timeout 180000ms exceeded.
 Call log:
   - <launching> /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --no-sandbox --disable-blink-features=AutomationControlled --disable-sync --no-first-run --force-webrtc-ip-handling-policy=default_public_interface_only --start-maximized --user-data-dir=/Users/runner/Library/Application Support/BookPrice/search-profile-chrome --remote-debugging-pipe about:blank
-  - <launched> pid=6508
-  - [pid=6508][err] [6508:32824:1111/113535.816119:ERROR:chrome/browser/chrome_browser_main.cc:1360] The use of Rosetta to run the x64 version of Chromium on Arm is neither tested nor maintained, and unexpected behavior will likely result. Please check that all tools that spawn Chromium are Arm-native.
+  - <launched> pid=6389
 
-2026-11-11 11:35:47,490 INFO MainThread bookprice: закрываю окно, оставшееся от прошлого запуска
-2026-11-11 11:35:52,041 INFO MainThread bookprice: выключено
-2026-11-11 11:35:52,949 INFO MainThread bookprice: запуск 0.6.3 (macOS) из /Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice
-2026-11-11 11:35:53,430 INFO window bookprice.window: окно программы: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
-2026-11-11 11:35:54,470 INFO updates bookprice.app: обновления не проверены: HTTP Error 403: rate limit exceeded
-2026-11-11 11:36:01,538 INFO watchdog bookprice.app: окно программы закрыто — выключаюсь
-2026-11-11 11:36:06,480 INFO MainThread bookprice: выключено
-2026-11-11 11:36:07,941 INFO MainThread bookprice: запуск 0.6.3 (macOS) из /Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice
-2026-11-11 11:36:08,367 INFO window bookprice.window: окно программы: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
-2026-11-11 11:36:09,249 INFO updates bookprice.app: обновления не проверены: HTTP Error 403: rate limit exceeded
-2026-11-11 11:36:16,578 INFO watchdog bookprice.app: окно программы закрыто — выключаюсь
-2026-11-11 11:36:20,713 INFO MainThread bookprice: выключено
+2026-11-11 11:46:11,408 INFO MainThread bookprice: закрываю окно, оставшееся от прошлого запуска
+2026-11-11 11:46:19,989 WARNING MainThread bookprice.system.mac: окно программы не закрылось само — завершаю его процесс
+2026-11-11 11:46:20,056 INFO MainThread bookprice: выключено
+2026-11-11 11:46:21,265 INFO MainThread bookprice: запуск 0.6.3 (macOS) из /Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice
+2026-11-11 11:46:21,881 INFO window bookprice.window: окно программы: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
+2026-11-11 11:46:29,981 INFO watchdog bookprice.app: окно программы закрыто — выключаюсь
+2026-11-11 11:46:34,991 INFO MainThread bookprice: выключено
+2026-11-11 11:46:36,320 INFO MainThread bookprice: запуск 0.6.3 (macOS) из /Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice
+2026-11-11 11:46:36,763 INFO window bookprice.window: окно программы: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
+2026-11-11 11:46:45,113 INFO watchdog bookprice.app: окно программы закрыто — выключаюсь
+2026-11-11 11:46:48,821 INFO MainThread bookprice: выключено
