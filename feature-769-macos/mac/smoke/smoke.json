@@ -2,7 +2,7 @@
  {
   "check": "Chrome «пользователя» с тремя вкладками",
   "ok": true,
-  "detail": "['2DA92E5BDBFC59857375703FBEAD62C5 data:text/html;charset=utf-8,<title>%D0%', '8D57F2061C9033386EA42A0D7A5B342D data:text/html;charset=utf-8,<title>%D0%', 'EDA0B259A5EE08072B353DC21D9FAB8F data:text/html;charset=utf-8,<title>%D0%']"
+  "detail": "['26618ECD95D3CBD2F215F2E459249E40 data:text/html;charset=utf-8,<title>%D0%', '4AEA44C2CE05A80B000085E30618C8A4 data:text/html;charset=utf-8,<title>%D0%', 'CF8E7720D69D11C07776E6DCB4CE1F23 data:text/html;charset=utf-8,<title>%D0%']"
  },
  {
   "check": "программа универсальная (Intel + Apple M)",
@@ -22,7 +22,12 @@
  {
   "check": "программа видит браузер",
   "ok": true,
-  "detail": "{'os': 'mac', 'os_label': 'macOS', 'machine': 'arm64', 'outbox': 'в папке, которую программа открыла в Finder', 'browser': 'Google Chrome', 'no_browser': 'Нет подходящего браузера: нужен Google Chrome, Microsoft Edge или Яндекс Браузер. Safari и Firefox программа не умеет — без одного из этих браузеров она не сможет искать цены.', 'downloads': [{'label': 'Google Chrome', 'url': 'https://www.google.com/chrome/'}, {'label': 'Microsoft Edge', 'url': 'https://www.microsoft.com/edge/download'}, {'label': 'Яндекс Браузер', 'url': 'https://browser.yandex.ru/'}]}"
+  "detail": "{'os': 'mac', 'os_label': 'macOS', 'machine': 'arm64', 'outbox': 'в папке, которую программа открыла в Finder', 'browser': 'Google Chrome', 'browser_key': 'chrome', 'browsers': [{'key': 'edge', 'label': 'Microsoft Edge'}, {'key': 'chrome', 'label': 'Google Chrome'}], 'no_browser': 'Нет подходящего браузера: нужен Google Chrome, Microsoft Edge или Яндекс Браузер. Safari и Firefox программа не умеет — без одного из этих браузеров она не сможет искать цены.', 'downloads': [{'label': 'Google Chrome', 'url': 'https://www.google.com/chrome/'}, {'label': 'Microsoft Edge', 'url': 'https://www.microsoft.com/edge/download'}, {'label': 'Яндекс Браузер', 'url': 'https://browser.yandex.ru/'}]}"
+ },
+ {
+  "check": "щелчок по значку в Dock не оставляет пустого окна",
+  "ok": true,
+  "detail": "{'окно программы': (2, 8)}"
  },
  {
   "check": "окно поиска открылось и закрылось",
@@ -32,7 +37,7 @@
  {
   "check": "вкладки пользователя на месте после окна поиска",
   "ok": true,
-  "detail": "['2DA92E5BDBFC59857375703FBEAD62C5 data:text/html;charset=utf-8,<title>%D0%', '8D57F2061C9033386EA42A0D7A5B342D data:text/html;charset=utf-8,<title>%D0%', 'EDA0B259A5EE08072B353DC21D9FAB8F data:text/html;charset=utf-8,<title>%D0%']"
+  "detail": "['26618ECD95D3CBD2F215F2E459249E40 data:text/html;charset=utf-8,<title>%D0%', '4AEA44C2CE05A80B000085E30618C8A4 data:text/html;charset=utf-8,<title>%D0%', 'CF8E7720D69D11C07776E6DCB4CE1F23 data:text/html;charset=utf-8,<title>%D0%']"
  },
  {
   "check": "старая копия вышла",
@@ -67,7 +72,7 @@
  {
   "check": "вкладки пользователя на месте",
   "ok": true,
-  "detail": "['2DA92E5BDBFC59857375703FBEAD62C5 data:text/html;charset=utf-8,<title>%D0%', '8D57F2061C9033386EA42A0D7A5B342D data:text/html;charset=utf-8,<title>%D0%', 'EDA0B259A5EE08072B353DC21D9FAB8F data:text/html;charset=utf-8,<title>%D0%']"
+  "detail": "['26618ECD95D3CBD2F215F2E459249E40 data:text/html;charset=utf-8,<title>%D0%', '4AEA44C2CE05A80B000085E30618C8A4 data:text/html;charset=utf-8,<title>%D0%', 'CF8E7720D69D11C07776E6DCB4CE1F23 data:text/html;charset=utf-8,<title>%D0%']"
  },
  {
   "check": "поднялась снова",
@@ -92,6 +97,6 @@
  {
   "check": "вкладки пользователя в конце те же",
   "ok": true,
-  "detail": "['2DA92E5BDBFC59857375703FBEAD62C5 data:text/html;charset=utf-8,<title>%D0%', '8D57F2061C9033386EA42A0D7A5B342D data:text/html;charset=utf-8,<title>%D0%', 'EDA0B259A5EE08072B353DC21D9FAB8F data:text/html;charset=utf-8,<title>%D0%']"
+  "detail": "['26618ECD95D3CBD2F215F2E459249E40 data:text/html;charset=utf-8,<title>%D0%', '4AEA44C2CE05A80B000085E30618C8A4 data:text/html;charset=utf-8,<title>%D0%', 'CF8E7720D69D11C07776E6DCB4CE1F23 data:text/html;charset=utf-8,<title>%D0%']"
  }
 ]

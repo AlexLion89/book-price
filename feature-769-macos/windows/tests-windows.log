@@ -119,6 +119,7 @@ test_each_browser_has_its_own_profiles_and_edge_keeps_the_old_ones (tests.test_s
 test_edge_on_windows_goes_by_channel_others_by_file (tests.test_system.BrowsersTest) ... ok
 test_preferred_browser_comes_first_whatever_the_path_order (tests.test_system.BrowsersTest) ... ok
 test_profile_folder_is_matched_exactly (tests.test_system.BrowsersTest) ... ok
+test_the_users_choice_wins_while_that_browser_is_installed (tests.test_system.BrowsersTest) ... ok
 test_without_a_suitable_browser_there_is_nothing_to_drive (tests.test_system.BrowsersTest) ... ok
 test_a_process_that_only_names_our_folder_is_not_ours (tests.test_system.ProcessesTest)
 Edge started through some launchers falls back to the user's own profile with our folder still in its ... ok
@@ -143,6 +144,6 @@ test_no_premium_when_new_copy_in_shop (tests.test_value.ValueTest) ... ok
 test_reader_ratings_from_five_point_sites (tests.test_value.ValueTest) ... ok
 
 ----------------------------------------------------------------------
-Ran 141 tests in 41.023s
+Ran 142 tests in 44.104s
 
 OK (skipped=3)
