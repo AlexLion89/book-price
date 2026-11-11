@@ -1,4 +1,4 @@
-OK   Chrome «пользователя» с тремя вкладками — ['9FDB3F8EE340D00AEC755B710A77B39C data:text/html;charset=utf-8,<title>%D0%', 'AE23191508B899EC066067D5D394F645 data:text/html;charset=utf-8,<title>%D0%', 'C9261A6B12497C8654247D795CE051F6 data:text/html;charset=utf-8,<title>%D0%']
+OK   Chrome «пользователя» с тремя вкладками — ['2016090F12A81463FF679AF76BA424D8 data:text/html;charset=utf-8,<title>%D0%', 'C2B480F21C6BE70697114D264A1F1326 data:text/html;charset=utf-8,<title>%D0%', 'E0561F7D90054DB2A84D6B927DF8D6ED data:text/html;charset=utf-8,<title>%D0%']
 OK   программа универсальная (Intel + Apple M) — x86_64 arm64
 A. запуск родной
 OK   программа поднялась — {'ok': True, 'version': '0.6.2', 'busy': False}
@@ -12,12 +12,12 @@ OK   программа видит браузер — {'os': 'mac', 'os_label': 
 OK   щелчок по значку в Dock не оставляет пустого окна — {'окно программы': (2, 8)}
 B. окно поиска
 снимок 2-search-window.png
-     окна (окно поиска открылось): {'окно поиска': (1, 8), 'окно программы': (2, 7)}
+     окна (окно поиска открылось): {'окно поиска': (2, 9), 'окно программы': (2, 7)}
      щелчок по значку окна поиска в Dock: ошибка: undefined
      окна (после щелчка по окну поиска): {'окно поиска': (2, 9), 'окно программы': (2, 7)}
 снимок 2b-after-dock-click-search.png
 OK   окно поиска открылось и закрылось — {'status': 'done', 'title': 'Поиск цен — Ценитель', 'browser': 'Google Chrome'}
-OK   вкладки пользователя на месте после окна поиска — ['9FDB3F8EE340D00AEC755B710A77B39C data:text/html;charset=utf-8,<title>%D0%', 'AE23191508B899EC066067D5D394F645 data:text/html;charset=utf-8,<title>%D0%', 'C9261A6B12497C8654247D795CE051F6 data:text/html;charset=utf-8,<title>%D0%']
+OK   вкладки пользователя на месте после окна поиска — ['2016090F12A81463FF679AF76BA424D8 data:text/html;charset=utf-8,<title>%D0%', 'C2B480F21C6BE70697114D264A1F1326 data:text/html;charset=utf-8,<title>%D0%', 'E0561F7D90054DB2A84D6B927DF8D6ED data:text/html;charset=utf-8,<title>%D0%']
 C. перезапуск, как после обновления
 OK   старая копия вышла
 OK   новая копия поднялась
@@ -26,12 +26,12 @@ D. пользователь закрыл окно программы
 OK   программа выключилась сама
 OK   её окон не осталось
 OK   Chrome пользователя жив
-OK   вкладки пользователя на месте — ['9FDB3F8EE340D00AEC755B710A77B39C data:text/html;charset=utf-8,<title>%D0%', 'AE23191508B899EC066067D5D394F645 data:text/html;charset=utf-8,<title>%D0%', 'C9261A6B12497C8654247D795CE051F6 data:text/html;charset=utf-8,<title>%D0%']
+OK   вкладки пользователя на месте — ['2016090F12A81463FF679AF76BA424D8 data:text/html;charset=utf-8,<title>%D0%', 'C2B480F21C6BE70697114D264A1F1326 data:text/html;charset=utf-8,<title>%D0%', 'E0561F7D90054DB2A84D6B927DF8D6ED data:text/html;charset=utf-8,<title>%D0%']
 E. повторный запуск и «Выйти»
 OK   поднялась снова
 снимок 3-again.png
 OK   «Выйти» выключает программу
 OK   и закрывает её окно
 OK   Chrome пользователя жив в конце
-OK   вкладки пользователя в конце те же — ['9FDB3F8EE340D00AEC755B710A77B39C data:text/html;charset=utf-8,<title>%D0%', 'AE23191508B899EC066067D5D394F645 data:text/html;charset=utf-8,<title>%D0%', 'C9261A6B12497C8654247D795CE051F6 data:text/html;charset=utf-8,<title>%D0%']
+OK   вкладки пользователя в конце те же — ['2016090F12A81463FF679AF76BA424D8 data:text/html;charset=utf-8,<title>%D0%', 'C2B480F21C6BE70697114D264A1F1326 data:text/html;charset=utf-8,<title>%D0%', 'E0561F7D90054DB2A84D6B927DF8D6ED data:text/html;charset=utf-8,<title>%D0%']
 итог: 20 из 20
