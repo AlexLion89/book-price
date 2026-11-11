@@ -1,0 +1,14 @@
+2026-11-11 10:17:59,826 INFO MainThread bookprice: запуск 0.6.2 (macOS) из /Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice
+2026-11-11 10:18:00,042 INFO window bookprice.window: окно программы: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
+2026-11-11 10:18:05,217 INFO window-pipe bookprice.system.mac: браузер открыл пустое окно (chrome://newtab/) — закрываю
+2026-11-11 10:18:06,585 INFO searcher bookprice.browser: окно поиска: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
+2026-11-11 10:18:50,932 INFO watchdog bookprice.app: окно программы закрыто — выключаюсь
+2026-11-11 10:18:53,045 INFO MainThread bookprice: выключено
+2026-11-11 10:18:53,398 INFO MainThread bookprice: запуск 0.6.2 (macOS) из /Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice
+2026-11-11 10:18:53,551 INFO window bookprice.window: окно программы: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
+2026-11-11 10:18:59,518 INFO watchdog bookprice.app: окно программы закрыто — выключаюсь
+2026-11-11 10:19:03,040 INFO MainThread bookprice: выключено
+2026-11-11 10:19:03,775 INFO MainThread bookprice: запуск 0.6.2 (macOS) из /Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice
+2026-11-11 10:19:03,920 INFO window bookprice.window: окно программы: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
+2026-11-11 10:19:07,989 INFO watchdog bookprice.app: окно программы закрыто — выключаюсь
+2026-11-11 10:19:11,182 INFO MainThread bookprice: выключено
