@@ -1,14 +1,22 @@
-OK   Chrome «пользователя» с тремя вкладками — ['04A7D8B75E3469B12B993B8E694EEF6E data:text/html;charset=utf-8,<title>%D0%', '516A64BAD225F35549D509043CD1F375 data:text/html;charset=utf-8,<title>%D0%', 'D3018DD48413FAFFBD8D4845F1D3E1CF data:text/html;charset=utf-8,<title>%D0%']
+OK   Chrome «пользователя» с тремя вкладками — ['2DA92E5BDBFC59857375703FBEAD62C5 data:text/html;charset=utf-8,<title>%D0%', '8D57F2061C9033386EA42A0D7A5B342D data:text/html;charset=utf-8,<title>%D0%', 'EDA0B259A5EE08072B353DC21D9FAB8F data:text/html;charset=utf-8,<title>%D0%']
 OK   программа универсальная (Intel + Apple M) — x86_64 arm64
 A. запуск родной
 OK   программа поднялась — {'ok': True, 'version': '0.6.1', 'busy': False}
 OK   окно программы открыто — ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/Application Support/BookPrice/ui-profile-chrome --no-first-ru']
 снимок 1-window.png
 OK   программа видит браузер — {'os': 'mac', 'os_label': 'macOS', 'machine': 'arm64', 'outbox': 'в папке, которую программа открыла в Finder', 'browser': 'Google Chrome', 'no_browser': 'Нет подходящего браузера: нужен Google Chrome, Microsoft Edge или Яндекс Браузер. Safari и Firefox программа не умеет — без одного из этих браузеров она не сможет искать цены.', 'downloads': [{'label': 'Google Chrome', 'url': 'https://www.google.com/chrome/'}, {'label': 'Microsoft Edge', 'url': 'https://www.microsoft.com/edge/download'}, {'label': 'Яндекс Браузер', 'url': 'https://browser.yandex.ru/'}]}
+     окна (после запуска): {'окно программы': (2, 6)}
+     щелчок по значку окна программы в Dock: ошибка: undefined
+     окна (после щелчка по окну программы): {'окно программы': (3, 10)}
+снимок 1b-after-dock-click-ui.png
 B. окно поиска
 снимок 2-search-window.png
+     окна (окно поиска открылось): {'окно поиска': (2, 9), 'окно программы': (3, 10)}
+     щелчок по значку окна поиска в Dock: ошибка: undefined
+     окна (после щелчка по окну поиска): {'окно поиска': (2, 9), 'окно программы': (3, 10)}
+снимок 2b-after-dock-click-search.png
 OK   окно поиска открылось и закрылось — {'status': 'done', 'title': 'Поиск цен — Ценитель', 'browser': 'Google Chrome'}
-OK   вкладки пользователя на месте после окна поиска — ['04A7D8B75E3469B12B993B8E694EEF6E data:text/html;charset=utf-8,<title>%D0%', '516A64BAD225F35549D509043CD1F375 data:text/html;charset=utf-8,<title>%D0%', 'D3018DD48413FAFFBD8D4845F1D3E1CF data:text/html;charset=utf-8,<title>%D0%']
+OK   вкладки пользователя на месте после окна поиска — ['2DA92E5BDBFC59857375703FBEAD62C5 data:text/html;charset=utf-8,<title>%D0%', '8D57F2061C9033386EA42A0D7A5B342D data:text/html;charset=utf-8,<title>%D0%', 'EDA0B259A5EE08072B353DC21D9FAB8F data:text/html;charset=utf-8,<title>%D0%']
 C. перезапуск, как после обновления
 OK   старая копия вышла
 OK   новая копия поднялась
@@ -17,12 +25,12 @@ D. пользователь закрыл окно программы
 OK   программа выключилась сама
 OK   её окон не осталось
 OK   Chrome пользователя жив
-OK   вкладки пользователя на месте — ['04A7D8B75E3469B12B993B8E694EEF6E data:text/html;charset=utf-8,<title>%D0%', '516A64BAD225F35549D509043CD1F375 data:text/html;charset=utf-8,<title>%D0%', 'D3018DD48413FAFFBD8D4845F1D3E1CF data:text/html;charset=utf-8,<title>%D0%']
+OK   вкладки пользователя на месте — ['2DA92E5BDBFC59857375703FBEAD62C5 data:text/html;charset=utf-8,<title>%D0%', '8D57F2061C9033386EA42A0D7A5B342D data:text/html;charset=utf-8,<title>%D0%', 'EDA0B259A5EE08072B353DC21D9FAB8F data:text/html;charset=utf-8,<title>%D0%']
 E. повторный запуск и «Выйти»
 OK   поднялась снова
 снимок 3-again.png
 OK   «Выйти» выключает программу
 OK   и закрывает её окно
 OK   Chrome пользователя жив в конце
-OK   вкладки пользователя в конце те же — ['04A7D8B75E3469B12B993B8E694EEF6E data:text/html;charset=utf-8,<title>%D0%', '516A64BAD225F35549D509043CD1F375 data:text/html;charset=utf-8,<title>%D0%', 'D3018DD48413FAFFBD8D4845F1D3E1CF data:text/html;charset=utf-8,<title>%D0%']
+OK   вкладки пользователя в конце те же — ['2DA92E5BDBFC59857375703FBEAD62C5 data:text/html;charset=utf-8,<title>%D0%', '8D57F2061C9033386EA42A0D7A5B342D data:text/html;charset=utf-8,<title>%D0%', 'EDA0B259A5EE08072B353DC21D9FAB8F data:text/html;charset=utf-8,<title>%D0%']
 итог: 19 из 19
