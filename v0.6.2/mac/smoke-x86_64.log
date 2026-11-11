@@ -1,0 +1,29 @@
+OK   Chrome «пользователя» с тремя вкладками — ['26695AA5836839711B322A5A340F00D0 data:text/html;charset=utf-8,<title>%D0%', '39010568678A215B10623A69656E9AEB data:text/html;charset=utf-8,<title>%D0%', 'F2FE4CB6722780053F3F300B03479C00 data:text/html;charset=utf-8,<title>%D0%']
+OK   программа универсальная (Intel + Apple M) — x86_64 arm64
+A. запуск x86_64
+OK   программа поднялась — {'ok': True, 'version': '0.6.2', 'busy': False}
+OK   окно программы открыто — ['/bin/sh -c exec "$0" "$@" 3<&0 4>&1 0</dev/null 1>/dev/null /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/A']
+снимок 1-window-x86_64.png
+OK   программа видит браузер — {'os': 'mac', 'os_label': 'macOS', 'machine': 'x86_64', 'outbox': 'в папке, которую программа открыла в Finder', 'browser': 'Google Chrome', 'browser_key': 'chrome', 'browsers': [{'key': 'edge', 'label': 'Microsoft Edge'}, {'key': 'chrome', 'label': 'Google Chrome'}], 'no_browser': 'Нет подходящего браузера: нужен Google Chrome, Microsoft Edge или Яндекс Браузер. Safari и Firefox программа не умеет — без одного из этих браузеров она не сможет искать цены.', 'downloads': [{'label': 'Google Chrome', 'url': 'https://www.google.com/chrome/'}, {'label': 'Microsoft Edge', 'url': 'https://www.microsoft.com/edge/download'}, {'label': 'Яндекс Браузер', 'url': 'https://browser.yandex.ru/'}]}
+OK   запущена под x86_64 — x86_64
+B. окно поиска
+снимок 2-search-window-x86_64.png
+OK   окно поиска открылось и закрылось — {'status': 'done', 'title': 'Поиск цен — Ценитель', 'browser': 'Google Chrome'}
+OK   вкладки пользователя на месте после окна поиска — ['26695AA5836839711B322A5A340F00D0 data:text/html;charset=utf-8,<title>%D0%', '39010568678A215B10623A69656E9AEB data:text/html;charset=utf-8,<title>%D0%', 'F2FE4CB6722780053F3F300B03479C00 data:text/html;charset=utf-8,<title>%D0%']
+C. перезапуск, как после обновления
+OK   старая копия вышла
+OK   новая копия поднялась
+OK   после перезапуска одно окно — ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/Application Support/B']
+D. пользователь закрыл окно программы
+OK   программа выключилась сама
+OK   её окон не осталось
+OK   Chrome пользователя жив
+OK   вкладки пользователя на месте — ['26695AA5836839711B322A5A340F00D0 data:text/html;charset=utf-8,<title>%D0%', '39010568678A215B10623A69656E9AEB data:text/html;charset=utf-8,<title>%D0%', 'F2FE4CB6722780053F3F300B03479C00 data:text/html;charset=utf-8,<title>%D0%']
+E. повторный запуск и «Выйти»
+OK   поднялась снова
+снимок 3-again-x86_64.png
+OK   «Выйти» выключает программу
+OK   и закрывает её окно
+OK   Chrome пользователя жив в конце
+OK   вкладки пользователя в конце те же — ['26695AA5836839711B322A5A340F00D0 data:text/html;charset=utf-8,<title>%D0%', '39010568678A215B10623A69656E9AEB data:text/html;charset=utf-8,<title>%D0%', 'F2FE4CB6722780053F3F300B03479C00 data:text/html;charset=utf-8,<title>%D0%']
+итог: 20 из 20

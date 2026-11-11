@@ -1,0 +1,102 @@
+[
+ {
+  "check": "Chrome «пользователя» с тремя вкладками",
+  "ok": true,
+  "detail": "['412B2760DFD3AB991A4C2949C113B19D data:text/html;charset=utf-8,<title>%D0%', '7574FEEF91A8DAA65E96DFE54A79C130 data:text/html;charset=utf-8,<title>%D0%', 'B5E3A278AB4A850B7E97ABB3FBBE97E3 data:text/html;charset=utf-8,<title>%D0%']"
+ },
+ {
+  "check": "программа универсальная (Intel + Apple M)",
+  "ok": true,
+  "detail": "x86_64 arm64"
+ },
+ {
+  "check": "программа поднялась",
+  "ok": true,
+  "detail": "{'ok': True, 'version': '0.6.2', 'busy': False}"
+ },
+ {
+  "check": "окно программы открыто",
+  "ok": true,
+  "detail": "['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/Application Support/BookPrice/ui-profile-chrome --no-first-ru']"
+ },
+ {
+  "check": "программа видит браузер",
+  "ok": true,
+  "detail": "{'os': 'mac', 'os_label': 'macOS', 'machine': 'arm64', 'outbox': 'в папке, которую программа открыла в Finder', 'browser': 'Google Chrome', 'browser_key': 'chrome', 'browsers': [{'key': 'edge', 'label': 'Microsoft Edge'}, {'key': 'chrome', 'label': 'Google Chrome'}], 'no_browser': 'Нет подходящего браузера: нужен Google Chrome, Microsoft Edge или Яндекс Браузер. Safari и Firefox программа не умеет — без одного из этих браузеров она не сможет искать цены.', 'downloads': [{'label': 'Google Chrome', 'url': 'https://www.google.com/chrome/'}, {'label': 'Microsoft Edge', 'url': 'https://www.microsoft.com/edge/download'}, {'label': 'Яндекс Браузер', 'url': 'https://browser.yandex.ru/'}]}"
+ },
+ {
+  "check": "щелчок по значку в Dock не оставляет пустого окна",
+  "ok": true,
+  "detail": "{'окно программы': (2, 8)}"
+ },
+ {
+  "check": "окно поиска открылось и закрылось",
+  "ok": true,
+  "detail": "{'status': 'done', 'title': 'Поиск цен — Ценитель', 'browser': 'Google Chrome'}"
+ },
+ {
+  "check": "вкладки пользователя на месте после окна поиска",
+  "ok": true,
+  "detail": "['412B2760DFD3AB991A4C2949C113B19D data:text/html;charset=utf-8,<title>%D0%', '7574FEEF91A8DAA65E96DFE54A79C130 data:text/html;charset=utf-8,<title>%D0%', 'B5E3A278AB4A850B7E97ABB3FBBE97E3 data:text/html;charset=utf-8,<title>%D0%']"
+ },
+ {
+  "check": "старая копия вышла",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "check": "новая копия поднялась",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "check": "после перезапуска одно окно",
+  "ok": true,
+  "detail": "['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/Application Support/B']"
+ },
+ {
+  "check": "программа выключилась сама",
+  "ok": true,
+  "detail": "[]"
+ },
+ {
+  "check": "её окон не осталось",
+  "ok": true,
+  "detail": "[]"
+ },
+ {
+  "check": "Chrome пользователя жив",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "check": "вкладки пользователя на месте",
+  "ok": true,
+  "detail": "['412B2760DFD3AB991A4C2949C113B19D data:text/html;charset=utf-8,<title>%D0%', '7574FEEF91A8DAA65E96DFE54A79C130 data:text/html;charset=utf-8,<title>%D0%', 'B5E3A278AB4A850B7E97ABB3FBBE97E3 data:text/html;charset=utf-8,<title>%D0%']"
+ },
+ {
+  "check": "поднялась снова",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "check": "«Выйти» выключает программу",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "check": "и закрывает её окно",
+  "ok": true,
+  "detail": "[]"
+ },
+ {
+  "check": "Chrome пользователя жив в конце",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "check": "вкладки пользователя в конце те же",
+  "ok": true,
+  "detail": "['412B2760DFD3AB991A4C2949C113B19D data:text/html;charset=utf-8,<title>%D0%', '7574FEEF91A8DAA65E96DFE54A79C130 data:text/html;charset=utf-8,<title>%D0%', 'B5E3A278AB4A850B7E97ABB3FBBE97E3 data:text/html;charset=utf-8,<title>%D0%']"
+ }
+]
