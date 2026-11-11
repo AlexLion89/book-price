@@ -1,29 +1,8 @@
-OK   Chrome «пользователя» с тремя вкладками — ['569A32DC739E5000B675012366BD364C data:text/html;charset=utf-8,<title>%D0%', 'C95321ADC00D79627A5C7F13D33E445C data:text/html;charset=utf-8,<title>%D0%', 'D98E563DC13E9CC287515671830580D8 data:text/html;charset=utf-8,<title>%D0%']
-OK   программа универсальная (Intel + Apple M) — x86_64 arm64
+OK   Chrome «пользователя» с тремя вкладками — ['D504D4EC2CAB56695445EA323B549073 data:text/html;charset=utf-8,<title>%D0%', 'E4DF7B2DCD05314F7034D4C043FE1DE7 data:text/html;charset=utf-8,<title>%D0%', 'F6669355C43DFC19353B3BAA7AB80E8D data:text/html;charset=utf-8,<title>%D0%']
+FAIL программа универсальная (Intel + Apple M)
 A. запуск x86_64
-OK   программа поднялась — {'ok': True, 'version': '0.6.2', 'busy': False}
-OK   окно программы открыто — ['/bin/sh -c exec "$0" "$@" 3<&0 4>&1 0</dev/null 1>/dev/null /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/A']
+FAIL программа поднялась — нет ответа
+FAIL окно программы открыто
 снимок 1-window-x86_64.png
-OK   программа видит браузер — {'os': 'mac', 'os_label': 'macOS', 'machine': 'x86_64', 'outbox': 'в папке, которую программа открыла в Finder', 'browser': 'Google Chrome', 'browser_key': 'chrome', 'browsers': [{'key': 'edge', 'label': 'Microsoft Edge'}, {'key': 'chrome', 'label': 'Google Chrome'}], 'no_browser': 'Нет подходящего браузера: нужен Google Chrome, Microsoft Edge или Яндекс Браузер. Safari и Firefox программа не умеет — без одного из этих браузеров она не сможет искать цены.', 'downloads': [{'label': 'Google Chrome', 'url': 'https://www.google.com/chrome/'}, {'label': 'Microsoft Edge', 'url': 'https://www.microsoft.com/edge/download'}, {'label': 'Яндекс Браузер', 'url': 'https://browser.yandex.ru/'}]}
-OK   запущена под x86_64 — x86_64
-B. окно поиска
-снимок 2-search-window-x86_64.png
-OK   окно поиска открылось и закрылось — {'status': 'done', 'title': 'Поиск цен — Ценитель', 'browser': 'Google Chrome'}
-OK   вкладки пользователя на месте после окна поиска — ['569A32DC739E5000B675012366BD364C data:text/html;charset=utf-8,<title>%D0%', 'C95321ADC00D79627A5C7F13D33E445C data:text/html;charset=utf-8,<title>%D0%', 'D98E563DC13E9CC287515671830580D8 data:text/html;charset=utf-8,<title>%D0%']
-C. перезапуск, как после обновления
-OK   старая копия вышла
-OK   новая копия поднялась
-OK   после перезапуска одно окно — ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/Users/runner/Library/Application Support/B']
-D. пользователь закрыл окно программы
-OK   программа выключилась сама
-OK   её окон не осталось
-OK   Chrome пользователя жив
-OK   вкладки пользователя на месте — ['569A32DC739E5000B675012366BD364C data:text/html;charset=utf-8,<title>%D0%', 'C95321ADC00D79627A5C7F13D33E445C data:text/html;charset=utf-8,<title>%D0%', 'D98E563DC13E9CC287515671830580D8 data:text/html;charset=utf-8,<title>%D0%']
-E. повторный запуск и «Выйти»
-OK   поднялась снова
-снимок 3-again-x86_64.png
-OK   «Выйти» выключает программу
-OK   и закрывает её окно
-OK   Chrome пользователя жив в конце
-OK   вкладки пользователя в конце те же — ['569A32DC739E5000B675012366BD364C data:text/html;charset=utf-8,<title>%D0%', 'C95321ADC00D79627A5C7F13D33E445C data:text/html;charset=utf-8,<title>%D0%', 'D98E563DC13E9CC287515671830580D8 data:text/html;charset=utf-8,<title>%D0%']
-итог: 20 из 20
+FAIL проверка дошла до конца — URLError: <urlopen error [Errno 61] Connection refused>
+итог: 1 из 5
