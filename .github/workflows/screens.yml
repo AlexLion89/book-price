@@ -40,21 +40,28 @@ jobs:
         continue-on-error: true
         timeout-minutes: 8
         run: bash tools/mac/screens.sh shots "$(ls "$RUNNER_TEMP"/dist/*.dmg)"
-      - name: this version started normally — does macOS ask about the local network?
+      - name: who asks for the local network — the program itself or its browser window?
         continue-on-error: true
-        timeout-minutes: 5
+        timeout-minutes: 8
         run: |
           mkdir -p shots
           osascript -e 'quit app "System Settings"' 2>/dev/null || true
-          killall CoreServicesUIAgent 2>/dev/null || true
-          # A copy macOS has not judged yet, without the download mark — as after the Terminal command.
-          mkdir -p "$HOME/Test" && ditto --noqtn "$RUNNER_TEMP/dist/Ценитель.app" "$HOME/Test/Ценитель.app"
-          open "$HOME/Test/Ценитель.app" &
-          for i in $(seq 1 60); do curl -fs -m 2 http://127.0.0.1:8769/api/ping && break; sleep 1; done > shots/local-network.log
-          sleep 12
-          screencapture -x shots/8-this-version-started.png
-          curl -fs -X POST -H 'Content-Type: application/json' -d '{}' http://127.0.0.1:8769/api/quit || true
-          sleep 8
+          # Two copies macOS has not judged yet, each with its own identity: the question is asked once per program.
+          copy() {
+            mkdir -p "$HOME/Test/$1" && ditto --noqtn "$RUNNER_TEMP/dist/Ценитель.app" "$HOME/Test/$1/Ценитель.app"
+            /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier io.github.alexlion89.bookprice.$1" "$HOME/Test/$1/Ценитель.app/Contents/Info.plist"
+            codesign --force --deep -s - "$HOME/Test/$1/Ценитель.app" 2>&1 | tail -1
+          }
+          probe() {
+            for i in $(seq 1 60); do curl -fs -m 2 http://127.0.0.1:8769/api/ping > /dev/null && break; sleep 1; done
+            sleep 15
+            screencapture -x "shots/$1.png"
+            log show --last 1m --style compact 2>/dev/null | grep -i -E "local ?network|nehelper|NEHelper|LocalNetwork" | tail -40 > "shots/$1.log"
+            curl -fs -X POST -H 'Content-Type: application/json' -d '{}' http://127.0.0.1:8769/api/quit > /dev/null || true
+            sleep 10
+          }
+          copy serveronly && open "$HOME/Test/serveronly/Ценитель.app" --args --no-window & sleep 2; probe 8a-program-without-window
+          copy withwindow && open "$HOME/Test/withwindow/Ценитель.app" & sleep 2; probe 8b-program-with-window
       - name: install script, as a person would run it
         continue-on-error: true
         timeout-minutes: 8
