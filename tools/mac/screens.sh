@@ -6,11 +6,17 @@ out="$1"; mkdir -p "$out"
 log() { echo "$*" | tee -a "$out/screens.log"; }
 shot() { sleep "${2:-4}"; screencapture -x "$out/$1.png"; log "снимок $1"; }
 
-url=$(curl -fsSL "https://api.github.com/repos/AlexLion89/book-price/releases?per_page=30" \
-  | grep -o '"browser_download_url": *"[^"]*-mac\.dmg"' | head -n 1 | sed 's/.*"\(https[^"]*\)"$/\1/')
-log "образ: $url"
-dmg="$HOME/Downloads/${url##*/}"
-curl -fsSL -o "$dmg" "$url"
+# A freshly built image when given, else the published one.
+dmg="$HOME/Downloads/BookPrice-mac.dmg"
+if [ -n "${2:-}" ]; then
+  cp "$2" "$dmg"
+  log "образ: $2"
+else
+  url=$(curl -fsSL "https://api.github.com/repos/AlexLion89/book-price/releases?per_page=30" \
+    | grep -o '"browser_download_url": *"[^"]*-mac\.dmg"' | head -n 1 | sed 's/.*"\(https[^"]*\)"$/\1/')
+  log "образ: $url"
+  curl -fsSL -o "$dmg" "$url"
+fi
 # The mark Safari puts on a download.
 xattr -w com.apple.quarantine "0081;$(printf %x "$(date +%s)");Safari;" "$dmg"
 
@@ -18,10 +24,14 @@ open "$dmg"
 shot 1-dmg-window 12
 ditto "/Volumes/Ценитель/Ценитель.app" "/Applications/Ценитель.app"
 xattr -w com.apple.quarantine "0081;$(printf %x "$(date +%s)");Safari;" "/Applications/Ценитель.app"
-hdiutil detach "/Volumes/Ценитель" -quiet || true
+open "/Volumes/Ценитель/Если не открывается.txt"
+shot 1b-readme 6
+osascript -e 'quit app "TextEdit"' >/dev/null 2>&1 || true
+hdiutil detach "/Volumes/Ценитель" -force -quiet || true
 
-open "/Applications/Ценитель.app"
-shot 2-blocked 8
+# `open` waits until the warning is answered: let it wait in the background.
+open "/Applications/Ценитель.app" &
+shot 2-blocked 10
 for anchor in "" "?Security" "?General"; do
   open "x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension$anchor"
   shot "3-settings$(echo "$anchor" | tr -d '?')" 6

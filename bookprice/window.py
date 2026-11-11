@@ -20,8 +20,11 @@ from .system import current as system
 log = logging.getLogger(__name__)
 
 # A fresh profile offers to sign in and sync with the system account, and to translate a Russian page on a system in
-# another language; the program's windows need none of it.
-QUIET = ["--no-first-run", "--no-default-browser-check", "--disable-sync", "--disable-features=Translate"]
+# another language. The browser also looks for TVs and speakers to cast to: macOS then asks whether «Ценитель» — the
+# program that started it — may find devices on the local network. The program's windows need none of it (the search
+# window gets the same from Playwright).
+QUIET = ["--no-first-run", "--no-default-browser-check", "--disable-sync",
+         "--disable-features=Translate,MediaRouter,DialMediaRouteProvider,GlobalMediaControls,OptimizationHints"]
 # An old Mac starting the browser cold takes over ten seconds to open the profile.
 FIND_TRIES, FIND_PAUSE = 30, 1.0
 SWEEP_TRIES, SWEEP_PAUSE = 6, 0.5

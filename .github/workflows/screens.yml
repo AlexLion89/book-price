@@ -26,12 +26,34 @@ jobs:
         run: |
           defaults write -g AppleLanguages -array ru-RU en-US
           defaults write -g AppleLocale ru_RU
-          killall cfprefsd Finder Dock SystemUIServer CoreServicesUIAgent 2>/dev/null || true
+          sudo defaults write /Library/Preferences/.GlobalPreferences AppleLanguages -array ru-RU en-US
+          sudo defaults write /Library/Preferences/.GlobalPreferences AppleLocale ru_RU
+          killall cfprefsd Finder Dock SystemUIServer CoreServicesUIAgent UserNotificationCenter 2>/dev/null || true
+          sudo killall cfprefsd 2>/dev/null || true
           sleep 5
+      - name: build this version, as a release would
+        run: |
+          bash tools/mac/env.sh > env.log 2>&1 || { tail -30 env.log; exit 1; }
+          BP_TARGET_ARCH=universal2 ../.venv-mac/bin/python tools/build.py "$RUNNER_TEMP/dist" > build.log 2>&1 || { tail -40 build.log; exit 1; }
+          ls "$RUNNER_TEMP"/dist/*.dmg
       - name: screenshots
         continue-on-error: true
         timeout-minutes: 8
-        run: bash tools/mac/screens.sh shots
+        run: bash tools/mac/screens.sh shots "$(ls "$RUNNER_TEMP"/dist/*.dmg)"
+      - name: this version started normally — does macOS ask about the local network?
+        continue-on-error: true
+        timeout-minutes: 5
+        run: |
+          mkdir -p shots
+          osascript -e 'quit app "System Settings"' 2>/dev/null || true
+          killall CoreServicesUIAgent 2>/dev/null || true
+          xattr -dr com.apple.quarantine "/Applications/Ценитель.app"
+          open "/Applications/Ценитель.app" &
+          for i in $(seq 1 60); do curl -fs -m 2 http://127.0.0.1:8769/api/ping && break; sleep 1; done > shots/local-network.log
+          sleep 12
+          screencapture -x shots/8-this-version-started.png
+          curl -fs -X POST -H 'Content-Type: application/json' -d '{}' http://127.0.0.1:8769/api/quit || true
+          sleep 8
       - name: install script, as a person would run it
         continue-on-error: true
         timeout-minutes: 8

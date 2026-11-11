@@ -27,7 +27,10 @@ if sys.platform == "darwin":
     stage.mkdir()
     # ditto keeps the bundle's symlinks and signatures as they are.
     subprocess.run(["ditto", str(app), str(stage / app.name)], check=True)
-    os.symlink("/Applications", stage / "Applications")
+    # Named as a Russian Mac shows the folder: a link keeps its own name, and "Applications" means nothing to many.
+    os.symlink("/Applications", stage / "Программы")
+    # Plain text opens on a Mac without the questions a downloaded program gets.
+    shutil.copyfile(root / "tools" / "mac" / "if-it-does-not-open.txt", stage / "Если не открывается.txt")
     dmg.unlink(missing_ok=True)
     subprocess.run(["hdiutil", "create", "-volname", "Ценитель", "-srcfolder", str(stage), "-ov", "-format", "UDZO",
                     str(dmg)], check=True)
