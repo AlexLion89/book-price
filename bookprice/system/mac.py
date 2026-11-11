@@ -27,6 +27,9 @@ OUTBOX_WHERE = "в папке, которую программа открыла 
 # Without the mock keychain a browser with a fresh profile asks for the login keychain password; our windows keep
 # no passwords.
 WINDOW_ARGS = ["--use-mock-keychain", "--password-store=basic", "--start-maximized"]
+# Sites may gather the computer's home-network addresses (WebRTC); macOS then asks whether «Ценитель», which started
+# the browser, may find devices on the local network. Prices need none of it.
+SEARCH_ARGS = ["--force-webrtc-ip-handling-policy=default_public_interface_only"]
 CLOSE_WAIT = 8.0
 # Without SO_REUSEADDR the port stays taken for half a minute after the program quits (TIME_WAIT), and the copy that
 # restarts it after an update cannot start. Here it never lets two copies listen at once.

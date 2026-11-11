@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Callable, Optional
 
 from . import browsers
+from .system import current as system
 from .sources.extract import SEARCH_INPUT
 
 log = logging.getLogger(__name__)
@@ -74,7 +75,7 @@ class Browser:
             headless=self.headless,
             locale="ru-RU",
             args=["--disable-blink-features=AutomationControlled", "--disable-sync", "--no-first-run",
-                  *([] if self.headless else ["--start-maximized"])],
+                  *system.SEARCH_ARGS, *([] if self.headless else ["--start-maximized"])],
             ignore_default_args=["--enable-automation"],
             **size,
         )

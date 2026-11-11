@@ -23,6 +23,7 @@ NAME = "windows"
 LABEL = "Windows"
 OUTBOX_WHERE = "на рабочем столе"
 WINDOW_ARGS = ["--start-maximized"]
+SEARCH_ARGS = []
 # With SO_REUSEADDR Windows lets a second socket listen on a taken port: two copies of the program would both answer,
 # and the second window would talk to either.
 REUSE_ADDRESS = False
