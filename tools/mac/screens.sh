@@ -32,9 +32,13 @@ hdiutil detach "/Volumes/Ценитель" -force -quiet || true
 # `open` waits until the warning is answered: let it wait in the background.
 open "/Applications/Ценитель.app" &
 shot 2-blocked 10
-for anchor in "" "?Security" "?General"; do
+# Nobody can press «Готово» here; closing the warning's agent dismisses it the same way, and only then the settings
+# show the line with «Всё равно открыть».
+killall CoreServicesUIAgent 2>/dev/null || true
+sleep 3
+for anchor in "?Security" ""; do
   open "x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension$anchor"
-  shot "3-settings$(echo "$anchor" | tr -d '?')" 6
+  shot "3-settings$(echo "$anchor" | tr -d '?')" 8
 done
 
 # Scroll down to the button and press it — works only if this runner lets scripts drive other apps' windows; macOS may

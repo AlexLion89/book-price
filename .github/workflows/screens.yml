@@ -47,8 +47,9 @@ jobs:
           mkdir -p shots
           osascript -e 'quit app "System Settings"' 2>/dev/null || true
           killall CoreServicesUIAgent 2>/dev/null || true
-          xattr -dr com.apple.quarantine "/Applications/Ценитель.app"
-          open "/Applications/Ценитель.app" &
+          # A copy macOS has not judged yet, without the download mark — as after the Terminal command.
+          mkdir -p "$HOME/Test" && ditto --noqtn "$RUNNER_TEMP/dist/Ценитель.app" "$HOME/Test/Ценитель.app"
+          open "$HOME/Test/Ценитель.app" &
           for i in $(seq 1 60); do curl -fs -m 2 http://127.0.0.1:8769/api/ping && break; sleep 1; done > shots/local-network.log
           sleep 12
           screencapture -x shots/8-this-version-started.png
