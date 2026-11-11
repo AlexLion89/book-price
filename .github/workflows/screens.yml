@@ -11,9 +11,15 @@ on:
 permissions:
   contents: write
 
+# A new run cancels one still going: macOS may hold a run waiting for a permission nobody can click.
+concurrency:
+  group: screens
+  cancel-in-progress: true
+
 jobs:
   mac:
     runs-on: macos-15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - name: Russian system language
@@ -24,9 +30,11 @@ jobs:
           sleep 5
       - name: screenshots
         continue-on-error: true
+        timeout-minutes: 8
         run: bash tools/mac/screens.sh shots
       - name: install script, as a person would run it
         continue-on-error: true
+        timeout-minutes: 8
         run: |
           mkdir -p shots
           osascript -e 'quit app "System Settings"' 2>/dev/null || true

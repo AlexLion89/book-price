@@ -290,6 +290,7 @@ function progressHtml(job, label) {
         Перейдите в окно «Поиск цен» и пройдите проверку там — поиск продолжится сам.</div>` : "";
   return `${captcha}<div class="card sleuth"><img src="/img/search.png" alt="">
     <div><h2><span class="spinner"></span> Лиса идёт по следу — около минуты</h2>
+    <p class="small muted" style="margin-top: -6px">Окно «Поиск цен», которое открылось рядом, — это программа: она сама ходит в нём по сайтам. Трогать его не нужно.</p>
     ${job.stage ? `<p class="small muted" style="margin-top: -6px">${esc(job.stage)}</p>` : ""}
     <div class="chips">${Object.entries(job.sources).map(([n, st]) =>
       `<span class="chip ${st}">${esc(label[n] || n)}: ${STATE_LABEL[st] || st}</span>`).join("")}</div></div></div>`;
@@ -392,9 +393,19 @@ function rowHtml(f) {
 
 /* ---------- help ---------- */
 
+function browserNoteHtml() {
+  const name = SYS.browser ? ` (сейчас — ${esc(SYS.browser)})` : "";
+  return `<div class="note"><strong>Не пугайтесь окон браузера.</strong> «Ценитель» работает через ваш браузер${name}:
+    само окно программы — это окно браузера без вкладок и адресной строки, а когда вы ищете цены, программа сама
+    открывает ещё одно окно — «Поиск цен» — и сама ходит в нём по магазинам и Авито. Так и задумано. Эти окна
+    отдельные, со своим профилем: ваши вкладки, история и пароли не затрагиваются. Окно поиска закроется само,
+    когда поиск закончится.</div>`;
+}
+
 function renderHelp() {
   view.innerHTML = `<a class="back" href="#/">← Все книги</a>
   <h1>Как пользоваться</h1>
+  ${browserNoteHtml()}
   <div class="card">
     <ol>
       <li><strong>Добавьте книгу.</strong> Впишите ISBN — 13 цифр под штрихкодом на задней обложке. Если ISBN нет (старая книга) — название, автора и год, потом выберите своё издание из списка.</li>

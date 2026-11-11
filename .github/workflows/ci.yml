@@ -5,7 +5,7 @@ name: ci
 
 on:
   push:
-    branches-ignore: [ci-results]
+    branches-ignore: [ci-results, screens]
     tags: ["v*"]
   release:
     types: [published]

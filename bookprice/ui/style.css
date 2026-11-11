@@ -84,6 +84,8 @@ textarea { width: 100%; min-height: 150px; padding: 12px; }
 .badge.sold { background: var(--noir); color: var(--noir-ink); }
 .alert { background: var(--amber-soft); border: 1px solid #efc995; color: #5e3a0c; border-radius: var(--radius); padding: 14px 16px; margin-bottom: 16px; }
 .alert.big { font-size: 18px; }
+.note { background: var(--forest-soft); border: 1px solid #b9d3c8; border-left: 4px solid var(--forest); color: var(--ink);
+  border-radius: var(--radius); padding: 14px 18px; margin-bottom: 18px; }
 
 .verdict { display: flex; gap: 34px; align-items: baseline; flex-wrap: wrap; }
 .verdict .price { font-size: 46px; font-weight: 700; color: var(--fox); line-height: 1.1; }

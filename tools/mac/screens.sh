@@ -27,8 +27,9 @@ for anchor in "" "?Security" "?General"; do
   shot "3-settings$(echo "$anchor" | tr -d '?')" 6
 done
 
-# Scroll down to the button and press it — works only if this runner lets scripts drive other apps' windows.
-osascript <<'APPLESCRIPT' 2>&1 | tee -a "$out/screens.log"
+# Scroll down to the button and press it — works only if this runner lets scripts drive other apps' windows; macOS may
+# instead wait for a person to allow it, so the attempt gets 90 seconds.
+cat > "$out/click.applescript" <<'APPLESCRIPT'
 tell application "System Settings" to activate
 delay 2
 tell application "System Events"
@@ -53,4 +54,9 @@ tell application "System Events"
   end tell
 end tell
 APPLESCRIPT
+osascript "$out/click.applescript" >> "$out/screens.log" 2>&1 &
+clicker=$!
+( sleep 90; kill "$clicker" 2>/dev/null ) &
+wait "$clicker" 2>/dev/null
+log "щелчок: код $?"
 shot 5-after-open-anyway 6
