@@ -1,17 +1,17 @@
-2026-11-11 07:29:19,865 INFO MainThread bookprice: запуск 0.6.2 (macOS) из /Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice
-2026-11-11 07:29:20,170 INFO window bookprice.window: окно программы: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
-2026-11-11 07:29:21,195 INFO updates bookprice.app: обновления не проверены: HTTP Error 403: rate limit exceeded
-2026-11-11 07:29:25,640 INFO window-pipe bookprice.system.mac: браузер открыл пустое окно (chrome://newtab/) — закрываю
-2026-11-11 07:29:26,855 INFO searcher bookprice.browser: окно поиска: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
-2026-11-11 07:30:11,204 INFO watchdog bookprice.app: окно программы закрыто — выключаюсь
-2026-11-11 07:30:14,641 INFO MainThread bookprice: выключено
-2026-11-11 07:30:15,015 INFO MainThread bookprice: запуск 0.6.2 (macOS) из /Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice
-2026-11-11 07:30:15,188 INFO window bookprice.window: окно программы: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
-2026-11-11 07:30:16,289 INFO updates bookprice.app: обновления не проверены: HTTP Error 403: rate limit exceeded
-2026-11-11 07:30:21,361 INFO watchdog bookprice.app: окно программы закрыто — выключаюсь
-2026-11-11 07:30:25,235 INFO MainThread bookprice: выключено
-2026-11-11 07:30:25,754 INFO MainThread bookprice: запуск 0.6.2 (macOS) из /Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice
-2026-11-11 07:30:25,845 INFO window bookprice.window: окно программы: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
-2026-11-11 07:30:26,916 INFO updates bookprice.app: обновления не проверены: HTTP Error 403: rate limit exceeded
-2026-11-11 07:30:29,874 INFO watchdog bookprice.app: окно программы закрыто — выключаюсь
-2026-11-11 07:30:33,213 INFO MainThread bookprice: выключено
+2026-11-11 10:18:00,685 INFO MainThread bookprice: запуск 0.6.2 (macOS) из /Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice
+2026-11-11 10:18:00,877 INFO window bookprice.window: окно программы: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
+2026-11-11 10:18:02,087 INFO updates bookprice.app: обновления не проверены: HTTP Error 403: rate limit exceeded
+2026-11-11 10:18:06,356 INFO window-pipe bookprice.system.mac: браузер открыл пустое окно (chrome://newtab/) — закрываю
+2026-11-11 10:18:07,596 INFO searcher bookprice.browser: окно поиска: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
+2026-11-11 10:18:51,897 INFO watchdog bookprice.app: окно программы закрыто — выключаюсь
+2026-11-11 10:18:55,121 INFO MainThread bookprice: выключено
+2026-11-11 10:18:55,512 INFO MainThread bookprice: запуск 0.6.2 (macOS) из /Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice
+2026-11-11 10:18:55,609 INFO window bookprice.window: окно программы: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
+2026-11-11 10:18:56,774 INFO updates bookprice.app: обновления не проверены: HTTP Error 403: rate limit exceeded
+2026-11-11 10:19:01,731 INFO watchdog bookprice.app: окно программы закрыто — выключаюсь
+2026-11-11 10:19:05,606 INFO MainThread bookprice: выключено
+2026-11-11 10:19:06,125 INFO MainThread bookprice: запуск 0.6.2 (macOS) из /Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice
+2026-11-11 10:19:06,262 INFO window bookprice.window: окно программы: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
+2026-11-11 10:19:07,441 INFO updates bookprice.app: обновления не проверены: HTTP Error 403: rate limit exceeded
+2026-11-11 10:19:10,248 INFO watchdog bookprice.app: окно программы закрыто — выключаюсь
+2026-11-11 10:19:13,562 INFO MainThread bookprice: выключено
