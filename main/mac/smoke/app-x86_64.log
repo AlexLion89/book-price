@@ -1,13 +1,13 @@
-2026-11-11 07:30:00,812 INFO MainThread bookprice: запуск 0.6.2 (macOS) из /Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice
-2026-11-11 07:30:01,806 INFO window bookprice.window: окно программы: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
-2026-11-11 07:30:02,536 INFO updates bookprice.app: обновления не проверены: HTTP Error 403: rate limit exceeded
-2026-11-11 07:30:41,413 INFO searcher bookprice.browser: окно поиска: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
-2026-11-11 07:31:04,000 WARNING window bookprice.window: не нашёл процесс окна программы — закрывать его придётся вручную
-2026-11-11 07:33:42,265 ERROR searcher bookprice.app: проверка окна поиска
+2026-11-11 11:32:10,631 INFO MainThread bookprice: запуск 0.6.3 (macOS) из /Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice
+2026-11-11 11:32:11,327 INFO window bookprice.window: окно программы: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
+2026-11-11 11:32:12,164 INFO updates bookprice.app: обновления не проверены: HTTP Error 403: rate limit exceeded
+2026-11-11 11:32:47,516 INFO searcher bookprice.browser: окно поиска: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
+2026-11-11 11:33:16,073 WARNING window bookprice.window: не нашёл процесс окна программы — закрывать его придётся вручную
+2026-11-11 11:35:48,132 ERROR searcher bookprice.app: проверка окна поиска
 Traceback (most recent call last):
   File "/Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice/app.py", line 161, in _window_test
     browser.start()
-  File "/Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice/browser.py", line 71, in start
+  File "/Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice/browser.py", line 72, in start
     self._ctx = self._pw.chromium.launch_persistent_context(
   File "playwright/sync_api/_generated.py", line 16570, in launch_persistent_context
   File "playwright/_impl/_sync_base.py", line 115, in _sync
@@ -16,20 +16,17 @@ Traceback (most recent call last):
   File "playwright/_impl/_connection.py", line 559, in wrap_api_call
 playwright._impl._errors.TimeoutError: BrowserType.launch_persistent_context: Timeout 180000ms exceeded.
 Call log:
-  - <launching> /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --no-sandbox --disable-blink-features=AutomationControlled --disable-sync --no-first-run --start-maximized --user-data-dir=/Users/runner/Library/Application Support/BookPrice/search-profile-chrome --remote-debugging-pipe about:blank
-  - <launched> pid=6470
-  - [pid=6470][err] [6470:33222:1111/073335.295352:ERROR:chrome/browser/chrome_browser_main.cc:1360] The use of Rosetta to run the x64 version of Chromium on Arm is neither tested nor maintained, and unexpected behavior will likely result. Please check that all tools that spawn Chromium are Arm-native.
+  - <launching> /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --no-sandbox --disable-blink-features=AutomationControlled --disable-sync --no-first-run --force-webrtc-ip-handling-policy=default_public_interface_only --start-maximized --user-data-dir=/Users/runner/Library/Application Support/BookPrice/search-profile-chrome --remote-debugging-pipe about:blank
+  - <launched> pid=6286
+  - [pid=6286][err] [6286:32818:1111/113542.516606:ERROR:chrome/browser/chrome_browser_main.cc:1360] The use of Rosetta to run the x64 version of Chromium on Arm is neither tested nor maintained, and unexpected behavior will likely result. Please check that all tools that spawn Chromium are Arm-native.
 
-2026-11-11 07:33:43,858 INFO MainThread bookprice: закрываю окно, оставшееся от прошлого запуска
-2026-11-11 07:33:52,310 WARNING MainThread bookprice.system.mac: окно программы не закрылось само — завершаю его процесс
-2026-11-11 07:33:52,339 INFO MainThread bookprice: выключено
-2026-11-11 07:33:53,319 INFO MainThread bookprice: запуск 0.6.2 (macOS) из /Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice
-2026-11-11 07:33:53,759 INFO window bookprice.window: окно программы: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
-2026-11-11 07:33:54,846 INFO updates bookprice.app: обновления не проверены: HTTP Error 403: rate limit exceeded
-2026-11-11 07:34:01,982 INFO watchdog bookprice.app: окно программы закрыто — выключаюсь
-2026-11-11 07:34:07,109 INFO MainThread bookprice: выключено
-2026-11-11 07:34:08,500 INFO MainThread bookprice: запуск 0.6.2 (macOS) из /Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice
-2026-11-11 07:34:08,844 INFO window bookprice.window: окно программы: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
-2026-11-11 07:34:09,829 INFO updates bookprice.app: обновления не проверены: HTTP Error 403: rate limit exceeded
-2026-11-11 07:34:17,146 INFO watchdog bookprice.app: окно программы закрыто — выключаюсь
-2026-11-11 07:34:21,166 INFO MainThread bookprice: выключено
+2026-11-11 11:35:49,223 INFO MainThread bookprice: закрываю окно, оставшееся от прошлого запуска
+2026-11-11 11:35:55,906 INFO MainThread bookprice: выключено
+2026-11-11 11:35:56,796 INFO MainThread bookprice: запуск 0.6.3 (macOS) из /Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice
+2026-11-11 11:35:57,150 INFO window bookprice.window: окно программы: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
+2026-11-11 11:36:05,308 INFO watchdog bookprice.app: окно программы закрыто — выключаюсь
+2026-11-11 11:36:10,383 INFO MainThread bookprice: выключено
+2026-11-11 11:36:11,494 INFO MainThread bookprice: запуск 0.6.3 (macOS) из /Users/runner/work/_temp/dist/Ценитель.app/Contents/Frameworks/bookprice
+2026-11-11 11:36:11,796 INFO window bookprice.window: окно программы: Google Chrome (/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
+2026-11-11 11:36:20,003 INFO watchdog bookprice.app: окно программы закрыто — выключаюсь
+2026-11-11 11:36:23,456 INFO MainThread bookprice: выключено

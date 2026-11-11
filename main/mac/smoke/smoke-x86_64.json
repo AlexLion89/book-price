@@ -2,7 +2,7 @@
  {
   "check": "Chrome «пользователя» с тремя вкладками",
   "ok": true,
-  "detail": "['77BE94132C545EC1248CD459E81A79AF data:text/html;charset=utf-8,<title>%D0%', '90A61BE1E210A791C61EB6FE8FBB7D6E data:text/html;charset=utf-8,<title>%D0%', 'AEF8E3B2548582142AA6089477592CDB data:text/html;charset=utf-8,<title>%D0%']"
+  "detail": "['EB91C8A09D313D707BAA07735EA9BAFF data:text/html;charset=utf-8,<title>%D0%', 'EDD4DE3BD39FC549B2C3CA09D01A01FB data:text/html;charset=utf-8,<title>%D0%', 'FC23678BD33737634AF9000781E2072F data:text/html;charset=utf-8,<title>%D0%']"
  },
  {
   "check": "программа универсальная (Intel + Apple M)",
@@ -12,7 +12,7 @@
  {
   "check": "программа поднялась",
   "ok": true,
-  "detail": "{'ok': True, 'version': '0.6.2', 'busy': False}"
+  "detail": "{'ok': True, 'version': '0.6.3', 'busy': False}"
  },
  {
   "check": "окно программы открыто",
@@ -32,12 +32,12 @@
  {
   "check": "окно поиска открылось и закрылось",
   "ok": false,
-  "detail": "{'status': 'error', 'error': 'TimeoutError: BrowserType.launch_persistent_context: Timeout 180000ms exceeded.\\nCall log:\\n  - <launching> /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --no-sandbox --disable-blink-features=AutomationControlled --disable-sync --no-first-run --start-maximized --user-data-dir=/Users/runner/Library/Application Support/BookPrice/search-profile-chrome --remote-debugging-pipe about:blank\\n  - <launched> pid=6470\\n  - [pid=6470][err] [6470:33222:1111/073335.295352:ERROR:chrome/browser/chrome_browser_main.cc:1360] The use of Rosetta to run the x64 version of Chromium on Arm is neither tested nor maintained, and unexpected behavior will likely result. Please check that all tools that spawn Chromium are Arm-native.\\n'}"
+  "detail": "{'status': 'error', 'error': 'TimeoutError: BrowserType.launch_persistent_context: Timeout 180000ms exceeded.\\nCall log:\\n  - <launching> /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --no-sandbox --disable-blink-features=AutomationControlled --disable-sync --no-first-run --force-webrtc-ip-handling-policy=default_public_interface_only --start-maximized --user-data-dir=/Users/runner/Library/Application Support/BookPrice/search-profile-chrome --remote-debugging-pipe about:blank\\n  - <launched> pid=6286\\n  - [pid=6286][err] [6286:32818:1111/113542.516606:ERROR:chrome/browser/chrome_browser_main.cc:1360] The use of Rosetta to run the x64 version of Chromium on Arm is neither tested nor maintained, and unexpected behavior will likely result. Please check that all tools that spawn Chromium are Arm-native.\\n'}"
  },
  {
   "check": "вкладки пользователя на месте после окна поиска",
   "ok": true,
-  "detail": "['77BE94132C545EC1248CD459E81A79AF data:text/html;charset=utf-8,<title>%D0%', '90A61BE1E210A791C61EB6FE8FBB7D6E data:text/html;charset=utf-8,<title>%D0%', 'AEF8E3B2548582142AA6089477592CDB data:text/html;charset=utf-8,<title>%D0%']"
+  "detail": "['EB91C8A09D313D707BAA07735EA9BAFF data:text/html;charset=utf-8,<title>%D0%', 'EDD4DE3BD39FC549B2C3CA09D01A01FB data:text/html;charset=utf-8,<title>%D0%', 'FC23678BD33737634AF9000781E2072F data:text/html;charset=utf-8,<title>%D0%']"
  },
  {
   "check": "старая копия вышла",
@@ -72,7 +72,7 @@
  {
   "check": "вкладки пользователя на месте",
   "ok": true,
-  "detail": "['77BE94132C545EC1248CD459E81A79AF data:text/html;charset=utf-8,<title>%D0%', '90A61BE1E210A791C61EB6FE8FBB7D6E data:text/html;charset=utf-8,<title>%D0%', 'AEF8E3B2548582142AA6089477592CDB data:text/html;charset=utf-8,<title>%D0%']"
+  "detail": "['EB91C8A09D313D707BAA07735EA9BAFF data:text/html;charset=utf-8,<title>%D0%', 'EDD4DE3BD39FC549B2C3CA09D01A01FB data:text/html;charset=utf-8,<title>%D0%', 'FC23678BD33737634AF9000781E2072F data:text/html;charset=utf-8,<title>%D0%']"
  },
  {
   "check": "поднялась снова",
@@ -97,6 +97,6 @@
  {
   "check": "вкладки пользователя в конце те же",
   "ok": true,
-  "detail": "['77BE94132C545EC1248CD459E81A79AF data:text/html;charset=utf-8,<title>%D0%', '90A61BE1E210A791C61EB6FE8FBB7D6E data:text/html;charset=utf-8,<title>%D0%', 'AEF8E3B2548582142AA6089477592CDB data:text/html;charset=utf-8,<title>%D0%']"
+  "detail": "['EB91C8A09D313D707BAA07735EA9BAFF data:text/html;charset=utf-8,<title>%D0%', 'EDD4DE3BD39FC549B2C3CA09D01A01FB data:text/html;charset=utf-8,<title>%D0%', 'FC23678BD33737634AF9000781E2072F data:text/html;charset=utf-8,<title>%D0%']"
  }
 ]

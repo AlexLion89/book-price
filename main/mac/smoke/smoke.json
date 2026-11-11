@@ -2,7 +2,7 @@
  {
   "check": "Chrome «пользователя» с тремя вкладками",
   "ok": true,
-  "detail": "['3FA81B12105FBD513F2801A260129821 data:text/html;charset=utf-8,<title>%D0%', '7E9358601CFCA38650BBDB72C2B3269B data:text/html;charset=utf-8,<title>%D0%', '9984714F54A426E13553A7CAF6376F6E data:text/html;charset=utf-8,<title>%D0%']"
+  "detail": "['4D254638EEB885A1DD8CD1713A6D5AE2 data:text/html;charset=utf-8,<title>%D0%', '94575FFD1E66C4CAC99294968A668714 data:text/html;charset=utf-8,<title>%D0%', 'DA244DC47D06A9E33A69261F42A98898 data:text/html;charset=utf-8,<title>%D0%']"
  },
  {
   "check": "программа универсальная (Intel + Apple M)",
@@ -12,7 +12,7 @@
  {
   "check": "программа поднялась",
   "ok": true,
-  "detail": "{'ok': True, 'version': '0.6.2', 'busy': False}"
+  "detail": "{'ok': True, 'version': '0.6.3', 'busy': False}"
  },
  {
   "check": "окно программы открыто",
@@ -27,7 +27,7 @@
  {
   "check": "щелчок по значку в Dock не оставляет пустого окна",
   "ok": true,
-  "detail": "{'окно программы': (2, 8)}"
+  "detail": "{'окно программы': (2, 10)}"
  },
  {
   "check": "окно поиска открылось и закрылось",
@@ -37,7 +37,7 @@
  {
   "check": "вкладки пользователя на месте после окна поиска",
   "ok": true,
-  "detail": "['3FA81B12105FBD513F2801A260129821 data:text/html;charset=utf-8,<title>%D0%', '7E9358601CFCA38650BBDB72C2B3269B data:text/html;charset=utf-8,<title>%D0%', '9984714F54A426E13553A7CAF6376F6E data:text/html;charset=utf-8,<title>%D0%']"
+  "detail": "['4D254638EEB885A1DD8CD1713A6D5AE2 data:text/html;charset=utf-8,<title>%D0%', '94575FFD1E66C4CAC99294968A668714 data:text/html;charset=utf-8,<title>%D0%', 'DA244DC47D06A9E33A69261F42A98898 data:text/html;charset=utf-8,<title>%D0%']"
  },
  {
   "check": "старая копия вышла",
@@ -72,7 +72,7 @@
  {
   "check": "вкладки пользователя на месте",
   "ok": true,
-  "detail": "['3FA81B12105FBD513F2801A260129821 data:text/html;charset=utf-8,<title>%D0%', '7E9358601CFCA38650BBDB72C2B3269B data:text/html;charset=utf-8,<title>%D0%', '9984714F54A426E13553A7CAF6376F6E data:text/html;charset=utf-8,<title>%D0%']"
+  "detail": "['4D254638EEB885A1DD8CD1713A6D5AE2 data:text/html;charset=utf-8,<title>%D0%', '94575FFD1E66C4CAC99294968A668714 data:text/html;charset=utf-8,<title>%D0%', 'DA244DC47D06A9E33A69261F42A98898 data:text/html;charset=utf-8,<title>%D0%']"
  },
  {
   "check": "поднялась снова",
@@ -97,6 +97,6 @@
  {
   "check": "вкладки пользователя в конце те же",
   "ok": true,
-  "detail": "['3FA81B12105FBD513F2801A260129821 data:text/html;charset=utf-8,<title>%D0%', '7E9358601CFCA38650BBDB72C2B3269B data:text/html;charset=utf-8,<title>%D0%', '9984714F54A426E13553A7CAF6376F6E data:text/html;charset=utf-8,<title>%D0%']"
+  "detail": "['4D254638EEB885A1DD8CD1713A6D5AE2 data:text/html;charset=utf-8,<title>%D0%', '94575FFD1E66C4CAC99294968A668714 data:text/html;charset=utf-8,<title>%D0%', 'DA244DC47D06A9E33A69261F42A98898 data:text/html;charset=utf-8,<title>%D0%']"
  }
 ]
