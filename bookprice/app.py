@@ -255,8 +255,14 @@ def make_handler(app: App) -> Callable:
     def system_info(body):
         found = browsers.find()
         return {"os": system.NAME, "os_label": system.LABEL, "machine": platform.machine(), "outbox": system.OUTBOX_WHERE,
-                "browser": found.label if found else None, "no_browser": browsers.NO_BROWSER,
-                "downloads": browsers.DOWNLOADS}
+                "browser": found.label if found else None, "browser_key": found.key if found else None,
+                "browsers": [{"key": f.key, "label": f.label} for f in browsers.installed()],
+                "no_browser": browsers.NO_BROWSER, "downloads": browsers.DOWNLOADS}
+
+    @route("POST", "/api/browser")
+    def choose_browser(body):
+        browsers.choose(body.get("key", ""))
+        return system_info(body)
 
     @route("GET", "/api/books")
     def books(body):

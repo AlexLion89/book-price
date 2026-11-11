@@ -212,6 +212,10 @@ def processes(exe_names: Iterable[str]) -> List[Tuple[int, str]]:
         return _powershell(names)
 
 
+def launch_window(command: List[str], url: str) -> None:
+    subprocess.Popen(command, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+
 def profile_in_use(profile: Path, pid: int) -> bool:
     """A browser holds <profile>/lockfile open, unshared, for as long as it runs on that folder. A process that only
     names our folder is not proof: Edge launched through some starters falls back to the user's own profile and keeps

@@ -398,7 +398,7 @@ function renderHelp() {
   <div class="card">
     <ol>
       <li><strong>Добавьте книгу.</strong> Впишите ISBN — 13 цифр под штрихкодом на задней обложке. Если ISBN нет (старая книга) — название, автора и год, потом выберите своё издание из списка.</li>
-      <li><strong>Выберите состояние</strong> и нажмите «Найти цены». Откроется отдельное окно ${esc(SYS.browser || "браузера")} «Поиск цен» — в нём программа сама ходит по магазинам и Авито (Читай-город, Лабиринт, Book24, Буквоед, Республика, Библио-Глобус, Дом книги (СПб), Московский дом книги, Озон, Wildberries, Яндекс Маркет, Авито, alib и Мешок), минуты полторы-две. Трогать его не нужно: когда поиск закончится, оно закроется само.</li>
+      <li><strong>Выберите состояние</strong> и нажмите «Найти цены». Откроется отдельное окно «Поиск цен»${SYS.browser ? ` (${esc(SYS.browser)})` : ""} — в нём программа сама ходит по магазинам и Авито (Читай-город, Лабиринт, Book24, Буквоед, Республика, Библио-Глобус, Дом книги (СПб), Московский дом книги, Озон, Wildberries, Яндекс Маркет, Авито, alib и Мешок), минуты полторы-две. Трогать его не нужно: когда поиск закончится, оно закроется само.</li>
       <li><strong>Если площадка спросит «вы не робот?»</strong> — программа напишет об этом крупно. Перейдите в окно «Поиск цен», пройдите проверку, дальше поиск пойдёт сам.</li>
       <li><strong>Посмотрите, что нашлось.</strong> Снимите галочки у чужих изданий и комплектов — цена пересчитается.</li>
       <li><strong>Выставьте объявление</strong>, скопировав готовый текст, и отметьте в программе цену. Через неделю без продажи программа подскажет, до скольких снизить.</li>
@@ -406,6 +406,7 @@ function renderHelp() {
     <p>Вернуться к списку книг — кнопка «Мои книги» вверху, ссылка «← Все книги» или клавиша Esc. Закрыть программу — кнопка «Выйти» или просто закрыть это окно. Ваши собственные окна и вкладки браузера программа не трогает: у неё свои отдельные окна со своим профилем.</p>
     <p>Если что-то не работает — нажмите «Отчёт об ошибке» вверху. ${SYS.os === "mac" ? "Откроется Finder с zip-файлом" : "На рабочем столе появится zip-файл"}: пришлите его тому, кто помогает с программой. В нём журнал работы и ваш список книг с найденными ценами — по нему видно, почему программа так посчитала. Сама программа ничего никуда не отправляет.</p>
   </div>
+  ${browserCardHtml()}
   <div class="card">
     <h2>Проверка площадок</h2>
     <p class="small muted">Для того, кто помогает с программой: прогоняет все площадки на двух книгах и сохраняет снимки страниц в zip ${esc(SYS.outbox)}. Занимает пару минут.</p>
@@ -418,11 +419,42 @@ function renderHelp() {
     await api("POST", "/api/window-test");
     pollWindowTest();
   };
+  const pick = document.getElementById("browser-pick");
+  if (pick) pick.onchange = async () => {
+    try {
+      SYS = await api("POST", "/api/browser", { key: pick.value });
+      document.getElementById("browser-note").innerHTML = `Готово: поиск пойдёт в ${esc(SYS.browser)} со следующей книги.
+        Окно программы откроется в нём после перезапуска. <button class="ghost" id="browser-restart">Перезапустить сейчас</button>`;
+      document.getElementById("browser-restart").onclick = restartNow;
+    } catch (e) { toast(e.message, 6000); }
+  };
   document.getElementById("check").onclick = async () => {
     await api("POST", "/api/check", { isbn: document.getElementById("check-isbn").value.trim() });
     pollCheck();
   };
   pollCheck();
+}
+
+function browserCardHtml() {
+  const list = SYS.browsers || [];
+  if (!list.length) return "";
+  const choice = list.length > 1
+    ? `<select id="browser-pick">${list.map(b =>
+        `<option value="${esc(b.key)}" ${b.key === SYS.browser_key ? "selected" : ""}>${esc(b.label)}</option>`).join("")}</select>`
+    : `<strong>${esc(list[0].label)}</strong> — другого подходящего на компьютере нет.`;
+  return `<div class="card">
+    <h2>Браузер</h2>
+    <p class="small muted">В каком браузере программа открывает свои окна и ищет цены. Ваши окна, вкладки и пароли в нём она не трогает: у неё свои отдельные окна.</p>
+    <div class="row">${choice}</div>
+    <p class="small" id="browser-note"></p>
+  </div>`;
+}
+
+async function restartNow() {
+  const st = await api("GET", "/api/update-status");
+  if (st.busy) return toast("Сейчас идёт поиск — дождитесь его конца", 6000);
+  await api("POST", "/api/restart");
+  view.innerHTML = `<div class="card"><span class="spinner"></span> Перезапускаюсь — окно откроется заново…</div>`;
 }
 
 async function pollCheck() {

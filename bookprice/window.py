@@ -61,10 +61,12 @@ def open_window(url: str, data_dir: Path, own: bool = True) -> Optional[OwnedWin
     # A folder the browser cannot create makes it fall back to the user's own profile.
     profile.mkdir(parents=True, exist_ok=True)
     log.info("окно программы: %s (%s)", browser.label, browser.path)
-    subprocess.Popen([str(browser.path), f"--user-data-dir={profile}", *QUIET, *system.WINDOW_ARGS, f"--app={url}"],
-                     stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    command = [str(browser.path), f"--user-data-dir={profile}", *QUIET, *system.WINDOW_ARGS, f"--app={url}"]
     if not own:
+        # Handed over to the browser already showing our window: nothing of ours to watch.
+        subprocess.Popen(command, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         return None
+    system.launch_window(command, url)
     for _ in range(FIND_TRIES):
         time.sleep(FIND_PAUSE)
         try:

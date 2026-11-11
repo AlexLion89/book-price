@@ -196,12 +196,15 @@ def main():
         check("запущена под " + ARCH, system.get("machine") == ARCH, system.get("machine"))
     windows = []
     if not ARCH:
-        # Not a pass/fail check: which of our browser copies opens extra windows, on its own or on a Dock click.
+        # A click on the Dock icon of a browser copy that shows only an app window makes it open an empty new-tab
+        # window (seen on a real Mac); the program closes it.
         diag("после запуска", windows)
+        before = window_counts().get("окно программы", (0, 0))[0]
         print("     щелчок по значку окна программы в Dock:", reopen("окно программы"), flush=True)
-        time.sleep(3)
+        settled = wait(lambda: window_counts().get("окно программы", (0, 0))[0] <= before, 10)
         diag("после щелчка по окну программы", windows)
         shot("1b-after-dock-click-ui")
+        check("щелчок по значку в Dock не оставляет пустого окна", settled, window_counts())
 
     print("B. окно поиска", flush=True)
     post("api/window-test")

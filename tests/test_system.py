@@ -70,6 +70,24 @@ class BrowsersTest(unittest.TestCase):
                 self.assertEqual([f.key for f in browsers.installed()], ["chrome", "yandex"])
                 self.assertEqual(browsers.find().label, "Google Chrome")
 
+    def test_the_users_choice_wins_while_that_browser_is_installed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            files = {k: Path(tmp) / f"{k}.bin" for k in ("edge", "yandex")}
+            for f in files.values():
+                f.write_bytes(b"")
+            data = Path(tmp) / "data"
+            data.mkdir()
+            with mock.patch.object(system, "browser_paths", lambda: list(files.items())), \
+                    mock.patch.dict(os.environ, {"BOOKPRICE_BROWSER": ""}), \
+                    mock.patch("bookprice.paths.data_dir", lambda: data):
+                self.assertEqual(browsers.find().key, "edge")
+                self.assertEqual(browsers.choose("yandex").label, "Яндекс Браузер")
+                self.assertEqual(browsers.find().key, "yandex")
+                with self.assertRaises(ValueError):
+                    browsers.choose("chrome")
+                files["yandex"].unlink()
+                self.assertEqual(browsers.find().key, "edge", "выбранный браузер удалили — берётся следующий")
+
     def test_without_a_suitable_browser_there_is_nothing_to_drive(self):
         with mock.patch.object(system, "browser_paths", lambda: [("chrome", Path("/nowhere/chrome"))]), \
                 mock.patch.dict(os.environ, {"BOOKPRICE_BROWSER": ""}):

@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Optional
 
+from . import settings
 from .system import current as system
 
 ORDER = ["edge", "chrome", "yandex", "brave", "vivaldi", "chromium"]
@@ -49,12 +50,22 @@ def installed() -> List[Found]:
 
 
 def find() -> Optional[Found]:
+    """The browser the user chose in the program, if it is still installed; otherwise the first in ORDER."""
     forced = os.environ.get("BOOKPRICE_BROWSER")
     if forced:
         key = next((k for k, p in system.browser_paths() if str(p) == forced), "chromium")
         return Found(key, Path(forced))
     found = installed()
-    return found[0] if found else None
+    chosen = settings.load().get("browser")
+    return next((f for f in found if f.key == chosen), found[0] if found else None)
+
+
+def choose(key: str) -> Found:
+    found = next((f for f in installed() if f.key == key), None)
+    if not found:
+        raise ValueError("такого браузера на компьютере нет")
+    settings.save(browser=key)
+    return found
 
 
 def exe_names() -> set:

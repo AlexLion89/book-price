@@ -7,12 +7,14 @@ to hold its lock.
 """
 from __future__ import annotations
 
+import json
 import logging
 import os
 import signal
 import ssl
 import subprocess
 import sys
+import threading
 import time
 from pathlib import Path
 from typing import Iterable, List, Optional, Tuple
@@ -39,6 +41,11 @@ BUNDLES = [
     ("chromium", "Chromium.app/Contents/MacOS/Chromium"),
 ]
 ROOTS = "/System/Library/Keychains/SystemRootCertificates.keychain"
+# New-tab pages of the browsers we drive: what a browser shows in a window it opens by itself.
+NEW_TAB = ("chrome://newtab", "chrome://new-tab-page", "chrome-search://", "edge://newtab", "browser://tune",
+           "chrome://vivaldi-webui/startpage", "about:newtab", "chrome://whats-new", "edge://welcome")
+# The shell hands our two pipes to the browser as descriptors 3 and 4, where --remote-debugging-pipe expects them.
+PIPE_SHELL = 'exec "$0" "$@" 3<&0 4>&1 0</dev/null 1>/dev/null'
 
 
 def data_root() -> Optional[Path]:
@@ -83,6 +90,47 @@ def ssl_context():
             log.exception("корневые сертификаты macOS не прочитаны")
         _context["ctx"] = ctx
     return _context["ctx"]
+
+
+def launch_window(command: List[str], url: str) -> None:
+    """The program's window, watched over a DevTools pipe. Clicking the Dock icon of a browser whose only window is an
+    app window makes it open an empty new-tab window (seen on a Mac with Chrome, 10.11.2026); the watcher closes such
+    pages in our browser copy. Pages the user opens from the program — links to shops — are left alone."""
+    proc = subprocess.Popen(["/bin/sh", "-c", PIPE_SHELL, *command, "--remote-debugging-pipe"],
+                            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+    threading.Thread(target=_watch_new_tabs, args=(proc,), daemon=True, name="window-pipe").start()
+
+
+def _watch_new_tabs(proc: subprocess.Popen) -> None:
+    def send(message: dict) -> None:
+        proc.stdin.write(json.dumps(message).encode() + b"\0")
+        proc.stdin.flush()
+
+    try:
+        send({"id": 1, "method": "Target.setDiscoverTargets", "params": {"discover": True}})
+        buf, next_id = b"", 2
+        while True:
+            chunk = os.read(proc.stdout.fileno(), 65536)
+            if not chunk:
+                break
+            buf += chunk
+            while b"\0" in buf:
+                raw, buf = buf.split(b"\0", 1)
+                message = json.loads(raw or b"{}")
+                if message.get("method") not in ("Target.targetCreated", "Target.targetInfoChanged"):
+                    continue
+                info = message["params"]["targetInfo"]
+                if info.get("type") == "page" and info.get("url", "").startswith(NEW_TAB):
+                    log.info("браузер открыл пустое окно (%s) — закрываю", info.get("url"))
+                    send({"id": next_id, "method": "Target.closeTarget", "params": {"targetId": info["targetId"]}})
+                    next_id += 1
+    except (OSError, ValueError, KeyError):
+        log.exception("наблюдение за окном программы")
+    finally:
+        try:
+            proc.wait(timeout=1)
+        except Exception:
+            pass
 
 
 def browser_paths() -> List[Tuple[str, Path]]:

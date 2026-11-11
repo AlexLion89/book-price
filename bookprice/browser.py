@@ -58,6 +58,8 @@ class Browser:
     def start(self) -> None:
         if self._ctx:
             return
+        # The user may have chosen another browser since the last search.
+        self.found = browsers.find()
         if not self.found:
             raise browsers.NoBrowser(browsers.NO_BROWSER)
         from playwright.sync_api import sync_playwright
