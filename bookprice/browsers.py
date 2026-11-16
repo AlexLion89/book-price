@@ -60,6 +60,12 @@ def find() -> Optional[Found]:
     return next((f for f in found if f.key == chosen), found[0] if found else None)
 
 
+def choice_required() -> bool:
+    found = installed()
+    return (not os.environ.get("BOOKPRICE_BROWSER") and len(found) > 1
+            and settings.load().get("browser") not in {f.key for f in found})
+
+
 def choose(key: str) -> Found:
     found = next((f for f in installed() if f.key == key), None)
     if not found:

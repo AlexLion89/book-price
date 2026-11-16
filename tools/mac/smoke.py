@@ -1,5 +1,5 @@
 """The built macOS program, end to end, without visiting any site: python tools/mac/smoke.py <Ценитель.app> <out dir>
-[--arch=x86_64]
+[--expect-arch=arm64|x86_64]
 
 A "user's" Google Chrome with three tabs is running all along, and the program is told to use that same Chrome app:
 the hardest case for "never touch the user's browser". Checked: the program starts, opens its window and the search
@@ -18,7 +18,7 @@ from pathlib import Path
 
 APP = Path(sys.argv[1]).resolve()
 OUT = Path(sys.argv[2]).resolve()
-ARCH = next((a.split("=", 1)[1] for a in sys.argv[3:] if a.startswith("--arch=")), "")
+ARCH = next((a.split("=", 1)[1] for a in sys.argv[3:] if a.startswith("--expect-arch=")), "")
 EXE = APP / "Contents" / "MacOS" / "BookPrice"
 CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 DATA = Path.home() / "Library" / "Application Support" / "BookPrice"
@@ -37,16 +37,12 @@ def check(name, ok, detail=""):
     return ok
 
 
-# Under Rosetta (the Intel half on an Apple M runner) the browser and Playwright's node start translated: slow.
-SLOW = 6 if ARCH else 1
-
-
-def get(path, timeout=5 * SLOW):
+def get(path, timeout=5):
     with urllib.request.urlopen(URL + path, timeout=timeout) as r:
         return json.load(r)
 
 
-def post(path, body=b"{}", timeout=10 * SLOW):
+def post(path, body=b"{}", timeout=10):
     req = urllib.request.Request(URL + path, data=body, method="POST", headers={"Content-Type": "application/json"})
     with urllib.request.urlopen(req, timeout=timeout) as r:
         return json.load(r)
@@ -167,11 +163,15 @@ def reopen(role):
 
 def launch(extra_env=None):
     env = {**os.environ, "BOOKPRICE_BROWSER": CHROME, "BOOKPRICE_WINDOW_TEST_HOLD": "20", **(extra_env or {})}
-    cmd = (["arch", f"-{ARCH}"] if ARCH else []) + [str(EXE)]
+    cmd = [str(EXE)]
     return subprocess.Popen(cmd, env=env, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
 def main():
+    machine = subprocess.run(["uname", "-m"], capture_output=True, text=True, check=True).stdout.strip()
+    check("проверка на родной архитектуре", bool(ARCH) and machine == ARCH, machine)
+    if not ARCH or machine != ARCH:
+        raise RuntimeError("архитектура машины не соответствует проверяемой сборке")
     shutil.rmtree(USER_PROFILE, ignore_errors=True)
     user = subprocess.Popen([CHROME, f"--user-data-dir={USER_PROFILE}", "--no-first-run", "--no-default-browser-check",
                              f"--remote-debugging-port={DEBUG_PORT}", *TABS],
@@ -187,7 +187,7 @@ def main():
     print("A. запуск", ARCH or "родной", flush=True)
     app = launch()
     check("программа поднялась", wait(ping, 90), get("api/ping") if ping() else "нет ответа")
-    check("окно программы открыто", wait(lambda: len(ours()) == 1, 30 * SLOW), [c[:160] for _, c in ours()])
+    check("окно программы открыто", wait(lambda: len(ours()) == 1, 30), [c[:160] for _, c in ours()])
     time.sleep(4)
     shot(f"1-window{'-' + ARCH if ARCH else ''}")
     system = get("api/system")
@@ -195,32 +195,30 @@ def main():
     if ARCH:
         check("запущена под " + ARCH, system.get("machine") == ARCH, system.get("machine"))
     windows = []
-    if not ARCH:
-        # A click on the Dock icon of a browser copy that shows only an app window makes it open an empty new-tab
-        # window (seen on a real Mac); the program closes it.
-        diag("после запуска", windows)
-        before = window_counts().get("окно программы", (0, 0))[0]
-        print("     щелчок по значку окна программы в Dock:", reopen("окно программы"), flush=True)
-        settled = wait(lambda: window_counts().get("окно программы", (0, 0))[0] <= before, 10)
-        diag("после щелчка по окну программы", windows)
-        shot("1b-after-dock-click-ui")
-        check("щелчок по значку в Dock не оставляет пустого окна", settled, window_counts())
+    # A click on the Dock icon of a browser copy that shows only an app window makes it open an empty new-tab
+    # window (seen on a real Mac); the program closes it.
+    diag("после запуска", windows)
+    before = window_counts().get("окно программы", (0, 0))[0]
+    print("     щелчок по значку окна программы в Dock:", reopen("окно программы"), flush=True)
+    settled = wait(lambda: window_counts().get("окно программы", (0, 0))[0] <= before, 10)
+    diag("после щелчка по окну программы", windows)
+    shot("1b-after-dock-click-ui")
+    check("щелчок по значку в Dock не оставляет пустого окна", settled, window_counts())
 
     print("B. окно поиска", flush=True)
     post("api/window-test")
-    wait(lambda: get("api/window-test").get("status") == "running", 30 * SLOW)
-    time.sleep(3 * SLOW)
+    wait(lambda: get("api/window-test").get("status") == "running", 30)
+    time.sleep(3)
     shot(f"2-search-window{'-' + ARCH if ARCH else ''}")
-    if not ARCH:
-        diag("окно поиска открылось", windows)
-        print("     щелчок по значку окна поиска в Dock:", reopen("окно поиска"), flush=True)
-        time.sleep(3)
-        diag("после щелчка по окну поиска", windows)
-        shot("2b-after-dock-click-search")
-        (OUT / "windows.json").write_text(json.dumps(windows, ensure_ascii=False, indent=1), encoding="utf-8")
-    wait(lambda: get("api/window-test").get("status") in ("done", "error"), 60 * SLOW)
+    diag("окно поиска открылось", windows)
+    print("     щелчок по значку окна поиска в Dock:", reopen("окно поиска"), flush=True)
+    time.sleep(3)
+    diag("после щелчка по окну поиска", windows)
+    shot("2b-after-dock-click-search")
+    (OUT / "windows.json").write_text(json.dumps(windows, ensure_ascii=False, indent=1), encoding="utf-8")
+    wait(lambda: get("api/window-test").get("status") in ("done", "error"), 60)
     state = {}
-    wait(lambda: state.update(get("api/window-test")) or True, 30 * SLOW)
+    wait(lambda: state.update(get("api/window-test")) or True, 30)
     check("окно поиска открылось и закрылось", state.get("status") == "done", state)
     check("вкладки пользователя на месте после окна поиска", user_tabs() == tabs_before, user_tabs())
 

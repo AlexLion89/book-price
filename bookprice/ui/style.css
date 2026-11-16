@@ -148,3 +148,13 @@ table.facts td { border-top: 0; padding: 4px 6px; }
 .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--line); border-top-color: var(--fox);
   border-radius: 50%; animation: spin 1s linear infinite; vertical-align: -2px; }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+#browser-setup { width: min(560px, calc(100vw - 40px)); max-height: calc(100vh - 40px); overflow: auto;
+  box-sizing: border-box; padding: 26px; border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--card); color: var(--ink); box-shadow: 0 16px 70px #0005; }
+#browser-setup::backdrop { background: #1e2736aa; }
+#browser-setup h1 { font-size: 26px; margin-top: 12px; }
+#browser-setup .setup-fox { width: 48px; height: 48px; }
+#browser-setup label { display: block; font-weight: 600; margin-bottom: 6px; }
+#first-browser { width: 100%; }
+#browser-setup-error { color: var(--bad); }

@@ -187,6 +187,38 @@ class App:
         self.ui_closed_at: Optional[float] = None
         self.update_info: Optional[dict] = None
         self.update_checked = False
+        self.update_lock = threading.Lock()
+        self.update_wakeup = threading.Event()
+
+    def update_status(self) -> dict:
+        with self.update_lock:
+            return {"version": __version__, "available": self.update_info, "checked": self.update_checked,
+                    "busy": self.searcher.busy(), "channel": updater.channel()}
+
+    def choose_update_channel(self, value: str) -> dict:
+        with self.update_lock:
+            updater.choose_channel(value)
+            self.update_info = None
+            self.update_checked = False
+            self.update_wakeup.set()
+        return self.update_status()
+
+    def check_updates(self) -> int:
+        with self.update_lock:
+            selected = updater.channel()
+        try:
+            info = updater.available(self.http, selected)
+        except Exception as e:
+            log.info("обновления не проверены: %s", e)
+            return UPDATE_RETRY
+        with self.update_lock:
+            # A request started before the user changed channels must not restore the old offer.
+            if selected == updater.channel():
+                self.update_info = info
+                self.update_checked = True
+                if info:
+                    log.info("вышла версия %s", info["version"])
+        return UPDATE_EVERY
 
     def book_view(self, book_id: int) -> dict:
         book, row = self.store.book(book_id)
@@ -257,6 +289,7 @@ def make_handler(app: App) -> Callable:
         return {"os": system.NAME, "os_label": system.LABEL, "machine": platform.machine(), "outbox": system.OUTBOX_WHERE,
                 "browser": found.label if found else None, "browser_key": found.key if found else None,
                 "browsers": [{"key": f.key, "label": f.label} for f in browsers.installed()],
+                "browser_choice_required": browsers.choice_required(), "update_channel": updater.channel(),
                 "no_browser": browsers.NO_BROWSER, "downloads": browsers.DOWNLOADS}
 
     @route("POST", "/api/browser")
@@ -355,8 +388,11 @@ def make_handler(app: App) -> Callable:
 
     @route("GET", "/api/update-status")
     def update_status(body):
-        return {"version": __version__, "available": app.update_info, "checked": app.update_checked,
-                "busy": app.searcher.busy()}
+        return app.update_status()
+
+    @route("POST", "/api/update-channel")
+    def choose_update_channel(body):
+        return app.choose_update_channel(body.get("channel", ""))
 
     @route("POST", "/api/quit")
     def quit_app(body):
@@ -476,18 +512,11 @@ def serve(app: App, port: int) -> ThreadingHTTPServer:
     threading.Thread(target=watchdog, daemon=True, name="watchdog").start()
 
     def look_for_updates() -> None:
-        time.sleep(UPDATE_FIRST_CHECK)
+        pause = UPDATE_FIRST_CHECK
         while True:
-            try:
-                app.update_info = updater.available(app.http)
-                app.update_checked = True
-                if app.update_info:
-                    log.info("вышла версия %s", app.update_info["version"])
-                pause = UPDATE_EVERY
-            except Exception as e:
-                log.info("обновления не проверены: %s", e)
-                pause = UPDATE_RETRY
-            time.sleep(pause)
+            app.update_wakeup.wait(pause)
+            app.update_wakeup.clear()
+            pause = app.check_updates()
 
     threading.Thread(target=look_for_updates, daemon=True, name="updates").start()
     return server

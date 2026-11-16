@@ -21,7 +21,6 @@ env:
 
 jobs:
   windows:
-    if: github.event_name != 'release'
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -43,8 +42,7 @@ jobs:
 
   mac:
     runs-on: macos-15
-    permissions:
-      contents: write
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - name: build environment (universal Python, Playwright with a two-architecture node)
@@ -69,21 +67,10 @@ jobs:
             && cp tests/runtime_mac1_modules.txt out/ || echo "список модулей не снят" | tee -a out/build.log
           find "$RUNNER_TEMP/dist/Ценитель.app/Contents" -maxdepth 2 | head -n 40 >> out/build.log
           lipo -archs "$RUNNER_TEMP/dist/Ценитель.app/Contents/MacOS/BookPrice" | tee -a out/build.log
-      - name: Rosetta, to run the Intel half too
-        run: sudo softwareupdate --install-rosetta --agree-to-license || true
       - name: end-to-end check (Apple M)
         run: |
           set -o pipefail
-          ../.venv-mac/bin/python tools/mac/smoke.py "$RUNNER_TEMP/dist/Ценитель.app" out/smoke 2>&1 | tee out/smoke-arm64.log
-      - name: end-to-end check (Intel)
-        # Informational: on this Apple M machine the Intel half runs under Rosetta, and so does the browser it starts —
-        # far slower than on a real Intel Mac, sometimes past Playwright's three minutes. The Apple M check gates.
-        if: always()
-        continue-on-error: true
-        run: |
-          set -o pipefail
-          rm -rf "$HOME/Library/Application Support/BookPrice"
-          ../.venv-mac/bin/python tools/mac/smoke.py "$RUNNER_TEMP/dist/Ценитель.app" out/smoke --arch=x86_64 2>&1 | tee out/smoke-x86_64.log
+          ../.venv-mac/bin/python tools/mac/smoke.py "$RUNNER_TEMP/dist/Ценитель.app" out/smoke --expect-arch=arm64 2>&1 | tee out/smoke-arm64.log
       - name: from the disk image, as a user would (quarantine on, like a download)
         if: always()
         continue-on-error: true
@@ -105,10 +92,58 @@ jobs:
         with:
           name: mac
           path: out/
-      - name: attach to the release
-        # On publishing, on a tag push for a release already published (the release may come first), and from main
-        # for the release of the current version if it still has no disk image (the run of its tag failed).
-        if: github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main'
+
+  mac-intel:
+    needs: mac
+    runs-on: macos-15-intel
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+      - uses: actions/download-artifact@v4
+        with:
+          name: mac
+          path: built
+      - name: native Intel environment and tests
+        run: |
+          mkdir -p out
+          set -o pipefail
+          test "$(uname -m)" = x86_64
+          python -m pip install "playwright==$PLAYWRIGHT" "greenlet==$GREENLET"
+          python -m unittest discover -s tests -t . -v 2>&1 | tee out/tests-mac-intel.log
+      - name: install the same universal disk image
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/cenitel-mnt"
+          hdiutil attach -nobrowse -readonly -mountpoint "$RUNNER_TEMP/cenitel-mnt" built/BookPrice-*-mac.dmg
+          ditto "$RUNNER_TEMP/cenitel-mnt/Ценитель.app" "$RUNNER_TEMP/Ценитель.app"
+          hdiutil detach "$RUNNER_TEMP/cenitel-mnt"
+          codesign --verify --deep --strict "$RUNNER_TEMP/Ценитель.app"
+      - name: end-to-end check (native Intel)
+        run: |
+          set -o pipefail
+          python tools/mac/smoke.py "$RUNNER_TEMP/Ценитель.app" out/smoke --expect-arch=x86_64 2>&1 | tee out/smoke-x86_64.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mac-intel
+          path: out/
+
+  attach:
+    needs: [windows, mac, mac-intel]
+    if: github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: mac
+          path: out
+      - name: attach the verified disk image to the release
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.event.release.tag_name || (startsWith(github.ref, 'refs/tags/v') && github.ref_name) || '' }}
@@ -125,7 +160,7 @@ jobs:
           gh release upload "$tag" out/BookPrice-*-mac.dmg --clobber --repo "$repo"
 
   results:
-    needs: [windows, mac]
+    needs: [windows, mac, mac-intel]
     if: always()
     runs-on: ubuntu-latest
     permissions:
@@ -151,6 +186,7 @@ jobs:
             echo "event: ${{ github.event_name }}  ref: $REF  sha: ${{ github.sha }}"
             echo "windows: ${{ needs.windows.result }}"
             echo "mac: ${{ needs.mac.result }}"
+            echo "mac-intel: ${{ needs.mac-intel.result }}"
             date -u +"finished: %Y-%m-%dT%H:%M:%SZ"
           } > "pub/$dir/result.txt"
           cd pub

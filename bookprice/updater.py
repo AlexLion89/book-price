@@ -16,7 +16,7 @@ import zipfile
 from pathlib import Path
 from typing import Optional, Tuple
 
-from . import __version__
+from . import __version__, settings
 from .net import Http
 from .system import current as system
 
@@ -51,18 +51,31 @@ def meant_for(notes: str, system_name: str) -> bool:
     return not found or SYSTEM_WORDS[system_name] in found.group(1).lower()
 
 
-def newest(releases: list, system_name: str, current: str) -> Optional[dict]:
-    fit = [r for r in releases if not r.get("draft") and not r.get("prerelease") and parse(r.get("tag_name") or "")
+def channel() -> str:
+    return "preview" if settings.load().get("update_channel") == "preview" else "stable"
+
+
+def choose_channel(value: str) -> None:
+    if value not in ("stable", "preview"):
+        raise ValueError("неизвестный канал обновлений")
+    settings.save(update_channel=value)
+
+
+def newest(releases: list, system_name: str, current: str, channel: str = "stable") -> Optional[dict]:
+    fit = [r for r in releases if not r.get("draft") and (channel == "preview" or not r.get("prerelease"))
+           and parse(r.get("tag_name") or "")
            and meant_for(r.get("body") or "", system_name)]
     best = max(fit, key=lambda r: parse(r["tag_name"]), default=None)
     if not best or parse(best["tag_name"]) <= parse(current):
         return None
     return {"tag": best["tag_name"], "version": ".".join(map(str, parse(best["tag_name"]))),
-            "summary": summary(best.get("body") or ""), "url": best.get("html_url") or ""}
+            "summary": summary(best.get("body") or ""), "url": best.get("html_url") or "",
+            "prerelease": bool(best.get("prerelease"))}
 
 
-def available(http: Http) -> Optional[dict]:
-    return newest(http.json(RELEASES), system.NAME, __version__)
+def available(http: Http, selected_channel: Optional[str] = None) -> Optional[dict]:
+    selected = channel() if selected_channel is None else selected_channel
+    return newest(http.json(RELEASES), system.NAME, __version__, selected)
 
 
 def download(http: Http, data_dir: Path, tag: str) -> str:

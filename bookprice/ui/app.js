@@ -418,6 +418,7 @@ function renderHelp() {
     <p>Если что-то не работает — нажмите «Отчёт об ошибке» вверху. ${SYS.os === "mac" ? "Откроется Finder с zip-файлом" : "На рабочем столе появится zip-файл"}: пришлите его тому, кто помогает с программой. В нём журнал работы и ваш список книг с найденными ценами — по нему видно, почему программа так посчитала. Сама программа ничего никуда не отправляет.</p>
   </div>
   ${browserCardHtml()}
+  ${updateChannelHtml()}
   <div class="card">
     <h2>Проверка площадок</h2>
     <p class="small muted">Для того, кто помогает с программой: прогоняет все площадки на двух книгах и сохраняет снимки страниц в zip ${esc(SYS.outbox)}. Занимает пару минут.</p>
@@ -429,6 +430,23 @@ function renderHelp() {
   document.getElementById("window-test").onclick = async () => {
     await api("POST", "/api/window-test");
     pollWindowTest();
+  };
+  document.getElementById("update-channel").onchange = async event => {
+    const pick = event.target;
+    pick.disabled = true;
+    try {
+      const st = await api("POST", "/api/update-channel", { channel: pick.value });
+      SYS.update_channel = st.channel;
+      sessionStorage.removeItem("update-later");
+      offerUpdate(st);
+      document.getElementById("channel-note").textContent = st.channel === "preview"
+        ? "Включены обычные и пробные выпуски. Проверяю, что нового…"
+        : "Включены только обычные выпуски. Установленная версия останется до следующего обновления.";
+      watchUpdates();
+    } catch (e) {
+      pick.value = SYS.update_channel || "stable";
+      toast(e.message, 6000);
+    } finally { pick.disabled = false; }
   };
   const pick = document.getElementById("browser-pick");
   if (pick) pick.onchange = async () => {
@@ -459,6 +477,56 @@ function browserCardHtml() {
     <div class="row">${choice}</div>
     <p class="small" id="browser-note"></p>
   </div>`;
+}
+
+function updateChannelHtml() {
+  return `<div class="card">
+    <h2>Обновления</h2>
+    <p>По умолчанию приходят только обычные выпуски. Если вы помогаете проверять новые возможности,
+      включите пробные: в них ещё могут встречаться ошибки.</p>
+    <label for="update-channel">Какие версии получать</label>
+    <select id="update-channel">
+      <option value="stable" ${SYS.update_channel !== "preview" ? "selected" : ""}>Только обычные</option>
+      <option value="preview" ${SYS.update_channel === "preview" ? "selected" : ""}>Обычные и пробные</option>
+    </select>
+    <p class="small muted" id="channel-note">Пробные обновления можно выключить в любой момент.
+      Возврата к старой версии не будет: программа дождётся более нового обычного выпуска.</p>
+  </div>`;
+}
+
+function chooseFirstBrowser() {
+  if (!SYS.browser_choice_required) return;
+  const dialog = document.getElementById("browser-setup");
+  dialog.innerHTML = `<form id="browser-setup-form">
+    <img class="setup-fox" src="/img/fox-64.png" alt="">
+    <h1 id="browser-setup-title">Какой браузер использовать?</h1>
+    <p>На компьютере найдено несколько подходящих браузеров. Выберите, в каком «Ценитель» будет
+      открывать свои окна и искать цены.</p>
+    <label for="first-browser">Браузер</label>
+    <select id="first-browser" required>${SYS.browsers.map(b =>
+      `<option value="${esc(b.key)}" ${b.key === SYS.browser_key ? "selected" : ""}>${esc(b.label)}</option>`).join("")}</select>
+    <p class="small muted">Не пугайтесь окон браузера: их открывает программа. Ваши вкладки и пароли останутся
+      на месте. Если выберете другой браузер, окно программы откроется заново.</p>
+    <p class="small">Выбор запомнится. Изменить его можно в «Справка → Браузер».</p>
+    <p id="browser-setup-error" class="small" role="alert"></p>
+    <button class="primary" type="submit">Продолжить</button>
+  </form>`;
+  dialog.oncancel = event => event.preventDefault();
+  document.getElementById("browser-setup-form").onsubmit = async event => {
+    event.preventDefault();
+    const button = event.submitter || dialog.querySelector("button");
+    button.disabled = true;
+    const previous = SYS.browser_key;
+    try {
+      SYS = await api("POST", "/api/browser", { key: document.getElementById("first-browser").value });
+      if (previous !== SYS.browser_key) await restartNow();
+      dialog.close();
+    } catch (e) {
+      document.getElementById("browser-setup-error").textContent = e.message;
+      button.disabled = false;
+    }
+  };
+  dialog.showModal();
 }
 
 async function restartNow() {
@@ -528,8 +596,8 @@ async function updateNow(ask) {
 function offerUpdate(st) {
   const banner = document.getElementById("update-banner");
   const u = st && st.available;
-  if (!u || sessionStorage.getItem("update-later") === u.version) return;
-  banner.innerHTML = `<div class="grow"><strong>Вышла новая версия ${esc(u.version)}</strong> (у вас ${esc(st.version)}).
+  if (!u || sessionStorage.getItem("update-later") === u.version) { banner.hidden = true; return; }
+  banner.innerHTML = `<div class="grow"><strong>Вышла ${u.prerelease ? "пробная" : "новая"} версия ${esc(u.version)}</strong> (у вас ${esc(st.version)}).
       ${esc(u.summary)}</div>
     <button class="primary" id="update-now">Обновить сейчас</button><button class="later" id="update-later">Позже</button>`;
   banner.hidden = false;
@@ -542,10 +610,11 @@ function offerUpdate(st) {
 
 // Ask again every 3 s until the program has heard back from GitHub, then every half hour.
 async function watchUpdates() {
+  clearTimeout(watchUpdates.timer);
   const st = await api("GET", "/api/update-status").catch(() => null);
   if (st) document.getElementById("version").textContent = "версия " + st.version;
   offerUpdate(st);
-  setTimeout(watchUpdates, st && st.checked ? 30 * 60000 : 3000);
+  watchUpdates.timer = setTimeout(watchUpdates, st && st.checked ? 30 * 60000 : 3000);
 }
 
 // Without Chrome, Edge or Yandex Browser the page has opened in the default browser (Safari, Firefox): say what to
@@ -562,7 +631,7 @@ async function checkSystem() {
   banner.hidden = false;
 }
 
-checkSystem().then(route);
+checkSystem().then(async () => { await route(); chooseFirstBrowser(); });
 watchUpdates();
 setInterval(() => fetch("/api/ping").catch(() => {}), 60000);
 // Closing this window turns the program off; a reload asks for the page again at once and cancels that.

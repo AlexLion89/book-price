@@ -88,6 +88,24 @@ class BrowsersTest(unittest.TestCase):
                 files["yandex"].unlink()
                 self.assertEqual(browsers.find().key, "edge", "выбранный браузер удалили — берётся следующий")
 
+    def test_first_run_asks_only_when_there_is_a_choice_and_it_is_not_saved(self):
+        files = [browsers.Found(k, Path(k)) for k in ("edge", "chrome")]
+        with mock.patch.object(browsers, "installed", return_value=files) as found, \
+                mock.patch("bookprice.settings.load", return_value={}) as saved, \
+                mock.patch.dict(os.environ, {"BOOKPRICE_BROWSER": ""}):
+            self.assertTrue(browsers.choice_required())
+            saved.return_value = {"browser": "chrome"}
+            self.assertFalse(browsers.choice_required())
+            saved.return_value = {"browser": "yandex"}
+            self.assertTrue(browsers.choice_required(), "выбранный браузер удалён")
+            found.return_value = files[:1]
+            self.assertFalse(browsers.choice_required())
+            found.return_value = []
+            self.assertFalse(browsers.choice_required())
+            found.return_value = files
+            with mock.patch.dict(os.environ, {"BOOKPRICE_BROWSER": "custom-browser"}):
+                self.assertFalse(browsers.choice_required())
+
     def test_without_a_suitable_browser_there_is_nothing_to_drive(self):
         with mock.patch.object(system, "browser_paths", lambda: [("chrome", Path("/nowhere/chrome"))]), \
                 mock.patch.dict(os.environ, {"BOOKPRICE_BROWSER": ""}):
