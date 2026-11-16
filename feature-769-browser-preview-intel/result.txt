@@ -1,0 +1,6 @@
+run: https://github.com/AlexLion89/book-price/actions/runs/43824098636
+event: push  ref: feature/769-browser-preview-intel  sha: 8930634dff110fc49c11a8f410f271887a073773
+windows: success
+mac: success
+mac-intel: success
+finished: 2026-11-16T07:36:12Z
