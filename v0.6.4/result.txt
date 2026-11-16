@@ -1,6 +1,6 @@
-run: https://github.com/AlexLion89/book-price/actions/runs/43825183033
-event: push  ref: v0.6.4  sha: 8930634dff110fc49c11a8f410f271887a073773
+run: https://github.com/AlexLion89/book-price/actions/runs/43825250633
+event: release  ref: v0.6.4  sha: 8930634dff110fc49c11a8f410f271887a073773
 windows: success
 mac: success
 mac-intel: success
-finished: 2026-11-16T07:46:37Z
+finished: 2026-11-16T07:47:11Z

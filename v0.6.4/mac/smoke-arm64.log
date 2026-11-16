@@ -1,5 +1,5 @@
 OK   проверка на родной архитектуре — arm64
-OK   Chrome «пользователя» с тремя вкладками — ['8877FFA529322F87D8B9BFDC48AFDBFC data:text/html;charset=utf-8,<title>%D0%', '9648E909EC6D24AC142928791D278F19 data:text/html;charset=utf-8,<title>%D0%', 'B10282D098D3D75DA47EAD693DF19165 data:text/html;charset=utf-8,<title>%D0%']
+OK   Chrome «пользователя» с тремя вкладками — ['0AAA18C6B930AF8F1761ED7EAF108035 data:text/html;charset=utf-8,<title>%D0%', 'B5AB0F4E37F31576314DBF9900D861D8 data:text/html;charset=utf-8,<title>%D0%', 'D349211C5F1CE5EE6D4D1C8FF8FF6C09 data:text/html;charset=utf-8,<title>%D0%']
 OK   программа универсальная (Intel + Apple M) — x86_64 arm64
 A. запуск arm64
 OK   программа поднялась — {'ok': True, 'version': '0.6.4', 'busy': False}
@@ -11,7 +11,7 @@ OK   запущена под arm64 — arm64
      щелчок по значку окна программы в Dock: ошибка: undefined
      окна (после щелчка по окну программы): {'окно программы': (3, 10)}
 снимок 1b-after-dock-click-ui.png
-OK   щелчок по значку в Dock не оставляет пустого окна — {'окно программы': (2, 7)}
+OK   щелчок по значку в Dock не оставляет пустого окна — {'окно программы': (2, 8)}
 B. окно поиска
 снимок 2-search-window-arm64.png
      окна (окно поиска открылось): {'окно поиска': (2, 9), 'окно программы': (2, 7)}
@@ -19,7 +19,7 @@ B. окно поиска
      окна (после щелчка по окну поиска): {'окно поиска': (2, 9), 'окно программы': (2, 7)}
 снимок 2b-after-dock-click-search.png
 OK   окно поиска открылось и закрылось — {'status': 'done', 'title': 'Поиск цен — Ценитель', 'browser': 'Google Chrome'}
-OK   вкладки пользователя на месте после окна поиска — ['8877FFA529322F87D8B9BFDC48AFDBFC data:text/html;charset=utf-8,<title>%D0%', '9648E909EC6D24AC142928791D278F19 data:text/html;charset=utf-8,<title>%D0%', 'B10282D098D3D75DA47EAD693DF19165 data:text/html;charset=utf-8,<title>%D0%']
+OK   вкладки пользователя на месте после окна поиска — ['0AAA18C6B930AF8F1761ED7EAF108035 data:text/html;charset=utf-8,<title>%D0%', 'B5AB0F4E37F31576314DBF9900D861D8 data:text/html;charset=utf-8,<title>%D0%', 'D349211C5F1CE5EE6D4D1C8FF8FF6C09 data:text/html;charset=utf-8,<title>%D0%']
 C. перезапуск, как после обновления
 OK   старая копия вышла
 OK   новая копия поднялась
@@ -28,12 +28,12 @@ D. пользователь закрыл окно программы
 OK   программа выключилась сама
 OK   её окон не осталось
 OK   Chrome пользователя жив
-OK   вкладки пользователя на месте — ['8877FFA529322F87D8B9BFDC48AFDBFC data:text/html;charset=utf-8,<title>%D0%', '9648E909EC6D24AC142928791D278F19 data:text/html;charset=utf-8,<title>%D0%', 'B10282D098D3D75DA47EAD693DF19165 data:text/html;charset=utf-8,<title>%D0%']
+OK   вкладки пользователя на месте — ['0AAA18C6B930AF8F1761ED7EAF108035 data:text/html;charset=utf-8,<title>%D0%', 'B5AB0F4E37F31576314DBF9900D861D8 data:text/html;charset=utf-8,<title>%D0%', 'D349211C5F1CE5EE6D4D1C8FF8FF6C09 data:text/html;charset=utf-8,<title>%D0%']
 E. повторный запуск и «Выйти»
 OK   поднялась снова
 снимок 3-again-arm64.png
 OK   «Выйти» выключает программу
 OK   и закрывает её окно
 OK   Chrome пользователя жив в конце
-OK   вкладки пользователя в конце те же — ['8877FFA529322F87D8B9BFDC48AFDBFC data:text/html;charset=utf-8,<title>%D0%', '9648E909EC6D24AC142928791D278F19 data:text/html;charset=utf-8,<title>%D0%', 'B10282D098D3D75DA47EAD693DF19165 data:text/html;charset=utf-8,<title>%D0%']
+OK   вкладки пользователя в конце те же — ['0AAA18C6B930AF8F1761ED7EAF108035 data:text/html;charset=utf-8,<title>%D0%', 'B5AB0F4E37F31576314DBF9900D861D8 data:text/html;charset=utf-8,<title>%D0%', 'D349211C5F1CE5EE6D4D1C8FF8FF6C09 data:text/html;charset=utf-8,<title>%D0%']
 итог: 22 из 22
